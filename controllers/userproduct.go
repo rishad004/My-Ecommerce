@@ -46,10 +46,6 @@ func UserHome(c *gin.Context) {
 	c.JSON(200, show)
 }
 
-func UserSearchP(c *gin.Context) {
-
-}
-
 func UserShowP(c *gin.Context) {
 
 	fmt.Println("")
@@ -59,6 +55,7 @@ func UserShowP(c *gin.Context) {
 	var category models.Category
 	var show details
 	var s string
+	var p []models.Products
 
 	Id := c.Param("Id")
 
@@ -79,8 +76,22 @@ func UserShowP(c *gin.Context) {
 			Description: product.Dscptn,
 			Status:      s,
 		}
+		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
 	}
 	c.JSON(200, show)
+	c.JSON(200, "Related Products")
+	for i := 0; i < len(p); i++ {
+		if p[i].Id != product.Id {
+			c.JSON(200, gin.H{
+				"Name":  p[i].Name,
+				"Price": p[i].Price,
+			})
+		}
+	}
 	product = models.Products{}
 	category = models.Category{}
+}
+
+func UserSearchP(c *gin.Context) {
+
 }
