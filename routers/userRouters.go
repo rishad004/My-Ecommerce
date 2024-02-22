@@ -13,4 +13,7 @@ func UserRouters(r *gin.RouterGroup) {
 	r.POST("/otp", controllers.PostOtpU)
 	r.POST("/login", controllers.PostLoginU)
 
+	//---------------Product
+	r.GET("/home", controllers.UserShowP)
+	r.POST("/searchproduct", controllers.UserSearchP)
 }

@@ -55,7 +55,7 @@ func PostOtpU(c *gin.Context) {
 
 	c.BindJSON(&rc)
 
-	database.Db.First(&check, "User_Mail=?", user.Email)
+	database.Db.Where("User_Mail=? AND Expr > ?", user.Email, time.Now()).First(&check)
 
 	if check.Otp == rc.Otp {
 		database.Db.Delete(&check)
@@ -71,7 +71,7 @@ func PostOtpU(c *gin.Context) {
 			})
 		}
 	} else {
-		c.JSON(401, "Invalid otp, Please try again")
+		c.JSON(401, "Otp expired or invalid, Please try again")
 	}
 
 }
