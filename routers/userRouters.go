@@ -14,6 +14,6 @@ func UserRouters(r *gin.RouterGroup) {
 	r.POST("/login", controllers.PostLoginU)
 
 	//---------------Product
-	r.GET("/home", controllers.UserShowP)
-	r.POST("/searchproduct", controllers.UserSearchP)
+	r.GET("/home", controllers.UserHome)
+	r.POST("/product/:Name", controllers.UserShowP)
 }
