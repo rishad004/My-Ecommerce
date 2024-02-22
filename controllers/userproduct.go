@@ -60,11 +60,11 @@ func UserShowP(c *gin.Context) {
 	var show details
 	var s string
 
-	name := c.Param("Name")
+	Id := c.Param("Id")
 
-	database.Db.First(&product).Update("Name", name)
+	database.Db.First(&product, Id)
 
-	database.Db.First(&category).Update("Id", product.CtgryId)
+	database.Db.First(&category, product.CtgryId)
 	if category.Blocking {
 		if product.Quantity != 0 {
 			s = "On stock"
@@ -79,8 +79,8 @@ func UserShowP(c *gin.Context) {
 			Description: product.Dscptn,
 			Status:      s,
 		}
-
 	}
-
 	c.JSON(200, show)
+	product = models.Products{}
+	category = models.Category{}
 }
