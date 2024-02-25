@@ -12,16 +12,16 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.POST("/login", controllers.PostLoginA)
 
 	//---------------Product
-	r.POST("/addproduct", controllers.AddProduct)
-	r.PUT("/editproduct/:Name", controllers.EditProduct)
-	r.DELETE("/deleteproduct/:Name", controllers.DeleteProduct)
+	r.POST("/product", controllers.AddProduct)
+	r.PUT("/product/:Name", controllers.EditProduct)
+	r.DELETE("/product/:Name", controllers.DeleteProduct)
 
 	//---------------Category
-	r.POST("/addcategory", controllers.AddCtgry)
-	r.PUT("/editcategory/:Name", controllers.EditCategory)
-	r.DELETE("/deletecategory/:Name", controllers.DeleteCategory)
-	r.PATCH("/blockingcategory/:Name", controllers.BlockingCategory)
+	r.POST("/category", controllers.AddCtgry)
+	r.PUT("/category/:Name", controllers.EditCategory)
+	r.DELETE("/category/:Name", controllers.DeleteCategory)
+	r.PATCH("/category/:Name", controllers.BlockingCategory)
 
 	//---------------User
-	r.PATCH("/blockinguser/:Id",controllers.BlockingUser)
+	r.PATCH("/user/:Id",controllers.BlockingUser)
 }

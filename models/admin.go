@@ -9,6 +9,7 @@ type Products struct {
 	Color      string `gorm:"not null" json:"color"`
 	Quantity   int    `gorm:"not null" json:"quantity"`
 	Dscptn     string `gorm:"not null" json:"description"`
+	Image      []string
 	CtgryId    uint
 	CtgryBlock bool
 }
