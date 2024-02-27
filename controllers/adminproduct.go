@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"project/database"
 	"project/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +22,21 @@ func AddProduct(c *gin.Context) {
 	var Product models.Products
 	var check models.Category
 
-	c.BindJSON(&product)
+	file, _ := c.MultipartForm()
+	product.Name = file.Value["name"][0]
+	product.Price, _ = strconv.Atoi(file.Value["price"][0])
+	product.Color = file.Value["color"][0]
+	product.Quantity, _ = strconv.Atoi(file.Value["quantity"][0])
+	product.Dscptn = file.Value["description"][0]
+	product.Ctgry = file.Value["category"][0]
+	image := file.File["image"]
+
+	for _, k := range image {
+		product.ImageURLs = append(product.ImageURLs, "./image/"+k.Filename)
+		if err:=c.SaveUploadedFile(k, "./assets/images/"+k.Filename);err!=nil{
+			c.JSON(400, "Failed to save")
+		}
+	}
 
 	database.Db.First(&check, "Name=?", product.Ctgry)
 
@@ -33,6 +48,7 @@ func AddProduct(c *gin.Context) {
 		Dscptn:     product.Dscptn,
 		CtgryId:    check.Id,
 		CtgryBlock: true,
+		ImageURLs:  product.ImageURLs,
 	}
 
 	if Product.CtgryId == 0 {

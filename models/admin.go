@@ -1,15 +1,19 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/lib/pq"
+)
 
 type Products struct {
-	Id         uint   `gorm:"primaryKey"`
-	Name       string `gorm:"not null; unique" json:"name"`
-	Price      int    `gorm:"not null" json:"price"`
-	Color      string `gorm:"not null" json:"color"`
-	Quantity   int    `gorm:"not null" json:"quantity"`
-	Dscptn     string `gorm:"not null" json:"description"`
-	Image      []string
+	Id         uint           `gorm:"primaryKey"`
+	Name       string         `gorm:"not null; unique" json:"name"`
+	Price      int            `gorm:"not null" json:"price"`
+	Color      string         `gorm:"not null" json:"color"`
+	Quantity   int            `gorm:"not null" json:"quantity"`
+	Dscptn     string         `gorm:"not null" json:"description"`
+	ImageURLs  pq.StringArray `gorm:"type:text[]"`
 	CtgryId    uint
 	CtgryBlock bool
 }
