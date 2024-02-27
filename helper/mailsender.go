@@ -3,6 +3,7 @@ package helper
 import (
 	"fmt"
 	"net/smtp"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,15 +13,15 @@ func SendMail(c *gin.Context, mail string, sub string, body string) {
 	fmt.Println("---------------------SENDING MAIL-----------------------")
 	auth := smtp.PlainAuth(
 		"Rishad's Project",
-		"rishadmuthu004@gmail.com",
-		"pcojpuhrbblrbhgv",
+		os.Getenv("SENDING_MAIL"),
+		os.Getenv("APP_PASS"),
 		"smtp.gmail.com",
 	)
 	msg := "Subject: " + sub + "\n" + body
 	err := smtp.SendMail(
 		"smtp.gmail.com:587",
 		auth,
-		"rishadmuthu004@gmail.com",
+		os.Getenv("SENDING_MAIL"),
 		[]string{mail},
 		[]byte(msg),
 	)
