@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -13,7 +14,7 @@ type Users struct {
 	Pass       string `gorm:"not null" json:"userpass"`
 	Phone      string `gorm:"not null;unique" json:"userphone"`
 	Gender     string `gorm:"not null" json:"usergender"`
-	Address_id uint
+	Address_id pq.Int32Array
 	Blocking   bool
 	Admin      bool
 }
