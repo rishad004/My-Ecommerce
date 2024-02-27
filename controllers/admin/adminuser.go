@@ -16,10 +16,8 @@ func BlockingUser(c *gin.Context) {
 
 	var u models.Users
 
-	database.Db.First(&u, Id)
-	if u.ID == 0 {
-		c.JSON(404, "User not found")
-	} else {
+	database.Db.First(&u, "ID=?", Id)
+	if u.ID != 0 {
 		if u.Blocking {
 			database.Db.Model(&u).Update("Blocking", false)
 			c.JSON(200, "Blocked user successfully")
@@ -27,5 +25,7 @@ func BlockingUser(c *gin.Context) {
 			database.Db.Model(&u).Update("Blocking", true)
 			c.JSON(200, "Unblocked user successfully")
 		}
+	} else {
+		c.JSON(404, "User not found")
 	}
 }

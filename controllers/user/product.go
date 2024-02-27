@@ -6,9 +6,11 @@ import (
 	"project/models"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
 
 type details struct {
+	Images      pq.StringArray
 	Name        string
 	Price       int
 	Color       string
@@ -18,32 +20,10 @@ type details struct {
 }
 
 type home struct {
+	Image pq.StringArray
 	Name  string
 	Price int
-}
-
-func UserHome(c *gin.Context) {
-
-	fmt.Println("")
-	fmt.Println("-----------------------------PRODUCT SHOWING------------------------")
-
-	var product []models.Products
-	var category models.Category
-	var show []home
-
-	database.Db.Find(&product)
-	for i := 0; i < len(product); i++ {
-		database.Db.First(&category).Update("Id", product[i].CtgryId)
-		if category.Blocking {
-			l := home{
-				Name:  product[i].Name,
-				Price: product[i].Price,
-			}
-			show = append(show, l)
-			category = models.Category{}
-		}
-	}
-	c.JSON(200, show)
+	Rating int
 }
 
 func UserShowP(c *gin.Context) {
@@ -69,6 +49,7 @@ func UserShowP(c *gin.Context) {
 			s = "Out of stock"
 		}
 		show = details{
+			Images:      product.ImageURLs,
 			Name:        product.Name,
 			Price:       product.Price,
 			Color:       product.Color,
@@ -83,6 +64,7 @@ func UserShowP(c *gin.Context) {
 	for i := 0; i < len(p); i++ {
 		if p[i].Id != product.Id {
 			c.JSON(200, gin.H{
+				"Image": p[i].ImageURLs[0],
 				"Name":  p[i].Name,
 				"Price": p[i].Price,
 			})

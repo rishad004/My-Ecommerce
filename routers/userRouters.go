@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"project/controllers"
+	controllers "project/controllers/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,4 +16,7 @@ func UserRouters(r *gin.RouterGroup) {
 	//---------------Product
 	r.GET("/home", controllers.UserHome)
 	r.GET("/product/:Id", controllers.UserShowP)
+
+	//---------------Home
+	r.GET("/profile", controllers.UserProfile)
 }

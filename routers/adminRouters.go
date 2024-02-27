@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"project/controllers"
+	controllers "project/controllers/admin"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,5 +23,5 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.PATCH("/category/:Name", controllers.BlockingCategory)
 
 	//---------------User
-	r.PATCH("/user/:Id",controllers.BlockingUser)
+	r.PATCH("/user/:Id", controllers.BlockingUser)
 }

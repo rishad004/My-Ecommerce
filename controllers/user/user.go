@@ -14,6 +14,7 @@ import (
 )
 
 var user models.Users
+var Logged uint
 
 func PostSignupU(c *gin.Context) {
 	fmt.Println("")
@@ -95,6 +96,7 @@ func PostLoginU(c *gin.Context) {
 		if err != nil {
 			c.JSON(401, "Inavlid Email or Password")
 		} else {
+			Logged = check.ID
 			c.JSON(200, "Successfully Logged in")
 		}
 	}
