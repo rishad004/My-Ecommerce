@@ -20,10 +20,10 @@ type details struct {
 }
 
 type home struct {
-	Image pq.StringArray
-	Name  string
-	Price int
-	Rating int
+	Image  pq.StringArray
+	Name   string
+	Price  int
+	Rating float32
 }
 
 func UserShowP(c *gin.Context) {
@@ -34,12 +34,15 @@ func UserShowP(c *gin.Context) {
 	var product models.Products
 	var category models.Category
 	var show details
+	var rate float32
 	var s string
 	var p []models.Products
+	var r []models.Rating
 
 	Id := c.Param("Id")
 
 	database.Db.First(&product, Id)
+	database.Db.Find(&r, "Prdct_Id=?", product.Id)
 
 	database.Db.First(&category, product.CtgryId)
 	if category.Blocking {
@@ -59,6 +62,17 @@ func UserShowP(c *gin.Context) {
 		}
 		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
 	}
+
+	for _, k := range r {
+		rate = rate + k.Rating
+		c.JSON(200, gin.H{
+			"Rating": k.Rating,
+			"Review": k.Review,
+		})
+	}
+	c.JSON(200, gin.H{
+		"Average rating": fmt.Sprint(rate/float32(len(r)), "/5"),
+	})
 	c.JSON(200, show)
 	c.JSON(200, "Related Products")
 	for i := 0; i < len(p); i++ {

@@ -65,10 +65,9 @@ type Orders struct {
 	Status    string `gorm:"not null"`
 }
 type Rating struct {
-	Id       uint `gorm:"primaryKey"`
-	Users    int
-	Rating   int
-	Review   string
+	Id       uint    `gorm:"primaryKey"`
+	Rating   float32 `json:"rating"`
+	Review   string  `json:"review"`
 	User_Id  uint
 	Prdct_Id uint
 }

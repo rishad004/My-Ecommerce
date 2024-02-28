@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"project/database"
 	"project/models"
 
@@ -8,6 +9,9 @@ import (
 )
 
 func UserProfile(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------USER PROFILE------------------------")
 
 	var user models.Users
 	var address []models.Address
@@ -23,7 +27,13 @@ func UserProfile(c *gin.Context) {
 	})
 	for _, k := range address {
 		c.JSON(200, gin.H{
-			"Address": k,
+			"Name":     k.Name,
+			"Phone":    k.Phone,
+			"Pincode":  k.PinCode,
+			"City":     k.City,
+			"State":    k.State,
+			"Landmark": k.Landmark,
+			"Address":  k.Address,
 		})
 	}
 }

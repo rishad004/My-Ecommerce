@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"project/database"
 	"project/models"
 
@@ -8,6 +9,10 @@ import (
 )
 
 func AddAddress(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------ADDRESS ADDING------------------------")
+
 	var address models.Address
 
 	c.BindJSON(&address)

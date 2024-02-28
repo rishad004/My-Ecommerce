@@ -11,19 +11,27 @@ import (
 func UserHome(c *gin.Context) {
 
 	fmt.Println("")
-	fmt.Println("-----------------------------PRODUCT SHOWING------------------------")
+	fmt.Println("-----------------------------HOME SHOWING------------------------")
 
 	var product []models.Products
 	var show []home
+	var rate float32
 
 	database.Db.Find(&product)
 	for i := 0; i < len(product); i++ {
 		if product[i].CtgryBlock {
-			l := home{
-				Image: product[i].ImageURLs[0:1],
-				Name:  product[i].Name,
-				Price: product[i].Price,
+			var r []models.Rating
+			database.Db.Find(&r, "Prdct_Id=?", product[i].Id)
+			for _, k := range r {
+				rate += k.Rating
 			}
+			l := home{
+				Image:  product[i].ImageURLs[0:1],
+				Name:   product[i].Name,
+				Price:  product[i].Price,
+				Rating: rate / float32(len(r)),
+			}
+			rate = 0
 			show = append(show, l)
 		}
 	}

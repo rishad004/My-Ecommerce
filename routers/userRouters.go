@@ -19,4 +19,10 @@ func UserRouters(r *gin.RouterGroup) {
 
 	//---------------Home
 	r.GET("/profile", controllers.UserProfile)
+
+	//---------------Address
+	r.POST("/address", controllers.AddAddress)
+
+	//---------------Rating
+	r.POST("/rating/:Id", controllers.AddRating)
 }

@@ -17,6 +17,7 @@ var user models.Users
 var Logged uint
 
 func PostSignupU(c *gin.Context) {
+
 	fmt.Println("")
 	fmt.Println("------------------USER SIGNING UP----------------------")
 
@@ -48,6 +49,7 @@ func PostSignupU(c *gin.Context) {
 }
 
 func PostOtpU(c *gin.Context) {
+	
 	fmt.Println("")
 	fmt.Println("------------------OTP VERIFYING----------------------")
 
@@ -78,6 +80,7 @@ func PostOtpU(c *gin.Context) {
 }
 
 func PostLoginU(c *gin.Context) {
+
 	fmt.Println("")
 	fmt.Println("------------------USER LOGGING IN----------------------")
 
