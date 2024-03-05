@@ -7,11 +7,50 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lib/pq"
 )
+
+type showp struct {
+	ImageURLs   pq.StringArray
+	Id          uint
+	Name        string
+	Price       int
+	Color       pq.StringArray
+	Quantity    int
+	Category    string
+	Description string
+}
 
 type pp struct {
 	models.Products
 	Ctgry string `json:"category"`
+}
+
+func ShowProduct(c *gin.Context) {
+	fmt.Println("")
+	fmt.Println("---------------------PRODUCT SHOWING--------------------")
+
+	var product []models.Products
+	var show []showp
+
+	database.Db.Order("Id asc").Find(&product)
+
+	for i := 0; i < len(product); i++ {
+		var cat models.Category
+		database.Db.First(&cat, product[i].CtgryId)
+		l := showp{
+			ImageURLs:   product[i].ImageURLs,
+			Id:          product[i].Id,
+			Name:        product[i].Name,
+			Price:       product[i].Price,
+			Color:       product[i].Color,
+			Quantity:    product[i].Quantity,
+			Category:    cat.Name,
+			Description: product[i].Dscptn,
+		}
+		show = append(show, l)
+	}
+	c.JSON(200, show)
 }
 
 func AddProduct(c *gin.Context) {
@@ -25,7 +64,7 @@ func AddProduct(c *gin.Context) {
 	file, _ := c.MultipartForm()
 	product.Name = file.Value["name"][0]
 	product.Price, _ = strconv.Atoi(file.Value["price"][0])
-	product.Color = file.Value["color"][0]
+	product.Color = file.Value["color"]
 	product.Quantity, _ = strconv.Atoi(file.Value["quantity"][0])
 	product.Dscptn = file.Value["description"][0]
 	product.Ctgry = file.Value["category"][0]
@@ -33,7 +72,7 @@ func AddProduct(c *gin.Context) {
 
 	for _, k := range image {
 		product.ImageURLs = append(product.ImageURLs, "./image/"+k.Filename)
-		if err:=c.SaveUploadedFile(k, "./assets/images/"+k.Filename);err!=nil{
+		if err := c.SaveUploadedFile(k, "./assets/images/"+k.Filename); err != nil {
 			c.JSON(400, "Failed to save")
 		}
 	}

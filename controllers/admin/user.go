@@ -8,6 +8,51 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type showu struct {
+	Id     uint
+	Name   string
+	Email  string
+	Phone  string
+	Gender string
+	Status string
+	Role   string
+}
+
+func ShowUser(c *gin.Context) {
+	fmt.Println("")
+	fmt.Println("-------------------------SHOWING USERS-------------------------")
+
+	var users []models.Users
+	var status, role string
+	var show []showu
+
+	database.Db.Order("ID asc").Find(&users)
+
+	for i := 0; i < len(users); i++ {
+		if users[i].Blocking {
+			status = "Active"
+		} else {
+			status = "Blocked"
+		}
+		if users[i].Admin {
+			role = "Admin"
+		} else {
+			role = "User"
+		}
+		l := showu{
+			Id:     users[i].ID,
+			Name:   users[i].Name,
+			Email:  users[i].Email,
+			Phone:  users[i].Phone,
+			Gender: users[i].Gender,
+			Status: status,
+			Role:   role,
+		}
+		show = append(show, l)
+	}
+	c.JSON(200, show)
+}
+
 func BlockingUser(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("-------------------------BLOCKING USER-------------------------")

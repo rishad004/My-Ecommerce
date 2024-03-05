@@ -50,11 +50,11 @@ type Payment struct {
 	Created_at    time.Time `gorm:"not null"`
 }
 type Cart struct {
-	Id        uint `gorm:"primaryKey"`
-	UserId    uint `gorm:"not null"`
-	Productid uint `gorm:"not null"`
-	Quantity  int  `gorm:"not null"`
-	SubTotal  int  `gorm:"not null"`
+	Id        uint   `gorm:"primaryKey"`
+	UserId    uint   `gorm:"not null"`
+	Productid uint   `gorm:"not null"`
+	Color     string `gorm:"not null"`
+	Quantity  int    `gorm:"not null"`
 }
 type Orders struct {
 	Id        uint   `gorm:"primaryKey"`

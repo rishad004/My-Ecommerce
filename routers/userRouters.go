@@ -10,7 +10,7 @@ func UserRouters(r *gin.RouterGroup) {
 
 	//---------------Login&SignUp
 	r.POST("/signup", controllers.PostSignupU)
-	r.POST("/otp", controllers.PostOtpU)
+	r.POST("/signup/otp", controllers.PostOtpU)
 	r.POST("/login", controllers.PostLoginU)
 
 	//---------------Product
@@ -25,4 +25,8 @@ func UserRouters(r *gin.RouterGroup) {
 
 	//---------------Rating
 	r.POST("/rating/:Id", controllers.AddRating)
+
+	//---------------Cart
+	r.POST("/cart/:Id/:Color", controllers.AddCart)
+	r.GET("/cart", controllers.ShowCart)
 }

@@ -10,7 +10,7 @@ type Products struct {
 	Id         uint           `gorm:"primaryKey"`
 	Name       string         `gorm:"not null; unique" json:"name"`
 	Price      int            `gorm:"not null" json:"price"`
-	Color      string         `gorm:"not null" json:"color"`
+	Color      pq.StringArray `gorm:"not null;type:text[]" json:"color"`
 	Quantity   int            `gorm:"not null" json:"quantity"`
 	Dscptn     string         `gorm:"not null" json:"description"`
 	ImageURLs  pq.StringArray `gorm:"type:text[]"`
@@ -25,10 +25,10 @@ type Category struct {
 }
 type Coupons struct {
 	Id     uint      `gorm:"primaryKey"`
-	Name   string    `gorm:"not null; unique"`
-	Dscptn string    `gorm:"not null"`
-	Code   string    `gorm:"not null"`
-	Value  string    `gorm:"not null"`
+	Name   string    `gorm:"not null; unique" json:"name"`
+	Dscptn string    `gorm:"not null" json:"description"`
+	Code   string    `gorm:"not null; unique" json:"code"`
+	Value  int       `gorm:"not null" json:"off"`
 	Expr   time.Time `gorm:"not null"`
 }
 type Banner struct {

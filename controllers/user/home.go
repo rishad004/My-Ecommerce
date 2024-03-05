@@ -25,14 +25,19 @@ func UserHome(c *gin.Context) {
 			for _, k := range r {
 				rate += k.Rating
 			}
+			if len(r) == 0 {
+				rate = 0
+			} else {
+				rate = rate / float32(len(r))
+			}
 			l := home{
 				Image:  product[i].ImageURLs[0:1],
 				Name:   product[i].Name,
 				Price:  product[i].Price,
-				Rating: rate / float32(len(r)),
+				Rating: rate,
 			}
-			rate = 0
 			show = append(show, l)
+			rate = 0
 		}
 	}
 	c.JSON(200, show)

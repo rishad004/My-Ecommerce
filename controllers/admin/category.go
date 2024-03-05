@@ -8,6 +8,41 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type showc struct {
+	Id          uint
+	Name        string
+	Description string
+	Status      string
+}
+
+func ShowCategory(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("---------------------------CATEGORY SHOWING----------------------")
+
+	var category []models.Category
+	var Status string
+	var show []showc
+
+	database.Db.Order("Id asc").Find(&category)
+
+	for i := 0; i < len(category); i++ {
+		if category[i].Blocking {
+			Status = "Active"
+		} else {
+			Status = "Blocked"
+		}
+		l := showc{
+			Id:          category[i].Id,
+			Name:        category[i].Name,
+			Description: category[i].Dscptn,
+			Status:      Status,
+		}
+		show = append(show, l)
+	}
+	c.JSON(200, show)
+}
+
 func AddCtgry(c *gin.Context) {
 
 	fmt.Println("")
@@ -97,7 +132,6 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"Products": product,
 			"Category": ctgry,
 			"message":  "Category unblocked successfully",
 		})
@@ -110,7 +144,6 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"Products": product,
 			"Category": ctgry,
 			"message":  "Category blocked successfully",
 		})

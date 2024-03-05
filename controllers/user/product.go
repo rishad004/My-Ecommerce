@@ -13,7 +13,7 @@ type details struct {
 	Images      pq.StringArray
 	Name        string
 	Price       int
-	Color       string
+	Color       pq.StringArray
 	Category    string
 	Description string
 	Status      string
