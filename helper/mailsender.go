@@ -26,7 +26,11 @@ func SendMail(c *gin.Context, mail string, sub string, body string) {
 		[]byte(msg),
 	)
 	if err != nil {
-		c.JSON(503, "We couldn't send the mail, Please check email address")
+		c.JSON(503, gin.H{
+			"Message": "We couldn't send the mail, Please check email address-----------------",
+			"Error":   err,
+		})
+
 		return
 	}
 }
