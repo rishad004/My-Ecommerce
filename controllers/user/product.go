@@ -70,8 +70,14 @@ func UserShowP(c *gin.Context) {
 			"Review": k.Review,
 		})
 	}
+	var Avg string
+	if rate != 0 {
+		Avg = fmt.Sprint(rate/float32(len(r)), "/5")
+	} else {
+		Avg = "0 Rating"
+	}
 	c.JSON(200, gin.H{
-		"Average rating": fmt.Sprint(rate/float32(len(r)), "/5"),
+		"Average rating": Avg,
 	})
 	c.JSON(200, show)
 	c.JSON(200, "Related Products")

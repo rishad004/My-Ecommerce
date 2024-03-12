@@ -27,9 +27,8 @@ func PostSignupU(c *gin.Context) {
 	c.ShouldBindJSON(&user)
 
 	user.Blocking = true
-	user.Admin = false
 
-	user.Pass = helper.HashPass(c, user.Pass)
+	user.Pass = helper.HashPass(user.Pass)
 
 	randomNum := strconv.Itoa(rand.Intn(900000) + 100000)
 

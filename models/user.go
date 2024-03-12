@@ -14,7 +14,6 @@ type Users struct {
 	Phone    string `gorm:"not null;unique" json:"userphone"`
 	Gender   string `gorm:"not null" json:"usergender"`
 	Blocking bool
-	Admin    bool
 }
 type Otp struct {
 	Id       uint   `gorm:"primaryKey"`

@@ -6,6 +6,12 @@ import (
 	"github.com/lib/pq"
 )
 
+type Admin struct {
+	Id    uint `gorm:"primaryKey"`
+	Name  string  
+	Email string `json:"adminmail"`
+	Pass  string `json:"adminpass"`
+}
 type Products struct {
 	Id         uint           `gorm:"primaryKey"`
 	Name       string         `gorm:"not null; unique" json:"name"`

@@ -17,7 +17,7 @@ func UserProfile(c *gin.Context) {
 	var address []models.Address
 
 	database.Db.First(&user, Logged)
-	database.Db.Find(&address, "User_Id=?", user.ID)
+	database.Db.Find(&address, "User_Id=?", Logged)
 
 	c.JSON(200, gin.H{
 		"Name":   user.Name,

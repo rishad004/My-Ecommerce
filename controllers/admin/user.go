@@ -15,7 +15,6 @@ type showu struct {
 	Phone  string
 	Gender string
 	Status string
-	Role   string
 }
 
 func ShowUser(c *gin.Context) {
@@ -23,7 +22,7 @@ func ShowUser(c *gin.Context) {
 	fmt.Println("-------------------------SHOWING USERS-------------------------")
 
 	var users []models.Users
-	var status, role string
+	var status string
 	var show []showu
 
 	database.Db.Order("ID asc").Find(&users)
@@ -34,11 +33,6 @@ func ShowUser(c *gin.Context) {
 		} else {
 			status = "Blocked"
 		}
-		if users[i].Admin {
-			role = "Admin"
-		} else {
-			role = "User"
-		}
 		l := showu{
 			Id:     users[i].ID,
 			Name:   users[i].Name,
@@ -46,7 +40,6 @@ func ShowUser(c *gin.Context) {
 			Phone:  users[i].Phone,
 			Gender: users[i].Gender,
 			Status: status,
-			Role:   role,
 		}
 		show = append(show, l)
 	}
