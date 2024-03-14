@@ -13,6 +13,8 @@ func AddAddress(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("-----------------------------ADDRESS ADDING------------------------")
 
+	Logged := c.MustGet("Id").(uint)
+
 	var address models.Address
 
 	c.BindJSON(&address)

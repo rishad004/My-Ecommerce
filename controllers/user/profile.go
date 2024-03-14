@@ -16,6 +16,8 @@ func UserProfile(c *gin.Context) {
 	var user models.Users
 	var address []models.Address
 
+	Logged := c.MustGet("Id").(uint)
+
 	database.Db.First(&user, Logged)
 	database.Db.Find(&address, "User_Id=?", Logged)
 

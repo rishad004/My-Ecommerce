@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"project/database"
 	"project/helper"
+	"project/middleware"
 	"project/models"
 	"strconv"
 	"time"
@@ -14,7 +15,6 @@ import (
 )
 
 var user models.Users
-var Logged uint
 
 func PostSignupU(c *gin.Context) {
 
@@ -48,7 +48,7 @@ func PostSignupU(c *gin.Context) {
 }
 
 func PostOtpU(c *gin.Context) {
-	
+
 	fmt.Println("")
 	fmt.Println("------------------OTP VERIFYING----------------------")
 
@@ -96,10 +96,20 @@ func PostLoginU(c *gin.Context) {
 		c.JSON(401, "User blocked by admin")
 	} else {
 		if err != nil {
-			c.JSON(401, "Inavlid Email or Password")
+			c.JSON(401, gin.H{"message": "Inavlid Email or Password"})
 		} else {
-			Logged = check.ID
-			c.JSON(200, "Successfully Logged in")
+			middleware.JwtCreate(c, check.ID, check.Email, "User")
+			c.JSON(200, gin.H{"message": "Successfully Logged in"})
 		}
 	}
+}
+
+func LogoutU(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("------------------USER LOGGING OUT----------------------")
+
+	tokenString := c.MustGet("token").(string)
+	middleware.BlacklistedTokens[tokenString] = true
+	c.JSON(200, gin.H{"message": "Logged out successfully."})
 }

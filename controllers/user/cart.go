@@ -22,6 +22,8 @@ func AddCart(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("-----------------------------CART ADDING------------------------")
 
+	Logged := c.MustGet("Id").(uint)
+
 	Id, _ := strconv.Atoi(c.Param("Id"))
 	Color, _ := strconv.Atoi(c.Param("Color"))
 
@@ -67,6 +69,8 @@ func ShowCart(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------CART SHOWING------------------------")
+
+	Logged := c.MustGet("Id").(uint)
 
 	var cart []models.Cart
 	var products []models.Products

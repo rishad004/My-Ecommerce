@@ -34,7 +34,7 @@ func DbConnect() {
 	Db.Find(&ad)
 
 	for i := 0; i < len(ad); i++ {
-		if len(ad[i].Pass) < 17 {
+		if len(ad[i].Pass) < 10 {
 			ad[i].Pass = helper.HashPass(ad[i].Pass)
 			Db.Save(&ad[i])
 		}

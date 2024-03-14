@@ -17,6 +17,8 @@ func AddRating(c *gin.Context) {
 	var rating models.Rating
 	var product models.Products
 
+	Logged := c.MustGet("Id").(uint)
+
 	c.BindJSON(&rating)
 
 	id, _ := strconv.Atoi(c.Param("Id"))
@@ -24,16 +26,16 @@ func AddRating(c *gin.Context) {
 
 	if Logged != 0 {
 		if product.Id == 0 {
-			c.JSON(404, "Product not found.")
+			c.JSON(404, gin.H{"message": "Product not found."})
 		} else {
 			rating.Prdct_Id = uint(id)
 			rating.User_Id = Logged
 
 			database.Db.Create(&rating)
-			c.JSON(201, "Rating added successfully!")
+			c.JSON(201, gin.H{"message": "Rating added successfully!"})
 		}
 	} else {
-		c.JSON(401, "Please login first.")
+		c.JSON(401, gin.H{"error": "Please login first."})
 	}
 
 }
