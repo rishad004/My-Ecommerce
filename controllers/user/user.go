@@ -93,7 +93,7 @@ func PostLoginU(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(userlog.Pass))
 
 	if !check.Blocking {
-		c.JSON(401, "User blocked by admin")
+		c.JSON(401, gin.H{"message": "User blocked by admin"})
 	} else {
 		if err != nil {
 			c.JSON(401, gin.H{"message": "Inavlid Email or Password"})

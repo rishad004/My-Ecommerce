@@ -40,7 +40,7 @@ func ShowCategory(c *gin.Context) {
 		}
 		show = append(show, l)
 	}
-	c.JSON(200, show)
+	c.JSON(200, gin.H{"categories": show})
 }
 
 func AddCtgry(c *gin.Context) {
@@ -55,9 +55,9 @@ func AddCtgry(c *gin.Context) {
 
 	e := database.Db.Create(&ctgry)
 	if e.Error != nil {
-		c.JSON(422, "Fill Category details correctly")
+		c.JSON(422, gin.H{"error": "Fill Category details correctly"})
 	} else {
-		c.JSON(200, "Created Category successfully")
+		c.JSON(200, gin.H{"message": "Created Category successfully"})
 	}
 }
 
@@ -76,11 +76,11 @@ func EditCategory(c *gin.Context) {
 	database.Db.First(&check, "Name=?", name)
 
 	if check.Id == 0 {
-		c.JSON(404, "Category not found")
+		c.JSON(404, gin.H{"error": "Category not found"})
 	} else {
 		database.Db.Model(&check).Update("Name", ctgry.Name)
 		database.Db.Model(&check).Update("Dscptn", ctgry.Dscptn)
-		c.JSON(200, "Category edited successfully")
+		c.JSON(200, gin.H{"message": "Category edited successfully"})
 	}
 
 }
@@ -103,9 +103,9 @@ func DeleteCategory(c *gin.Context) {
 	} else {
 		e := database.Db.Delete(&ctgry)
 		if e.Error != nil {
-			c.JSON(422, "Couldn't delete the category, Please try again.")
+			c.JSON(422, gin.H{"error": "Couldn't delete the category, Please try again."})
 		} else {
-			c.JSON(200, "Category deleted successfully")
+			c.JSON(200, gin.H{"message":"Category deleted successfully"})
 		}
 	}
 }

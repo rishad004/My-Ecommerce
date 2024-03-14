@@ -50,7 +50,7 @@ func ShowProduct(c *gin.Context) {
 		}
 		show = append(show, l)
 	}
-	c.JSON(200, show)
+	c.JSON(200, gin.H{"products": show})
 }
 
 func AddProduct(c *gin.Context) {
@@ -73,7 +73,7 @@ func AddProduct(c *gin.Context) {
 	for _, k := range image {
 		product.ImageURLs = append(product.ImageURLs, "./image/"+k.Filename)
 		if err := c.SaveUploadedFile(k, "./assets/images/"+k.Filename); err != nil {
-			c.JSON(400, "Failed to save")
+			c.JSON(400, gin.H{"error": "Failed to save"})
 		}
 	}
 
@@ -91,13 +91,13 @@ func AddProduct(c *gin.Context) {
 	}
 
 	if Product.CtgryId == 0 {
-		c.JSON(404, "The category not found, Please add the category first.")
+		c.JSON(404, gin.H{"message": "The category not found, Please add the category first."})
 	} else {
 		e := database.Db.Create(&Product)
 		if e.Error != nil {
-			c.JSON(409, "Product already exist, Please try to edit.")
+			c.JSON(409, gin.H{"message": "Product already exist, Please try to edit."})
 		} else {
-			c.JSON(200, "Product added successfully")
+			c.JSON(200, gin.H{"message": "Product added successfully"})
 		}
 	}
 }
@@ -127,14 +127,14 @@ func EditProduct(c *gin.Context) {
 	}
 
 	if Product.CtgryId == 0 {
-		c.JSON(404, "The category not found, Please add the category first.")
+		c.JSON(404, gin.H{"message": "The category not found, Please add the category first."})
 	} else {
 		database.Db.First(&p, "Name=?", name)
 		database.Db.Model(&models.Products{}).Where("Name=?", name).Updates(Product)
 		if p.Id == 0 {
-			c.JSON(404, "Product not found")
+			c.JSON(404, gin.H{"error": "Product not found"})
 		} else {
-			c.JSON(200, "Product edited successfully")
+			c.JSON(200, gin.H{"message": "Product edited successfully"})
 		}
 	}
 
@@ -152,9 +152,9 @@ func DeleteProduct(c *gin.Context) {
 
 	e := database.Db.Delete(&product)
 	if e.Error != nil {
-		c.JSON(422, "Couldn't delete the product, Please try again.")
+		c.JSON(422, gin.H{"error": "Couldn't delete the product, Please try again."})
 	} else {
-		c.JSON(200, "Product deleted successfully")
+		c.JSON(200, gin.H{"message": "Product deleted successfully"})
 	}
 
 }

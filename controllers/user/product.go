@@ -79,7 +79,7 @@ func UserShowP(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"Average rating": Avg,
 	})
-	c.JSON(200, show)
+	c.JSON(200, gin.H{"product": show})
 	c.JSON(200, "Related Products")
 	for i := 0; i < len(p); i++ {
 		if p[i].Id != product.Id {

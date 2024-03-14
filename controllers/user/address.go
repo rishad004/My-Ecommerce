@@ -22,8 +22,8 @@ func AddAddress(c *gin.Context) {
 		address.User_Id = Logged
 
 		database.Db.Create(&address)
-		c.JSON(201, "Address added  successfully")
+		c.JSON(201, gin.H{"message": "Address added  successfully"})
 	} else {
-		c.JSON(401, "You must be logged in to add an address!")
+		c.JSON(401, gin.H{"error": "You must be logged in to add an address!"})
 	}
 }

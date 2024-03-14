@@ -40,5 +40,5 @@ func UserHome(c *gin.Context) {
 			rate = 0
 		}
 	}
-	c.JSON(200, show)
+	c.JSON(200, gin.H{"products": show})
 }
