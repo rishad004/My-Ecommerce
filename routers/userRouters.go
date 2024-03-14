@@ -24,6 +24,8 @@ func UserRouters(r *gin.RouterGroup) {
 
 	//---------------Address
 	r.POST("/address", middleware.Auth, controllers.AddAddress)
+	r.PUT("/address/:Id", middleware.Auth, controllers.EditAddress)
+	r.DELETE("/address/:Id", middleware.Auth, controllers.DeleteAddress)
 
 	//---------------Rating
 	r.POST("/rating/:Id", middleware.Auth, controllers.AddRating)
