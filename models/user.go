@@ -53,15 +53,14 @@ type Cart struct {
 	UserId    uint   `gorm:"not null"`
 	Productid uint   `gorm:"not null"`
 	Color     string `gorm:"not null"`
-	Quantity  int    `gorm:"not null"`
+	Quantity  uint   `gorm:"not null"`
 }
 type Orders struct {
-	Id        uint   `gorm:"primaryKey"`
-	UserId    uint   `gorm:"not null"`
-	Productid uint   `gorm:"not null"`
-	CouponId  uint   `gorm:"not null"`
-	Amount    int    `gorm:"not null"`
-	Status    string `gorm:"not null"`
+	Id       uint `gorm:"primaryKey"`
+	UserId   uint `gorm:"not null"`
+	CouponId uint
+	Amount   int    `gorm:"not null"`
+	Status   string `gorm:"not null"`
 }
 type Rating struct {
 	Id       uint    `gorm:"primaryKey"`
@@ -69,4 +68,10 @@ type Rating struct {
 	Review   string  `json:"review"`
 	User_Id  uint
 	Prdct_Id uint
+}
+type Orderitem struct {
+	Id       uint `gorm:"primaryKey"`
+	OrderId  uint
+	PrdctId  uint
+	Quantity int
 }

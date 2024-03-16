@@ -12,7 +12,7 @@ import (
 type Scart struct {
 	Product     string
 	Color       string
-	Quantity    int
+	Quantity    uint
 	Description string
 	Price       int
 }
@@ -32,18 +32,18 @@ func AddCart(c *gin.Context) {
 	var cc models.Cart
 
 	if Logged == 0 {
-		c.JSON(401, "Please login first")
+		c.JSON(401, gin.H{"error": "Please login first"})
 	} else {
 		database.Db.First(&product, Id)
 		if product.Id == 0 {
-			c.JSON(404, "Product not found.")
+			c.JSON(404, gin.H{"error": "Product not found."})
 		} else {
 			database.Db.First(&cc, "Productid=?", Id)
 
 			if cc.Productid == uint(Id) && cc.UserId == Logged {
 				cc.Quantity++
 				database.Db.Save(&cc)
-				c.JSON(200, "Product added successfully")
+				c.JSON(200, gin.H{"message": "Quantity increased successfully"})
 			} else {
 
 				for i := 0; i < len(product.Color); i++ {
@@ -59,7 +59,7 @@ func AddCart(c *gin.Context) {
 					Quantity:  1,
 				}
 				database.Db.Create(&cart)
-				c.JSON(200, "Product added successfully")
+				c.JSON(200, gin.H{"message": "Product added successfully"})
 			}
 		}
 	}
@@ -91,11 +91,61 @@ func ShowCart(c *gin.Context) {
 			Description: products[i].Dscptn,
 			Price:       products[i].Price,
 		}
-		SubTotal += l.Quantity * l.Price
+		SubTotal += int(l.Quantity) * l.Price
 		show = append(show, l)
 	}
 	c.JSON(200, gin.H{
 		"Products": show,
 		"SubTotal": SubTotal,
 	})
+}
+
+func LessCart(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------CART LESSING------------------------")
+
+	Logged := c.MustGet("Id").(uint)
+
+	Id, _ := strconv.Atoi(c.Param("Id"))
+
+	var cc models.Cart
+
+	if Logged == 0 {
+		c.JSON(401, "Please login first")
+	} else {
+		database.Db.First(&cc, "Productid=? AND User_Id=?", Id, Logged)
+		if cc.Productid == uint(Id) && cc.UserId == Logged {
+			if cc.Quantity <= 1 {
+				database.Db.Delete(&cc)
+				c.JSON(200, gin.H{"message": "Removed product from cart"})
+			} else {
+				cc.Quantity--
+				database.Db.Save(&cc)
+				c.JSON(200, gin.H{"message": "Quantity decreased successfully"})
+			}
+		} else {
+			c.JSON(404, gin.H{"error": "Product not found in your cart"})
+		}
+	}
+}
+
+func DeleteCart(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------CART REMOVING------------------------")
+
+	var cc models.Cart
+
+	Logged := c.MustGet("Id").(uint)
+	Id, _ := strconv.Atoi(c.Param("Id"))
+
+	database.Db.First(&cc, "Productid=? AND User_Id=?", Id, Logged)
+	err := database.Db.Delete(&cc)
+
+	if err.Error != nil {
+		c.JSON(400, gin.H{"error": "Couldn't delete data"})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Product removed from cart."})
 }
