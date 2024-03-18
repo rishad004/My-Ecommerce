@@ -19,30 +19,20 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func JwtCreate(c *gin.Context, UserID uint, Email string, Role string) {
+func JwtCreate(c *gin.Context, UserID uint, Email string, Role string) (string, error) {
 	claims := Claims{
 		UserID: UserID,
 		Email:  Email,
 		Role:   Role,
 		Log:    true,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 4).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
-	if err != nil {
-		fmt.Println("=======Error JWT Create", err)
-		c.JSON(403, gin.H{
-			"Error": "Failed to create Token",
-		})
-		return
-	}
-	c.JSON(201, gin.H{
-		"Token": tokenString,
-	})
-
+	return tokenString, err
 }
 
 func Auth(c *gin.Context) {

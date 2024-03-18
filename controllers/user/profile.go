@@ -10,6 +10,23 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type addres struct {
+	Name     string
+	Phone    uint
+	PinCode  uint
+	City     string
+	State    string
+	Landmark string
+	Address  string
+}
+
+type person struct {
+	Name   string
+	Email  string
+	Phone  string
+	Gender string
+}
+
 func UserProfile(c *gin.Context) {
 
 	fmt.Println("")
@@ -17,29 +34,26 @@ func UserProfile(c *gin.Context) {
 
 	var user models.Users
 	var address []models.Address
+	var addresShow []addres
 
 	Logged := c.MustGet("Id").(uint)
 
 	database.Db.First(&user, Logged)
 	database.Db.Find(&address, "User_Id=?", Logged)
 
-	c.JSON(200, gin.H{
-		"Name":   user.Name,
-		"Email":  user.Email,
-		"Phone":  user.Phone,
-		"Gender": user.Gender,
-	})
-	for _, k := range address {
-		c.JSON(200, gin.H{
-			"Name":     k.Name,
-			"Phone":    k.Phone,
-			"Pincode":  k.PinCode,
-			"City":     k.City,
-			"State":    k.State,
-			"Landmark": k.Landmark,
-			"Address":  k.Address,
-		})
+	personShow := person{
+		Name:   user.Name,
+		Email:  user.Email,
+		Phone:  user.Phone,
+		Gender: user.Gender,
 	}
+	for _, k := range address {
+		addresShow = append(addresShow, addres{k.Name, k.Phone, k.PinCode, k.City, k.State, k.Landmark, k.Address})
+	}
+	c.JSON(200, gin.H{
+		"1user":    personShow,
+		"2address": addresShow,
+	})
 }
 
 func UpdatePass(c *gin.Context) {

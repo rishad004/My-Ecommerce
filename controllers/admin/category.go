@@ -105,7 +105,7 @@ func DeleteCategory(c *gin.Context) {
 		if e.Error != nil {
 			c.JSON(422, gin.H{"error": "Couldn't delete the category, Please try again."})
 		} else {
-			c.JSON(200, gin.H{"message":"Category deleted successfully"})
+			c.JSON(200, gin.H{"message": "Category deleted successfully"})
 		}
 	}
 }
@@ -132,8 +132,7 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"Category": ctgry,
-			"message":  "Category unblocked successfully",
+			"message": "Category unblocked successfully",
 		})
 	} else {
 		database.Db.Model(&ctgry).Update("Blocking", false)
@@ -144,8 +143,7 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"Category": ctgry,
-			"message":  "Category blocked successfully",
+			"message": "Category blocked successfully",
 		})
 	}
 

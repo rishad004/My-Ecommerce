@@ -24,8 +24,15 @@ func PostLoginA(c *gin.Context) {
 	if err != nil {
 		c.JSON(401, gin.H{"message": "Invalid Email or Password"})
 	} else {
-		middleware.JwtCreate(c, check.Id, check.Email, "Admin")
-		c.JSON(200, gin.H{"message": "Admin Login Successfull"})
+		token, err := middleware.JwtCreate(c, check.Id, check.Email, "Admin")
+		if err != nil {
+			fmt.Println("=======Error JWT Create", err)
+			c.JSON(403, gin.H{
+				"Error": "Failed to create Token",
+			})
+			return
+		}
+		c.JSON(200, gin.H{"message": "Admin Login Successfull", "token": token})
 	}
 }
 

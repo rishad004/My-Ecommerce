@@ -9,6 +9,17 @@ import (
 	"github.com/lib/pq"
 )
 
+type rating struct {
+	Rating float32
+	Review string
+}
+
+type related struct {
+	Image string
+	Name  string
+	Price int
+}
+
 type details struct {
 	Images      pq.StringArray
 	Name        string
@@ -16,6 +27,7 @@ type details struct {
 	Color       pq.StringArray
 	Category    string
 	Description string
+	Rating      string
 	Status      string
 }
 
@@ -38,6 +50,8 @@ func UserShowP(c *gin.Context) {
 	var s string
 	var p []models.Products
 	var r []models.Rating
+	var ratingShow []rating
+	var relatedShow []related
 
 	Id := c.Param("Id")
 
@@ -51,6 +65,16 @@ func UserShowP(c *gin.Context) {
 		} else {
 			s = "Out of stock"
 		}
+		for _, k := range r {
+			rate = rate + k.Rating
+			ratingShow = append(ratingShow, rating{k.Rating, k.Review})
+		}
+		var Avg string
+		if rate != 0 {
+			Avg = fmt.Sprint(rate/float32(len(r)), "/5")
+		} else {
+			Avg = "0 Rating"
+		}
 		show = details{
 			Images:      product.ImageURLs,
 			Name:        product.Name,
@@ -58,38 +82,21 @@ func UserShowP(c *gin.Context) {
 			Color:       product.Color,
 			Category:    category.Name,
 			Description: product.Dscptn,
+			Rating:      Avg,
 			Status:      s,
 		}
 		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
 	}
-
-	for _, k := range r {
-		rate = rate + k.Rating
-		c.JSON(200, gin.H{
-			"Rating": k.Rating,
-			"Review": k.Review,
-		})
-	}
-	var Avg string
-	if rate != 0 {
-		Avg = fmt.Sprint(rate/float32(len(r)), "/5")
-	} else {
-		Avg = "0 Rating"
-	}
-	c.JSON(200, gin.H{
-		"Average rating": Avg,
-	})
-	c.JSON(200, gin.H{"product": show})
-	c.JSON(200, "Related Products")
 	for i := 0; i < len(p); i++ {
 		if p[i].Id != product.Id {
-			c.JSON(200, gin.H{
-				"Image": p[i].ImageURLs[0],
-				"Name":  p[i].Name,
-				"Price": p[i].Price,
-			})
+			relatedShow = append(relatedShow, related{p[i].ImageURLs[0], p[i].Name, p[i].Price})
 		}
 	}
+	c.JSON(200, gin.H{
+		"product":          show,
+		"rating_review":    ratingShow,
+		"related_products": relatedShow,
+	})
 	product = models.Products{}
 	category = models.Category{}
 }
