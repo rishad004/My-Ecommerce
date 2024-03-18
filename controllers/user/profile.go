@@ -32,20 +32,20 @@ func UserProfile(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("-----------------------------USER PROFILE------------------------")
 
-	var user models.Users
+	var use models.Users
 	var address []models.Address
 	var addresShow []addres
 
 	Logged := c.MustGet("Id").(uint)
 
-	database.Db.First(&user, Logged)
+	database.Db.First(&use, Logged)
 	database.Db.Find(&address, "User_Id=?", Logged)
 
 	personShow := person{
-		Name:   user.Name,
-		Email:  user.Email,
-		Phone:  user.Phone,
-		Gender: user.Gender,
+		Name:   use.Name,
+		Email:  use.Email,
+		Phone:  use.Phone,
+		Gender: use.Gender,
 	}
 	for _, k := range address {
 		addresShow = append(addresShow, addres{k.Name, k.Phone, k.PinCode, k.City, k.State, k.Landmark, k.Address})
@@ -57,18 +57,22 @@ func UserProfile(c *gin.Context) {
 }
 
 func UpdatePass(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------CHANGING PASSWORD------------------------")
+
 	type Pass struct {
 		CurrentPass string `json:"currentpass"`
 		NewPass     string `json:"newpass"`
 		RepeatPass  string `json:"repeatpass"`
 	}
 	var data Pass
-	var user models.Users
+	var use models.Users
 	Logged := c.MustGet("Id").(uint)
 	c.BindJSON(&data)
 
-	database.Db.First(&user, Logged)
-	err := bcrypt.CompareHashAndPassword([]byte(user.Pass), []byte(data.CurrentPass))
+	database.Db.First(&use, Logged)
+	err := bcrypt.CompareHashAndPassword([]byte(use.Pass), []byte(data.CurrentPass))
 
 	if err != nil {
 		c.JSON(401, gin.H{"message": "Current password is not correct"})
@@ -78,7 +82,30 @@ func UpdatePass(c *gin.Context) {
 		c.JSON(406, gin.H{"message": "Both new and repeat pass are not the same"})
 		return
 	}
-	user.Pass = helper.HashPass(data.NewPass)
-	database.Db.Save(&user)
+	use.Pass = helper.HashPass(data.NewPass)
+	database.Db.Save(&use)
 	c.JSON(200, gin.H{"message": "Successfully updated your password"})
+}
+
+func EditProfile(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------EDITING PROFILE------------------------")
+
+	var us, use models.Users
+
+	c.BindJSON(&us)
+
+	Logged := c.MustGet("Id").(uint)
+	database.Db.First(&use, Logged)
+	use.Name = us.Name
+	use.Phone = us.Phone
+	use.Gender = us.Gender
+	err := database.Db.Save(&use)
+
+	if err.Error != nil {
+		c.JSON(409, gin.H{"message": "User already exist with this number."})
+		return
+	}
+	c.JSON(200, gin.H{"message": "Profile udpated successfully"})
 }

@@ -41,9 +41,13 @@ func AddCart(c *gin.Context) {
 			database.Db.First(&cc, "Productid=?", Id)
 
 			if cc.Productid == uint(Id) && cc.UserId == Logged {
-				cc.Quantity++
-				database.Db.Save(&cc)
-				c.JSON(200, gin.H{"message": "Quantity increased successfully"})
+				if cc.Quantity < 10 && cc.Quantity < uint(product.Quantity) {
+					cc.Quantity++
+					database.Db.Save(&cc)
+					c.JSON(200, gin.H{"message": "Quantity increased successfully"})
+				} else {
+					c.JSON(409, gin.H{"message": "This product can't be added to cart anymore"})
+				}
 			} else {
 
 				for i := 0; i < len(product.Color); i++ {

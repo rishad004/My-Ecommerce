@@ -22,6 +22,7 @@ func UserRouters(r *gin.RouterGroup) {
 	//---------------Profile
 	r.GET("/profile", middleware.Auth, controllers.UserProfile)
 	r.PATCH("/password", middleware.Auth, controllers.UpdatePass)
+	r.PATCH("/profile", middleware.Auth, controllers.EditProfile)
 
 	//---------------Address
 	r.POST("/address", middleware.Auth, controllers.AddAddress)
