@@ -52,7 +52,7 @@ func SortProduct(c *gin.Context) {
 
 	sortType := c.Query("type")
 	fmt.Println(sortType)
-	
+
 	switch sortType {
 	case "aA-zZ":
 		database.Db.Order("name asc").Find(&p)
@@ -71,6 +71,46 @@ func SortProduct(c *gin.Context) {
 		return
 	}
 	for _, product := range p {
+		var rate float32
+		var r []models.Rating
+		database.Db.Find(&r, "Prdct_Id=?", product.ID)
+		for _, k := range r {
+			rate += k.Rating
+		}
+		if len(r) == 0 {
+			rate = 0
+		} else {
+			rate = rate / float32(len(r))
+		}
+		if product.CtgryBlock {
+			show = append(show, home{
+				Image:  product.ImageURLs[0:1],
+				Name:   product.Name,
+				Price:  product.Price,
+				Rating: rate,
+			})
+		}
+	}
+	c.JSON(200, gin.H{"products": show})
+}
+
+func UserSearchP(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------SEARCHING PRODUCT------------------------")
+
+	var products []models.Products
+	var show []home
+
+	searchQuery := c.Query("search")
+	fmt.Println(searchQuery)
+
+	database.Db.Where("name ILIKE ?", "%"+searchQuery+"%").Find(&products)
+	if len(products) == 0 {
+		c.JSON(404, gin.H{"message": "Products not found"})
+		return
+	}
+	for _, product := range products {
 		var rate float32
 		var r []models.Rating
 		database.Db.Find(&r, "Prdct_Id=?", product.ID)

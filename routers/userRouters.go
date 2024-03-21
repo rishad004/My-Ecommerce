@@ -19,6 +19,7 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/home", controllers.UserHome)
 	r.GET("/product/:Id", controllers.UserShowP)
 	r.GET("/home/sort", controllers.SortProduct)
+	r.GET("/home/search", controllers.UserSearchP)
 
 	//---------------Profile
 	r.GET("/profile", middleware.Auth, controllers.UserProfile)

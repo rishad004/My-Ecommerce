@@ -98,7 +98,3 @@ func UserShowP(c *gin.Context) {
 	product = models.Products{}
 	category = models.Category{}
 }
-
-func UserSearchP(c *gin.Context) {
-
-}
