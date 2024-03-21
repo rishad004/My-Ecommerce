@@ -46,7 +46,6 @@ func UserShowP(c *gin.Context) {
 	var product models.Products
 	var category models.Category
 	var show details
-	var rate float32
 	var s string
 	var p []models.Products
 	var r []models.Rating
@@ -56,7 +55,7 @@ func UserShowP(c *gin.Context) {
 	Id := c.Param("Id")
 
 	database.Db.First(&product, Id)
-	database.Db.Find(&r, "Prdct_Id=?", product.Id)
+	database.Db.Find(&r, "Prdct_Id=?", product.ID)
 
 	database.Db.First(&category, product.CtgryId)
 	if category.Blocking {
@@ -66,12 +65,11 @@ func UserShowP(c *gin.Context) {
 			s = "Out of stock"
 		}
 		for _, k := range r {
-			rate = rate + k.Rating
 			ratingShow = append(ratingShow, rating{k.Rating, k.Review})
 		}
 		var Avg string
-		if rate != 0 {
-			Avg = fmt.Sprint(rate/float32(len(r)), "/5")
+		if product.AvrgRating != 0 {
+			Avg = fmt.Sprint(product.AvrgRating, "/5")
 		} else {
 			Avg = "0 Rating"
 		}
@@ -88,7 +86,7 @@ func UserShowP(c *gin.Context) {
 		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
 	}
 	for i := 0; i < len(p); i++ {
-		if p[i].Id != product.Id {
+		if p[i].ID != product.ID {
 			relatedShow = append(relatedShow, related{p[i].ImageURLs[0], p[i].Name, p[i].Price})
 		}
 	}

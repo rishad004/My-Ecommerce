@@ -40,7 +40,7 @@ func ShowProduct(c *gin.Context) {
 		database.Db.First(&cat, product[i].CtgryId)
 		l := showp{
 			ImageURLs:   product[i].ImageURLs,
-			Id:          product[i].Id,
+			Id:          product[i].ID,
 			Name:        product[i].Name,
 			Price:       product[i].Price,
 			Color:       product[i].Color,
@@ -131,7 +131,7 @@ func EditProduct(c *gin.Context) {
 	} else {
 		database.Db.First(&p, "Name=?", name)
 		database.Db.Model(&models.Products{}).Where("Name=?", name).Updates(Product)
-		if p.Id == 0 {
+		if p.ID == 0 {
 			c.JSON(404, gin.H{"error": "Product not found"})
 		} else {
 			c.JSON(200, gin.H{"message": "Product edited successfully"})

@@ -21,7 +21,7 @@ func UserHome(c *gin.Context) {
 	for i := 0; i < len(product); i++ {
 		if product[i].CtgryBlock {
 			var r []models.Rating
-			database.Db.Find(&r, "Prdct_Id=?", product[i].Id)
+			database.Db.Find(&r, "Prdct_Id=?", product[i].ID)
 			for _, k := range r {
 				rate += k.Rating
 			}
@@ -30,14 +30,65 @@ func UserHome(c *gin.Context) {
 			} else {
 				rate = rate / float32(len(r))
 			}
-			l := home{
+			show = append(show, home{
 				Image:  product[i].ImageURLs[0:1],
 				Name:   product[i].Name,
 				Price:  product[i].Price,
 				Rating: rate,
-			}
-			show = append(show, l)
+			})
 			rate = 0
+		}
+	}
+	c.JSON(200, gin.H{"products": show})
+}
+
+func SortProduct(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------SORTING PRODUCT------------------------")
+
+	var p []models.Products
+	var show []home
+
+	sortType := c.Query("type")
+	fmt.Println(sortType)
+	
+	switch sortType {
+	case "aA-zZ":
+		database.Db.Order("name asc").Find(&p)
+	case "zZ-aA":
+		database.Db.Order("name desc").Find(&p)
+	case "low to high":
+		database.Db.Order("price asc").Find(&p)
+	case "high to low":
+		database.Db.Order("price desc").Find(&p)
+	case "recent":
+		database.Db.Order("id_product desc").Find(&p)
+	case "popularity":
+		database.Db.Order("Avrg_Rating asc").Find(&p)
+	default:
+		c.JSON(404, gin.H{"error": "Products not found"})
+		return
+	}
+	for _, product := range p {
+		var rate float32
+		var r []models.Rating
+		database.Db.Find(&r, "Prdct_Id=?", product.ID)
+		for _, k := range r {
+			rate += k.Rating
+		}
+		if len(r) == 0 {
+			rate = 0
+		} else {
+			rate = rate / float32(len(r))
+		}
+		if product.CtgryBlock {
+			show = append(show, home{
+				Image:  product.ImageURLs[0:1],
+				Name:   product.Name,
+				Price:  product.Price,
+				Rating: rate,
+			})
 		}
 	}
 	c.JSON(200, gin.H{"products": show})

@@ -32,7 +32,7 @@ func AddCart(c *gin.Context) {
 	var cc models.Cart
 
 	database.Db.First(&product, Id)
-	if product.Id == 0 {
+	if product.ID == 0 {
 		c.JSON(404, gin.H{"error": "Product not found."})
 	} else {
 		eror := database.Db.First(&cc, "Product_Id=?", Id)

@@ -98,7 +98,7 @@ func DeleteCategory(c *gin.Context) {
 	database.Db.First(&ctgry, "Name=?", name)
 	database.Db.First(&product, "Ctgry_Id=?", ctgry.Id)
 
-	if product.Id != 0 {
+	if product.ID != 0 {
 		c.JSON(409, "You can't delete, There are some products in this category.")
 	} else {
 		e := database.Db.Delete(&ctgry)
