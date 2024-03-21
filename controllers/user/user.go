@@ -2,12 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"math/rand"
 	"project/database"
 	"project/helper"
 	"project/middleware"
 	"project/models"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +28,7 @@ func PostSignupU(c *gin.Context) {
 
 	user.Pass = helper.HashPass(user.Pass)
 
-	randomNum := strconv.Itoa(rand.Intn(900000) + 100000)
+	randomNum := helper.GenerateInt()
 
 	database.Db.First(&oottpp, "User_Mail=?", user.Email)
 	database.Db.Delete(&oottpp)

@@ -8,7 +8,7 @@ import (
 
 type Admin struct {
 	Id    uint `gorm:"primaryKey"`
-	Name  string  
+	Name  string
 	Email string `json:"adminmail"`
 	Pass  string `json:"adminpass"`
 }
@@ -30,12 +30,13 @@ type Category struct {
 	Blocking bool   `gorm:"not null"`
 }
 type Coupons struct {
-	Id     uint      `gorm:"primaryKey"`
-	Name   string    `gorm:"not null; unique" json:"name"`
-	Dscptn string    `gorm:"not null" json:"description"`
-	Code   string    `gorm:"not null; unique" json:"code"`
-	Value  int       `gorm:"not null" json:"off"`
-	Expr   time.Time `gorm:"not null"`
+	Id        uint   `gorm:"primaryKey"`
+	Name      string `gorm:"not null; unique" json:"name"`
+	Dscptn    string `gorm:"not null" json:"description"`
+	Code      string `gorm:"not null; unique" json:"code"`
+	Condition int
+	Value     int       `gorm:"not null" json:"off"`
+	Expr      time.Time 
 }
 type Banner struct {
 	Id         uint   `gorm:"primaryKey"`

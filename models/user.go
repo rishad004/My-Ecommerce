@@ -39,28 +39,32 @@ type Wishlist struct {
 	Quantity  int  `gorm:"not null"`
 }
 type Payment struct {
-	Id            uint   `gorm:"primaryKey"`
-	OrderId       uint   `gorm:"not null"`
+	*gorm.Model
+	OrderId       string `gorm:"not null"`
 	UserId        uint   `gorm:"not null"`
 	Amount        int    `gorm:"not null"`
 	Status        bool   `gorm:"not null"`
 	PMethod       string `gorm:"not null"`
 	TransactionId string
-	Created_at    time.Time `gorm:"not null"`
 }
 type Cart struct {
-	Id        uint   `gorm:"primaryKey"`
-	UserId    uint   `gorm:"not null"`
-	Productid uint   `gorm:"not null"`
+	Id        uint `gorm:"primaryKey"`
+	UserId    uint `gorm:"not null"`
+	ProductId uint `gorm:"not null"`
+	Product   Products
 	Color     string `gorm:"not null"`
 	Quantity  uint   `gorm:"not null"`
 }
 type Orders struct {
-	Id       uint `gorm:"primaryKey"`
-	UserId   uint `gorm:"not null"`
-	CouponId uint
-	Amount   int    `gorm:"not null"`
-	Status   string `gorm:"not null"`
+	Ordernum  int  `gorm:"primaryKey"`
+	UserId    uint `gorm:"not null"`
+	User      Users
+	SubTotal  int
+	CouponId  uint
+	Coupon    Coupons
+	Amount    int `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 type Rating struct {
 	Id       uint    `gorm:"primaryKey"`
@@ -71,7 +75,11 @@ type Rating struct {
 }
 type Orderitem struct {
 	Id       uint `gorm:"primaryKey"`
-	OrderId  uint
+	OrderId  int
 	PrdctId  uint
+	Color    string
 	Quantity int
+	Status   string
+	Order    Orders
+	Prdct    Products
 }
