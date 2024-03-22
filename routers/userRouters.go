@@ -39,5 +39,9 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/cart", middleware.Auth, controllers.ShowCart)
 	r.PATCH("/cart/:Id", middleware.Auth, controllers.LessCart)
 	r.DELETE("/cart/:Id", middleware.Auth, controllers.DeleteCart)
+
+	//---------------Order
 	r.POST("/cart/checkout", middleware.Auth, controllers.CheckoutCart)
+	r.PATCH("/order", middleware.Auth, controllers.CancelOrder)
+	r.GET("/order", middleware.Auth, controllers.ShowOrder)
 }

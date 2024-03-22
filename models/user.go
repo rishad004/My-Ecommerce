@@ -60,6 +60,7 @@ type Orders struct {
 	UserId    uint `gorm:"not null"`
 	User      Users
 	SubTotal  int
+	AddressId uint
 	CouponId  uint
 	Coupon    Coupons
 	Amount    int `gorm:"not null"`
