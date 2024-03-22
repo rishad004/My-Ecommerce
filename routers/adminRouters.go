@@ -35,4 +35,8 @@ func AdminRouters(r *gin.RouterGroup) {
 	r.POST("/coupon", middleware.Auth, controllers.AddCoupon)
 	r.PUT("/coupon/:Id", middleware.Auth, controllers.EditCoupon)
 	r.DELETE("/coupon/:Id", middleware.Auth, controllers.DeleteCoupon)
+
+	//---------------Order
+	r.GET("/order", middleware.Auth, controllers.ShowOrders)
+	r.PATCH("/order", middleware.Auth, controllers.OrdersStatusChange)
 }
