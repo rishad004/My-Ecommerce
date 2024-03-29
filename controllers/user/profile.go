@@ -11,6 +11,7 @@ import (
 )
 
 type addres struct {
+	Id       uint
 	Name     string
 	Phone    uint
 	PinCode  uint
@@ -48,7 +49,7 @@ func UserProfile(c *gin.Context) {
 		Gender: use.Gender,
 	}
 	for _, k := range address {
-		addresShow = append(addresShow, addres{k.Name, k.Phone, k.PinCode, k.City, k.State, k.Landmark, k.Address})
+		addresShow = append(addresShow, addres{k.Id, k.Name, k.Phone, k.PinCode, k.City, k.State, k.Landmark, k.Address})
 	}
 	c.JSON(200, gin.H{
 		"1user":    personShow,

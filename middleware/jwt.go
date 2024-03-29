@@ -3,13 +3,13 @@ package middleware
 import (
 	"fmt"
 	"os"
+	"project/database"
+	"project/models"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
-
-var BlacklistedTokens = make(map[string]bool)
 
 type Claims struct {
 	UserID uint
@@ -39,25 +39,56 @@ func Auth(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("------------------AUTH MIDDLEWARE----------------------")
 
-	path := c.Request.URL.Path
+	var otp []models.Otp
+	er := database.Db.Find(&otp, "Expr <?", time.Now()).Error
+	if er != nil {
+		fmt.Println("")
+		fmt.Println("Error on deleting otps......................")
+	} else {
+		fmt.Println("")
+		for _, v := range otp {
+			fmt.Println("Deleting the expired otps..................")
+			database.Db.Delete(&v)
+		}
+	}
 
-	tokenString := c.GetHeader("Authorization")
+	path := c.Request.URL.Path
+	var tokenString string
+
+	if path[1] == 97 {
+		tokenString, _ = c.Cookie("Jwt-Admin")
+	}
+	if path[1] == 117 {
+		tokenString, _ = c.Cookie("Jwt-User")
+	}
+
 	if tokenString == "" {
 		c.JSON(401, gin.H{"Error": "No Authorization Token found."})
 		c.Abort()
 		return
 	}
-	if BlacklistedTokens[tokenString] {
-		c.JSON(401, gin.H{"Error": "Revoked token"})
-		c.Abort()
-		return
-	}
+
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
+
 	if err != nil || !token.Valid || !claims.Log {
 		c.JSON(401, gin.H{"error": "Invalid token"})
+		c.Abort()
+		return
+	}
+
+	var user models.Users
+	eror := database.Db.First(&user, "ID=?", claims.UserID).Error
+	if eror != nil {
+		c.JSON(404, gin.H{"error": "User not found!"})
+		c.Abort()
+		return
+	}
+
+	if !user.Blocking {
+		c.JSON(401, gin.H{"error": "You are blocked!"})
 		c.Abort()
 		return
 	}
@@ -69,6 +100,7 @@ func Auth(c *gin.Context) {
 			return
 		}
 	}
+
 	if path[1] == 117 {
 		if claims.Role != "User" {
 			c.JSON(401, gin.H{"Error": "Not Authorized"})

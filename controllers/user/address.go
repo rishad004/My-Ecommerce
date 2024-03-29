@@ -37,9 +37,18 @@ func EditAddress(c *gin.Context) {
 	var address, ad models.Address
 
 	Id, _ := strconv.Atoi(c.Param("Id"))
+	Logged := c.MustGet("Id").(uint)
 	c.BindJSON(&ad)
 
-	database.Db.First(&address, "Id=?", uint(Id))
+	if err := database.Db.First(&address, "Id=?", uint(Id)).Error; err != nil {
+		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		return
+	}
+
+	if address.User_Id != Logged {
+		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		return
+	}
 
 	database.Db.Model(&address).Update("Name", ad.Name)
 	database.Db.Model(&address).Update("Phone", ad.Phone)
@@ -58,9 +67,19 @@ func DeleteAddress(c *gin.Context) {
 	fmt.Println("-----------------------------ADDRESS DELETING------------------------")
 
 	Id, _ := strconv.Atoi(c.Param("Id"))
+	Logged := c.MustGet("Id").(uint)
 
 	var ad models.Address
-	database.Db.First(&ad, "Id=?", uint(Id))
+	err := database.Db.Where("Id=?", uint(Id)).First(&ad)
+
+	if err.Error != nil {
+		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		return
+	}
+	if ad.User_Id != Logged {
+		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		return
+	}
 
 	database.Db.Delete(&ad)
 

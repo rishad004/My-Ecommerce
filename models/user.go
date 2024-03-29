@@ -40,11 +40,14 @@ type Wishlist struct {
 }
 type Payment struct {
 	*gorm.Model
-	OrderId       string `gorm:"not null"`
-	UserId        uint   `gorm:"not null"`
+	OrderId       int `gorm:"not null"`
+	Order         Orders
+	UserId        uint `gorm:"not null"`
+	User          Users
 	Amount        int    `gorm:"not null"`
-	Status        bool   `gorm:"not null"`
+	Status        string `gorm:"not null"`
 	PMethod       string `gorm:"not null"`
+	PaymentId     string `gorm:"unique"`
 	TransactionId string
 }
 type Cart struct {
@@ -68,11 +71,12 @@ type Orders struct {
 	UpdatedAt time.Time
 }
 type Rating struct {
-	Id       uint    `gorm:"primaryKey"`
-	Rating   float32 `json:"rating"`
-	Review   string  `json:"review"`
-	User_Id  uint
-	Prdct_Id uint
+	Id      uint    `gorm:"primaryKey"`
+	Rating  float32 `json:"rating"`
+	Review  string  `json:"review"`
+	User_Id uint
+	PrdctId uint
+	Prdct   Products
 }
 type Orderitem struct {
 	Id       uint `gorm:"primaryKey"`

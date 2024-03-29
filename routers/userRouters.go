@@ -33,6 +33,7 @@ func UserRouters(r *gin.RouterGroup) {
 
 	//---------------Rating
 	r.POST("/rating/:Id", middleware.Auth, controllers.AddRating)
+	r.PUT("/rating/:Id", middleware.Auth, controllers.EditRating)
 
 	//---------------Cart
 	r.POST("/cart/:Id/:Color", middleware.Auth, controllers.AddCart)
@@ -44,4 +45,8 @@ func UserRouters(r *gin.RouterGroup) {
 	r.POST("/cart/checkout", middleware.Auth, controllers.CheckoutCart)
 	r.PATCH("/order", middleware.Auth, controllers.CancelOrder)
 	r.GET("/order", middleware.Auth, controllers.ShowOrder)
+
+	//---------------Payment
+	r.GET("/payment/:payment", middleware.Auth, controllers.RazorPay)
+	r.POST("/payment", middleware.Auth, controllers.RazorPayVerify)
 }

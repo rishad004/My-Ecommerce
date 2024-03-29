@@ -5,6 +5,7 @@ import (
 	"project/database"
 	"project/middleware"
 	"project/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -32,6 +33,7 @@ func PostLoginA(c *gin.Context) {
 			})
 			return
 		}
+		c.SetCookie("Jwt-Admin", token, int((time.Hour * 1).Seconds()), "/", "localhost", false, true)
 		c.JSON(200, gin.H{"message": "Admin Login Successfull", "token": token})
 	}
 }
@@ -40,7 +42,6 @@ func LogoutA(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("------------------ADMIN LOGGING OUT----------------------")
 
-	tokenString := c.MustGet("token").(string)
-	middleware.BlacklistedTokens[tokenString] = true
+	c.SetCookie("Jwt-Admin", "", -1, "/", "localhost", false, true)
 	c.JSON(200, gin.H{"message": "Logged out successfully."})
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"project/database"
 	"project/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
@@ -52,9 +53,13 @@ func UserShowP(c *gin.Context) {
 	var ratingShow []rating
 	var relatedShow []related
 
-	Id := c.Param("Id")
+	Id, _ := strconv.Atoi(c.Param("Id"))
 
-	database.Db.First(&product, Id)
+	err := database.Db.Where("id=?", uint(Id)).First(&product).Error
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Product not found!"})
+		return
+	}
 	database.Db.Find(&r, "Prdct_Id=?", product.ID)
 
 	database.Db.First(&category, product.CtgryId)
@@ -84,6 +89,9 @@ func UserShowP(c *gin.Context) {
 			Status:      s,
 		}
 		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
+	} else {
+		c.JSON(404, gin.H{"error": "Product not found!"})
+		return
 	}
 	for i := 0; i < len(p); i++ {
 		if p[i].ID != product.ID {

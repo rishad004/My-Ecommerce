@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SendMail(c *gin.Context, mail string, sub string, body string) {
+func SendMail(c *gin.Context, mail string, sub string, body string)error {
 	fmt.Println("")
 	fmt.Println("---------------------SENDING MAIL-----------------------")
 	auth := smtp.PlainAuth(
@@ -25,12 +25,5 @@ func SendMail(c *gin.Context, mail string, sub string, body string) {
 		[]string{mail},
 		[]byte(msg),
 	)
-	if err != nil {
-		c.JSON(503, gin.H{
-			"Message": "We couldn't send the mail, Please check email address-----------------",
-			"Error":   err,
-		})
-
-		return
-	}
+	return err
 }

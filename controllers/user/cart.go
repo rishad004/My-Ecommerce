@@ -31,8 +31,8 @@ func AddCart(c *gin.Context) {
 	var color string
 	var cc models.Cart
 
-	database.Db.First(&product, Id)
-	if product.ID == 0 {
+	err := database.Db.Where("ID=?", uint(Id)).First(&product).Error
+	if err != nil {
 		c.JSON(404, gin.H{"error": "Product not found."})
 	} else {
 		eror := database.Db.First(&cc, "Product_Id=?", Id)

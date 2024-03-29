@@ -8,23 +8,22 @@ import (
 	"project/models"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var user models.Users
 
 func PostSignupU(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("------------------USER SIGNING UP----------------------")
 
+	var user models.Users
 	var otp models.Otp
 	var oottpp models.Otp
 
 	c.ShouldBindJSON(&user)
-
-	user.Blocking = true
+	session := sessions.Default(c)
 
 	user.Pass = helper.HashPass(user.Pass)
 
@@ -40,7 +39,20 @@ func PostSignupU(c *gin.Context) {
 	}
 	database.Db.Save(&otp)
 
-	helper.SendMail(c, user.Email, "Otp", "Your verification code is "+otp.Otp)
+	err := helper.SendMail(c, user.Email, "Otp", "Your verification code is "+otp.Otp)
+	if err != nil {
+		c.JSON(503, gin.H{
+			"Message": "We couldn't send the mail, Please check email address-----------------",
+			"Error":   err,
+		})
+		return
+	}
+	session.Set("signupEmail", user.Email)
+	session.Set("signupName", user.Name)
+	session.Set("signupPhone", user.Phone)
+	session.Set("signupPass", user.Pass)
+	session.Set("signupGender", user.Gender)
+	session.Save()
 
 	c.JSON(200, "Verify Otp, Please check your mail. "+otp.Otp)
 }
@@ -52,8 +64,17 @@ func PostOtpU(c *gin.Context) {
 
 	var check models.Otp
 	var rc models.Otp
+	var user models.Users
 
 	c.BindJSON(&rc)
+	session := sessions.Default(c)
+	user.Email = session.Get("signupEmail").(string)
+	user.Name = session.Get("signupName").(string)
+	user.Phone = session.Get("signupPhone").(string)
+	user.Gender = session.Get("signupGender").(string)
+	user.Pass = session.Get("signupPass").(string)
+	user.Blocking = true
+	fmt.Println(user)
 
 	database.Db.Where("User_Mail=? AND Expr > ?", user.Email, time.Now()).First(&check)
 
@@ -69,6 +90,12 @@ func PostOtpU(c *gin.Context) {
 				"message": "Successfully signed up",
 				"userId":  user.ID,
 			})
+			session.Delete("signupEmail")
+			session.Delete("signupName")
+			session.Delete("signupPhone")
+			session.Delete("signupGender")
+			session.Delete("signupPass")
+			session.Save()
 		}
 	} else {
 		c.JSON(401, "Otp expired or invalid, Please try again")
@@ -102,7 +129,8 @@ func PostLoginU(c *gin.Context) {
 				c.JSON(403, gin.H{"Error": "Failed to create Token"})
 				return
 			}
-			c.JSON(200, gin.H{"message": "Successfully Logged in", "token": token})
+			c.SetCookie("Jwt-User", token, int((time.Hour * 1).Seconds()), "/", "localhost", false, true)
+			c.JSON(200, gin.H{"Message": "Successfully Logged in", "Token": token, "Id": check.ID})
 		}
 	}
 }
@@ -112,7 +140,6 @@ func LogoutU(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("------------------USER LOGGING OUT----------------------")
 
-	tokenString := c.MustGet("token").(string)
-	middleware.BlacklistedTokens[tokenString] = true
+	c.SetCookie("Jwt-User", "", -1, "/", "localhost", false, true)
 	c.JSON(200, gin.H{"message": "Logged out successfully."})
 }

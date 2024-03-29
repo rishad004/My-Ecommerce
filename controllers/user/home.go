@@ -63,9 +63,9 @@ func SortProduct(c *gin.Context) {
 	case "high to low":
 		database.Db.Order("price desc").Find(&p)
 	case "recent":
-		database.Db.Order("id_product desc").Find(&p)
-	case "popularity":
-		database.Db.Order("Avrg_Rating asc").Find(&p)
+		database.Db.Order("id desc").Find(&p)
+	case "most rated":
+		database.Db.Order("Avrg_Rating desc").Find(&p)
 	default:
 		c.JSON(404, gin.H{"error": "Products not found"})
 		return
