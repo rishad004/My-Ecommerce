@@ -7,19 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 )
-
-type showp struct {
-	ImageURLs   pq.StringArray
-	Id          uint
-	Name        string
-	Price       int
-	Color       pq.StringArray
-	Quantity    int
-	Category    string
-	Description string
-}
 
 type pp struct {
 	models.Products
@@ -31,26 +19,25 @@ func ShowProduct(c *gin.Context) {
 	fmt.Println("---------------------PRODUCT SHOWING--------------------")
 
 	var product []models.Products
-	var show []showp
+	var l []gin.H
 
 	database.Db.Order("Id asc").Find(&product)
 
 	for i := 0; i < len(product); i++ {
 		var cat models.Category
 		database.Db.First(&cat, product[i].CtgryId)
-		l := showp{
-			ImageURLs:   product[i].ImageURLs,
-			Id:          product[i].ID,
-			Name:        product[i].Name,
-			Price:       product[i].Price,
-			Color:       product[i].Color,
-			Quantity:    product[i].Quantity,
-			Category:    cat.Name,
-			Description: product[i].Dscptn,
-		}
-		show = append(show, l)
+		l = append(l, gin.H{
+			"ImageURLs":   product[i].ImageURLs,
+			"Id":          product[i].ID,
+			"Name":        product[i].Name,
+			"Price":       product[i].Price,
+			"Color":       product[i].Color,
+			"Quantity":    product[i].Quantity,
+			"Category":    cat.Name,
+			"Description": product[i].Dscptn,
+		})
 	}
-	c.JSON(200, gin.H{"products": show})
+	c.JSON(200, gin.H{"products": l})
 }
 
 func AddProduct(c *gin.Context) {

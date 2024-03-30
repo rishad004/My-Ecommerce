@@ -15,22 +15,13 @@ type cp struct {
 	Duration int `json:"day"`
 }
 
-type showcp struct {
-	Id           uint
-	Name         string
-	Description  string
-	Code         string
-	Value        int
-	Expires_Days int
-}
-
 func ShowCoupon(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("---------------------------COUPON SHOWING----------------------")
 
 	var coupon []models.Coupons
-	var show []showcp
+	var l []gin.H
 
 	database.Db.Order("Id asc").Find(&coupon)
 
@@ -38,17 +29,16 @@ func ShowCoupon(c *gin.Context) {
 		diff := time.Until(coupon[i].Expr)
 		days := int(diff.Hours() / 24)
 
-		l := showcp{
-			Id:           coupon[i].Id,
-			Name:         coupon[i].Name,
-			Description:  coupon[i].Dscptn,
-			Code:         coupon[i].Code,
-			Value:        coupon[i].Value,
-			Expires_Days: days,
-		}
-		show = append(show, l)
+		l = append(l, gin.H{
+			"Id":           coupon[i].Id,
+			"Name":         coupon[i].Name,
+			"Description":  coupon[i].Dscptn,
+			"Code":         coupon[i].Code,
+			"Value":        coupon[i].Value,
+			"Expires_Days": days,
+		})
 	}
-	c.JSON(200, gin.H{"coupons": show})
+	c.JSON(200, gin.H{"coupons": l})
 }
 
 func AddCoupon(c *gin.Context) {

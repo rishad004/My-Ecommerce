@@ -9,25 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AdminOrder struct {
-	Id           uint
-	OrderId      int
-	Username     string
-	User_Email   string
-	Product_Name string
-	Image        string
-	Color        string
-	Quantity     int
-	Status       string
-}
-
 func ShowOrders(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------SHOW ORDER------------------------")
 
 	var order []models.Orderitem
-	var show []AdminOrder
+	var show []gin.H
 
 	err := database.Db.Preload("Order").Preload("Prdct").Preload("Order.User").Find(&order).Error
 
@@ -36,7 +24,17 @@ func ShowOrders(c *gin.Context) {
 		return
 	}
 	for _, v := range order {
-		show = append(show, AdminOrder{v.Id, v.OrderId, v.Order.User.Name, v.Order.User.Email, v.Prdct.Name, v.Prdct.ImageURLs[0], v.Color, v.Quantity, v.Status})
+		show = append(show, gin.H{
+			"Id":           v.Id,
+			"OrderId":      v.OrderId,
+			"Username":     v.Order.User.Name,
+			"User_Email":   v.Order.User.Email,
+			"Product_Name": v.Prdct.Name,
+			"Image":        v.Prdct.ImageURLs[0],
+			"Color":        v.Color,
+			"Quantity":     v.Quantity,
+			"Status":       v.Status,
+		})
 	}
 	c.JSON(200, gin.H{"Orders": show})
 }

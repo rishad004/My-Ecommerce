@@ -7,37 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 )
-
-type rating struct {
-	Rating float32
-	Review string
-}
-
-type related struct {
-	Image string
-	Name  string
-	Price int
-}
-
-type details struct {
-	Images      pq.StringArray
-	Name        string
-	Price       int
-	Color       pq.StringArray
-	Category    string
-	Description string
-	Rating      string
-	Status      string
-}
-
-type home struct {
-	Image  pq.StringArray
-	Name   string
-	Price  int
-	Rating float32
-}
 
 func UserShowP(c *gin.Context) {
 
@@ -46,12 +16,11 @@ func UserShowP(c *gin.Context) {
 
 	var product models.Products
 	var category models.Category
-	var show details
+	var show gin.H
 	var s string
 	var p []models.Products
 	var r []models.Rating
-	var ratingShow []rating
-	var relatedShow []related
+	var relatedShow, ratingShow []gin.H
 
 	Id, _ := strconv.Atoi(c.Param("Id"))
 
@@ -70,7 +39,7 @@ func UserShowP(c *gin.Context) {
 			s = "Out of stock"
 		}
 		for _, k := range r {
-			ratingShow = append(ratingShow, rating{k.Rating, k.Review})
+			ratingShow = append(ratingShow, gin.H{"Rating": k.Rating, "Review": k.Review})
 		}
 		var Avg string
 		if product.AvrgRating != 0 {
@@ -78,15 +47,15 @@ func UserShowP(c *gin.Context) {
 		} else {
 			Avg = "0 Rating"
 		}
-		show = details{
-			Images:      product.ImageURLs,
-			Name:        product.Name,
-			Price:       product.Price,
-			Color:       product.Color,
-			Category:    category.Name,
-			Description: product.Dscptn,
-			Rating:      Avg,
-			Status:      s,
+		show = gin.H{
+			"Images":      product.ImageURLs,
+			"Name":        product.Name,
+			"Price":       product.Price,
+			"Color":       product.Color,
+			"Category":    category.Name,
+			"Description": product.Dscptn,
+			"Rating":      Avg,
+			"Status":      s,
 		}
 		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
 	} else {
@@ -95,7 +64,7 @@ func UserShowP(c *gin.Context) {
 	}
 	for i := 0; i < len(p); i++ {
 		if p[i].ID != product.ID {
-			relatedShow = append(relatedShow, related{p[i].ImageURLs[0], p[i].Name, p[i].Price})
+			relatedShow = append(relatedShow, gin.H{"Image": p[i].ImageURLs[0], "Name": p[i].Name, "Price": p[i].Price})
 		}
 	}
 	c.JSON(200, gin.H{

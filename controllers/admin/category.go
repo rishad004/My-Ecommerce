@@ -8,13 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type showc struct {
-	Id          uint
-	Name        string
-	Description string
-	Status      string
-}
-
 func ShowCategory(c *gin.Context) {
 
 	fmt.Println("")
@@ -22,7 +15,7 @@ func ShowCategory(c *gin.Context) {
 
 	var category []models.Category
 	var Status string
-	var show []showc
+	var l []gin.H
 
 	database.Db.Order("Id asc").Find(&category)
 
@@ -32,15 +25,14 @@ func ShowCategory(c *gin.Context) {
 		} else {
 			Status = "Blocked"
 		}
-		l := showc{
-			Id:          category[i].Id,
-			Name:        category[i].Name,
-			Description: category[i].Dscptn,
-			Status:      Status,
-		}
-		show = append(show, l)
+		l = append(l, gin.H{
+			"Id":          category[i].Id,
+			"Name":        category[i].Name,
+			"Description": category[i].Dscptn,
+			"Status":      Status,
+		})
 	}
-	c.JSON(200, gin.H{"categories": show})
+	c.JSON(200, gin.H{"categories": l})
 }
 
 func AddCtgry(c *gin.Context) {

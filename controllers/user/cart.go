@@ -76,7 +76,7 @@ func ShowCart(c *gin.Context) {
 
 	var cart []models.Cart
 	var products []models.Products
-	var show []Scart
+	var l []gin.H
 	var SubTotal int
 
 	database.Db.Find(&cart, "User_Id=?", Logged)
@@ -86,18 +86,17 @@ func ShowCart(c *gin.Context) {
 		products = append(products, product)
 	}
 	for i := 0; i < len(cart); i++ {
-		l := Scart{
-			Product:     products[i].Name,
-			Color:       cart[i].Color,
-			Quantity:    cart[i].Quantity,
-			Description: products[i].Dscptn,
-			Price:       products[i].Price,
-		}
-		SubTotal += int(l.Quantity) * l.Price
-		show = append(show, l)
+		l = append(l, gin.H{
+			"Product":     products[i].Name,
+			"Color":       cart[i].Color,
+			"Quantity":    cart[i].Quantity,
+			"Description": products[i].Dscptn,
+			"Price":       products[i].Price,
+		})
+		SubTotal += int(cart[i].Quantity) * products[i].Price
 	}
 	c.JSON(200, gin.H{
-		"Products": show,
+		"Products": l,
 		"SubTotal": SubTotal,
 	})
 }

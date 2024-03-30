@@ -10,15 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type OrderType struct {
-	Id       uint
-	OrderId  int
-	Name     string
-	Image    string
-	Color    string
-	Quantity int
-}
-
 func CheckoutCart(c *gin.Context) {
 
 	fmt.Println("")
@@ -171,7 +162,7 @@ func ShowOrder(c *gin.Context) {
 	Logged := c.MustGet("Id").(uint)
 
 	var orderitem []models.Orderitem
-	var show []OrderType
+	var show []gin.H
 
 	err := database.Db.Preload("Order").Preload("Prdct").Find(&orderitem).Where("Order.User_Id=?", Logged).Error
 	if err != nil {
@@ -181,9 +172,23 @@ func ShowOrder(c *gin.Context) {
 	for _, v := range orderitem {
 		if v.Status != "cancelled" {
 			if len(v.Prdct.ImageURLs) > 0 {
-				show = append(show, OrderType{v.Id, v.OrderId, v.Prdct.Name, v.Prdct.ImageURLs[0], v.Color, v.Quantity})
+				show = append(show, gin.H{
+					"Id":       v.Id,
+					"OrderId":  v.OrderId,
+					"Name":     v.Prdct.Name,
+					"Image":    v.Prdct.ImageURLs[0],
+					"Color":    v.Color,
+					"Quantity": v.Quantity,
+				})
 			} else {
-				show = append(show, OrderType{v.Id, v.OrderId, v.Prdct.Name, "", v.Color, v.Quantity})
+				show = append(show, gin.H{
+					"Id":       v.Id,
+					"OrderId":  v.OrderId,
+					"Name":     v.Prdct.Name,
+					"Image":    "",
+					"Color":    v.Color,
+					"Quantity": v.Quantity,
+				})
 			}
 		}
 	}
