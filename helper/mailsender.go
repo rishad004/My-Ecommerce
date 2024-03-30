@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
-
-	"github.com/gin-gonic/gin"
 )
 
-func SendMail(c *gin.Context, mail string, sub string, body string)error {
+func SendMail(mail string, sub string, body string) error {
 	fmt.Println("")
 	fmt.Println("---------------------SENDING MAIL-----------------------")
 	auth := smtp.PlainAuth(

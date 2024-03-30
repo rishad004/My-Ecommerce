@@ -23,9 +23,9 @@ func AddAddress(c *gin.Context) {
 		address.User_Id = Logged
 
 		database.Db.Create(&address)
-		c.JSON(201, gin.H{"message": "Address added  successfully"})
+		c.JSON(201, gin.H{"Message": "Address added  successfully"})
 	} else {
-		c.JSON(401, gin.H{"error": "You must be logged in to add an address!"})
+		c.JSON(401, gin.H{"Error": "You must be logged in to add an address!"})
 	}
 }
 
@@ -58,7 +58,7 @@ func EditAddress(c *gin.Context) {
 	database.Db.Model(&address).Update("Landmark", ad.Landmark)
 	database.Db.Model(&address).Update("Address", ad.Address)
 
-	c.JSON(200, gin.H{"message": "The Address has been updated."})
+	c.JSON(200, gin.H{"Message": "The Address has been updated."})
 }
 
 func DeleteAddress(c *gin.Context) {
@@ -83,5 +83,5 @@ func DeleteAddress(c *gin.Context) {
 
 	database.Db.Delete(&ad)
 
-	c.JSON(200, gin.H{"message": "Address deleted  successfully"})
+	c.JSON(200, gin.H{"Message": "Address deleted  successfully"})
 }

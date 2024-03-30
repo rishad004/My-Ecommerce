@@ -20,7 +20,7 @@ func ShowOrders(c *gin.Context) {
 	err := database.Db.Preload("Order").Preload("Prdct").Preload("Order.User").Find(&order).Error
 
 	if err != nil {
-		c.JSON(404, gin.H{"message": "No orders found!"})
+		c.JSON(404, gin.H{"Message": "No orders found!"})
 		return
 	}
 	for _, v := range order {
@@ -50,7 +50,7 @@ func OrdersStatusChange(c *gin.Context) {
 	var order models.Orderitem
 	err := database.Db.Preload("Order").Preload("Prdct").First(&order, uint(ord)).Error
 	if err != nil {
-		c.JSON(404, gin.H{"error": "No such Order found!"})
+		c.JSON(404, gin.H{"Error": "No such Order found!"})
 		return
 	}
 	order.Status = status
@@ -60,12 +60,12 @@ func OrdersStatusChange(c *gin.Context) {
 	}
 	er := database.Db.Save(&order).Error
 	if er != nil {
-		c.JSON(401, gin.H{"error": "Couldn't cancel this order!"})
+		c.JSON(401, gin.H{"Error": "Couldn't cancel this order!"})
 		return
 	}
 	if status == "cancelled" {
-		c.JSON(200, gin.H{"message": "Order cancelled succesfully!"})
+		c.JSON(200, gin.H{"Message": "Order cancelled succesfully!"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Order status updated successfully!"})
+	c.JSON(200, gin.H{"Message": "Order status updated successfully!"})
 }

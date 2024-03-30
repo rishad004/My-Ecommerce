@@ -38,7 +38,7 @@ func ShowCoupon(c *gin.Context) {
 			"Expires_Days": days,
 		})
 	}
-	c.JSON(200, gin.H{"coupons": l})
+	c.JSON(200, gin.H{"Coupons": l})
 }
 
 func AddCoupon(c *gin.Context) {
@@ -58,9 +58,9 @@ func AddCoupon(c *gin.Context) {
 
 	err := database.Db.Create(&coupon)
 	if err.Error != nil {
-		c.JSON(409, gin.H{"message": "Coupon name or code already exist, please try to edit"})
+		c.JSON(409, gin.H{"Message": "Coupon name or code already exist, please try to edit"})
 	} else {
-		c.JSON(200, gin.H{"message": "Coupon added successfully"})
+		c.JSON(200, gin.H{"Message": "Coupon added successfully"})
 	}
 }
 
@@ -80,9 +80,9 @@ func EditCoupon(c *gin.Context) {
 	database.Db.Model(&models.Coupons{}).Where("Id=?", Id).Updates(rc)
 
 	if cpp.Id == 0 {
-		c.JSON(404, gin.H{"error": "Coupon not found."})
+		c.JSON(404, gin.H{"Error": "Coupon not found."})
 	} else {
-		c.JSON(200, gin.H{"message": "Coupon edited succesfully."})
+		c.JSON(200, gin.H{"Message": "Coupon edited succesfully."})
 	}
 
 }
@@ -99,9 +99,9 @@ func DeleteCoupon(c *gin.Context) {
 	database.Db.First(&coupon, Id)
 
 	if coupon.Id == 0 {
-		c.JSON(404, gin.H{"error": "Coupon not found."})
+		c.JSON(404, gin.H{"Error": "Coupon not found."})
 	} else {
 		database.Db.Delete(&coupon)
-		c.JSON(200, gin.H{"message": "Coupon deleted successfully"})
+		c.JSON(200, gin.H{"Message": "Coupon deleted successfully"})
 	}
 }

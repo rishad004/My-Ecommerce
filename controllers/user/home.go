@@ -39,7 +39,7 @@ func UserHome(c *gin.Context) {
 			rate = 0
 		}
 	}
-	c.JSON(200, gin.H{"products": show})
+	c.JSON(200, gin.H{"Products": show})
 }
 
 func SortProduct(c *gin.Context) {
@@ -67,7 +67,7 @@ func SortProduct(c *gin.Context) {
 	case "most rated":
 		database.Db.Order("Avrg_Rating desc").Find(&p)
 	default:
-		c.JSON(404, gin.H{"error": "Products not found"})
+		c.JSON(404, gin.H{"Error": "Products not found"})
 		return
 	}
 	for _, product := range p {
@@ -91,7 +91,7 @@ func SortProduct(c *gin.Context) {
 			})
 		}
 	}
-	c.JSON(200, gin.H{"products": show})
+	c.JSON(200, gin.H{"Products": show})
 }
 
 func UserSearchP(c *gin.Context) {
@@ -107,7 +107,7 @@ func UserSearchP(c *gin.Context) {
 
 	database.Db.Where("name ILIKE ?", "%"+searchQuery+"%").Find(&products)
 	if len(products) == 0 {
-		c.JSON(404, gin.H{"message": "Products not found"})
+		c.JSON(404, gin.H{"Message": "Products not found"})
 		return
 	}
 	for _, product := range products {
@@ -131,5 +131,5 @@ func UserSearchP(c *gin.Context) {
 			})
 		}
 	}
-	c.JSON(200, gin.H{"products": show})
+	c.JSON(200, gin.H{"Products": show})
 }

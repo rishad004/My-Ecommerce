@@ -39,7 +39,7 @@ func PostSignupU(c *gin.Context) {
 	}
 	database.Db.Save(&otp)
 
-	err := helper.SendMail(c, user.Email, "Otp", "Your verification code is "+otp.Otp)
+	err := helper.SendMail(user.Email, "Otp", "Your verification code is "+otp.Otp)
 	if err != nil {
 		c.JSON(503, gin.H{
 			"Message": "We couldn't send the mail, Please check email address-----------------",
@@ -54,7 +54,7 @@ func PostSignupU(c *gin.Context) {
 	session.Set("signupGender", user.Gender)
 	session.Save()
 
-	c.JSON(200, "Verify Otp, Please check your mail. "+otp.Otp)
+	c.JSON(200, gin.H{"Message": "Verify Otp, Please check your mail. ", "Otp": otp.Otp})
 }
 
 func PostOtpU(c *gin.Context) {
@@ -84,11 +84,11 @@ func PostOtpU(c *gin.Context) {
 		err := database.Db.Create(&user)
 
 		if err.Error != nil {
-			c.JSON(409, "User already exist")
+			c.JSON(409, gin.H{"Message": "User already exist"})
 		} else {
 			c.JSON(200, gin.H{
-				"message": "Successfully signed up",
-				"userId":  user.ID,
+				"Message": "Successfully signed up",
+				"UserId":  user.ID,
 			})
 			session.Delete("signupEmail")
 			session.Delete("signupName")
@@ -98,7 +98,7 @@ func PostOtpU(c *gin.Context) {
 			session.Save()
 		}
 	} else {
-		c.JSON(401, "Otp expired or invalid, Please try again")
+		c.JSON(401, gin.H{"Message": "Otp expired or invalid, Please try again"})
 	}
 
 }
@@ -118,10 +118,10 @@ func PostLoginU(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(userlog.Pass))
 
 	if !check.Blocking {
-		c.JSON(401, gin.H{"message": "User blocked by admin"})
+		c.JSON(401, gin.H{"Message": "User blocked by admin"})
 	} else {
 		if err != nil {
-			c.JSON(401, gin.H{"message": "Inavlid Email or Password"})
+			c.JSON(401, gin.H{"Message": "Inavlid Email or Password"})
 		} else {
 			token, erro := middleware.JwtCreate(c, check.ID, check.Email, "User")
 			if erro != nil {
@@ -141,5 +141,5 @@ func LogoutU(c *gin.Context) {
 	fmt.Println("------------------USER LOGGING OUT----------------------")
 
 	c.SetCookie("Jwt-User", "", -1, "/", "localhost", false, true)
-	c.JSON(200, gin.H{"message": "Logged out successfully."})
+	c.JSON(200, gin.H{"Message": "Logged out successfully."})
 }

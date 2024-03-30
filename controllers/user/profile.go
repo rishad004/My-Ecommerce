@@ -43,8 +43,8 @@ func UserProfile(c *gin.Context) {
 		})
 	}
 	c.JSON(200, gin.H{
-		"1user":    personShow,
-		"2address": addresShow,
+		"User":    personShow,
+		"Address": addresShow,
 	})
 }
 
@@ -67,16 +67,16 @@ func UpdatePass(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(use.Pass), []byte(data.CurrentPass))
 
 	if err != nil {
-		c.JSON(401, gin.H{"message": "Current password is not correct"})
+		c.JSON(401, gin.H{"Message": "Current password is not correct"})
 		return
 	}
 	if data.NewPass != data.RepeatPass {
-		c.JSON(406, gin.H{"message": "Both new and repeat pass are not the same"})
+		c.JSON(406, gin.H{"Message": "Both new and repeat pass are not the same"})
 		return
 	}
 	use.Pass = helper.HashPass(data.NewPass)
 	database.Db.Save(&use)
-	c.JSON(200, gin.H{"message": "Successfully updated your password"})
+	c.JSON(200, gin.H{"Message": "Successfully updated your password"})
 }
 
 func EditProfile(c *gin.Context) {
@@ -96,8 +96,8 @@ func EditProfile(c *gin.Context) {
 	err := database.Db.Save(&use)
 
 	if err.Error != nil {
-		c.JSON(409, gin.H{"message": "User already exist with this number."})
+		c.JSON(409, gin.H{"Message": "User already exist with this number."})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Profile udpated successfully"})
+	c.JSON(200, gin.H{"Message": "Profile udpated successfully"})
 }

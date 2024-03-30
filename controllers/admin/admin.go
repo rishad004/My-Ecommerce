@@ -23,7 +23,7 @@ func PostLoginA(c *gin.Context) {
 	database.Db.First(&check, "Email=?", adminlog.Email)
 	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(adminlog.Pass))
 	if err != nil {
-		c.JSON(401, gin.H{"message": "Invalid Email or Password"})
+		c.JSON(401, gin.H{"Message": "Invalid Email or Password"})
 	} else {
 		token, err := middleware.JwtCreate(c, check.Id, check.Email, "Admin")
 		if err != nil {
@@ -34,7 +34,7 @@ func PostLoginA(c *gin.Context) {
 			return
 		}
 		c.SetCookie("Jwt-Admin", token, int((time.Hour * 1).Seconds()), "/", "localhost", false, true)
-		c.JSON(200, gin.H{"message": "Admin Login Successfull", "token": token})
+		c.JSON(200, gin.H{"Message": "Admin Login Successfull", "token": token})
 	}
 }
 
@@ -43,5 +43,5 @@ func LogoutA(c *gin.Context) {
 	fmt.Println("------------------ADMIN LOGGING OUT----------------------")
 
 	c.SetCookie("Jwt-Admin", "", -1, "/", "localhost", false, true)
-	c.JSON(200, gin.H{"message": "Logged out successfully."})
+	c.JSON(200, gin.H{"Message": "Logged out successfully."})
 }

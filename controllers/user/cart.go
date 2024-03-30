@@ -33,7 +33,7 @@ func AddCart(c *gin.Context) {
 
 	err := database.Db.Where("ID=?", uint(Id)).First(&product).Error
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Product not found."})
+		c.JSON(404, gin.H{"Error": "Product not found."})
 	} else {
 		eror := database.Db.First(&cc, "Product_Id=?", Id)
 
@@ -41,13 +41,13 @@ func AddCart(c *gin.Context) {
 			if cc.Quantity < 10 && cc.Quantity < uint(product.Quantity) {
 				cc.Quantity++
 				database.Db.Save(&cc)
-				c.JSON(200, gin.H{"message": "Quantity increased successfully"})
+				c.JSON(200, gin.H{"Message": "Quantity increased successfully"})
 			} else {
-				c.JSON(409, gin.H{"message": "This product can't be added to cart anymore"})
+				c.JSON(409, gin.H{"Message": "This product can't be added to cart anymore"})
 			}
 		} else {
 			if product.Quantity <= 0 {
-				c.JSON(404, gin.H{"error": "This product is out of stock!"})
+				c.JSON(404, gin.H{"Error": "This product is out of stock!"})
 				return
 			}
 			for i := 0; i < len(product.Color); i++ {
@@ -62,7 +62,7 @@ func AddCart(c *gin.Context) {
 				Quantity:  1,
 			}
 			database.Db.Create(&cart)
-			c.JSON(200, gin.H{"message": "Product added successfully"})
+			c.JSON(200, gin.H{"Message": "Product added successfully"})
 		}
 	}
 }
@@ -112,22 +112,18 @@ func LessCart(c *gin.Context) {
 
 	var cc models.Cart
 
-	if Logged == 0 {
-		c.JSON(401, "Please login first")
-	} else {
-		database.Db.First(&cc, "Product_Id=? AND User_Id=?", Id, Logged)
-		if cc.ProductId == uint(Id) && cc.UserId == Logged {
-			if cc.Quantity <= 1 {
-				database.Db.Delete(&cc)
-				c.JSON(200, gin.H{"message": "Removed product from cart"})
-			} else {
-				cc.Quantity--
-				database.Db.Save(&cc)
-				c.JSON(200, gin.H{"message": "Quantity decreased successfully"})
-			}
+	database.Db.First(&cc, "Product_Id=? AND User_Id=?", Id, Logged)
+	if cc.ProductId == uint(Id) && cc.UserId == Logged {
+		if cc.Quantity <= 1 {
+			database.Db.Delete(&cc)
+			c.JSON(200, gin.H{"Message": "Removed product from cart"})
 		} else {
-			c.JSON(404, gin.H{"error": "Product not found in your cart"})
+			cc.Quantity--
+			database.Db.Save(&cc)
+			c.JSON(200, gin.H{"Message": "Quantity decreased successfully"})
 		}
+	} else {
+		c.JSON(404, gin.H{"Error": "Product not found in your cart"})
 	}
 }
 
@@ -145,8 +141,8 @@ func DeleteCart(c *gin.Context) {
 	err := database.Db.Delete(&cc)
 
 	if err.Error != nil {
-		c.JSON(400, gin.H{"error": "Couldn't delete data"})
+		c.JSON(400, gin.H{"Error": "Couldn't delete data"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "Product removed from cart."})
+	c.JSON(200, gin.H{"Message": "Product removed from cart."})
 }

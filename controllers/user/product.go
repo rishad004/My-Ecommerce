@@ -26,7 +26,7 @@ func UserShowP(c *gin.Context) {
 
 	err := database.Db.Where("id=?", uint(Id)).First(&product).Error
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Product not found!"})
+		c.JSON(404, gin.H{"Error": "Product not found!"})
 		return
 	}
 	database.Db.Find(&r, "Prdct_Id=?", product.ID)
@@ -59,7 +59,7 @@ func UserShowP(c *gin.Context) {
 		}
 		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
 	} else {
-		c.JSON(404, gin.H{"error": "Product not found!"})
+		c.JSON(404, gin.H{"Error": "Product not found!"})
 		return
 	}
 	for i := 0; i < len(p); i++ {
@@ -68,9 +68,9 @@ func UserShowP(c *gin.Context) {
 		}
 	}
 	c.JSON(200, gin.H{
-		"product":          show,
-		"rating_review":    ratingShow,
-		"related_products": relatedShow,
+		"Product":         show,
+		"RatingReview":    ratingShow,
+		"RelatedProducts": relatedShow,
 	})
 	product = models.Products{}
 	category = models.Category{}

@@ -47,9 +47,9 @@ func AddCtgry(c *gin.Context) {
 
 	e := database.Db.Create(&ctgry)
 	if e.Error != nil {
-		c.JSON(422, gin.H{"error": "Fill Category details correctly"})
+		c.JSON(422, gin.H{"Error": "Fill Category details correctly"})
 	} else {
-		c.JSON(200, gin.H{"message": "Created Category successfully"})
+		c.JSON(200, gin.H{"Message": "Created Category successfully"})
 	}
 }
 
@@ -68,11 +68,11 @@ func EditCategory(c *gin.Context) {
 	database.Db.First(&check, "Name=?", name)
 
 	if check.Id == 0 {
-		c.JSON(404, gin.H{"error": "Category not found"})
+		c.JSON(404, gin.H{"Error": "Category not found"})
 	} else {
 		database.Db.Model(&check).Update("Name", ctgry.Name)
 		database.Db.Model(&check).Update("Dscptn", ctgry.Dscptn)
-		c.JSON(200, gin.H{"message": "Category edited successfully"})
+		c.JSON(200, gin.H{"Message": "Category edited successfully"})
 	}
 
 }
@@ -91,13 +91,13 @@ func DeleteCategory(c *gin.Context) {
 	database.Db.First(&product, "Ctgry_Id=?", ctgry.Id)
 
 	if product.ID != 0 {
-		c.JSON(409, "You can't delete, There are some products in this category.")
+		c.JSON(409, gin.H{"Message": "You can't delete, There are some products in this category."})
 	} else {
 		e := database.Db.Delete(&ctgry)
 		if e.Error != nil {
-			c.JSON(422, gin.H{"error": "Couldn't delete the category, Please try again."})
+			c.JSON(422, gin.H{"Error": "Couldn't delete the category, Please try again."})
 		} else {
-			c.JSON(200, gin.H{"message": "Category deleted successfully"})
+			c.JSON(200, gin.H{"Message": "Category deleted successfully"})
 		}
 	}
 }
@@ -124,7 +124,7 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"message": "Category unblocked successfully",
+			"Message": "Category unblocked successfully",
 		})
 	} else {
 		database.Db.Model(&ctgry).Update("Blocking", false)
@@ -135,7 +135,7 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"message": "Category blocked successfully",
+			"Message": "Category blocked successfully",
 		})
 	}
 

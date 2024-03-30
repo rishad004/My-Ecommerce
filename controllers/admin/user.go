@@ -33,7 +33,7 @@ func ShowUser(c *gin.Context) {
 			"Status": status,
 		})
 	}
-	c.JSON(200, gin.H{"users": l})
+	c.JSON(200, gin.H{"Users": l})
 }
 
 func BlockingUser(c *gin.Context) {
@@ -48,12 +48,12 @@ func BlockingUser(c *gin.Context) {
 	if u.ID != 0 {
 		if u.Blocking {
 			database.Db.Model(&u).Update("Blocking", false)
-			c.JSON(200, gin.H{"message": "Blocked user successfully"})
+			c.JSON(200, gin.H{"Message": "Blocked user successfully"})
 		} else {
 			database.Db.Model(&u).Update("Blocking", true)
-			c.JSON(200, gin.H{"message": "Unblocked user successfully"})
+			c.JSON(200, gin.H{"Message": "Unblocked user successfully"})
 		}
 	} else {
-		c.JSON(404, gin.H{"error": "User not found"})
+		c.JSON(404, gin.H{"Error": "User not found"})
 	}
 }
