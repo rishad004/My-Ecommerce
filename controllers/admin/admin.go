@@ -23,7 +23,7 @@ func PostLoginA(c *gin.Context) {
 	database.Db.First(&check, "Email=?", adminlog.Email)
 	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(adminlog.Pass))
 	if err != nil {
-		c.JSON(401, gin.H{"Message": "Invalid Email or Password"})
+		c.JSON(401, gin.H{"Message": "Invalid Email or Password", "Error": err.Error()})
 	} else {
 		token, err := middleware.JwtCreate(c, check.Id, check.Email, "Admin")
 		if err != nil {

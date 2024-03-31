@@ -48,15 +48,57 @@ func OrdersStatusChange(c *gin.Context) {
 	status := c.PostForm("status")
 
 	var order models.Orderitem
-	err := database.Db.Preload("Order").Preload("Prdct").First(&order, uint(ord)).Error
-	if err != nil {
+	var payment models.Payment
+	var wallet models.Wallet
+
+	if err := database.Db.Preload("Order").Preload("Order.Coupon").Preload("Prdct").First(&order, uint(ord)).Error; err != nil {
 		c.JSON(404, gin.H{"Error": "No such Order found!"})
+		return
+	}
+	if err := database.Db.First(&payment, "Order_Id=?", order.OrderId).Error; err != nil {
+		c.JSON(500, gin.H{"Error": "No such payment!"})
+		return
+	}
+	if err := database.Db.First(&wallet, "User_Id=?", order.Order.UserId).Error; err != nil {
+		c.JSON(501, gin.H{"Error": "Failed to find the user wallet!"})
 		return
 	}
 	order.Status = status
 	if status == "cancelled" {
+		if order.Status == "cancelled" {
+			c.JSON(409, gin.H{"Error": "This order is already cancelled"})
+			return
+		}
+
 		fmt.Println("Cancelling......................")
+		order.Order.SubTotal = order.Order.SubTotal - (order.Prdct.Price * order.Quantity)
+		if order.Order.SubTotal < order.Order.Coupon.Condition {
+			order.Order.Amount = order.Order.SubTotal
+			order.Order.CouponId = 1
+		} else {
+			order.Order.Amount = order.Order.SubTotal - (order.Order.SubTotal * order.Order.Coupon.Value / 100)
+		}
+		if er := database.Db.Save(&order.Order).Error; er != nil {
+			c.JSON(500, gin.H{"Error": "Can't decrease the order amount!"})
+			return
+		}
 		order.Prdct.Quantity += order.Quantity
+		if er := database.Db.Save(&order.Prdct).Error; er != nil {
+			c.JSON(500, gin.H{"Error": "Can't increase product quantity!"})
+			return
+		}
+		if payment.Status == "recieved" {
+			wallet.Balance += (float32(order.Prdct.Price) * float32(order.Quantity)) - (float32(order.Prdct.Price) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
+			if err := database.Db.Save(&wallet).Error; err != nil {
+				c.JSON(500, gin.H{"Error": "Couldn't update wallet!"})
+				return
+			}
+			payment.Status = "partially refunded"
+			if err := database.Db.Model(&payment).Update("Status", payment.Status).Error; err != nil {
+				c.JSON(500, gin.H{"Error": "Failed to set payment as refunded"})
+				return
+			}
+		}
 	}
 	er := database.Db.Save(&order).Error
 	if er != nil {

@@ -65,6 +65,7 @@ func PostOtpU(c *gin.Context) {
 	var check models.Otp
 	var rc models.Otp
 	var user models.Users
+	var wallet models.Wallet
 
 	c.BindJSON(&rc)
 	session := sessions.Default(c)
@@ -81,15 +82,18 @@ func PostOtpU(c *gin.Context) {
 	if check.Otp == rc.Otp {
 		database.Db.Delete(&check)
 
-		err := database.Db.Create(&user)
-
-		if err.Error != nil {
+		if err := database.Db.Create(&user).Error; err != nil {
 			c.JSON(409, gin.H{"Message": "User already exist"})
 		} else {
 			c.JSON(200, gin.H{
 				"Message": "Successfully signed up",
 				"UserId":  user.ID,
 			})
+			wallet.UserId = user.ID
+			if er := database.Db.Create(&wallet).Error; er != nil {
+				c.JSON(500, gin.H{"Error": "Couldn't create the wallet!"})
+				return
+			}
 			session.Delete("signupEmail")
 			session.Delete("signupName")
 			session.Delete("signupPhone")

@@ -94,6 +94,11 @@ func CheckoutCart(c *gin.Context) {
 			database.Db.Delete(&v)
 		}
 
+		if errr := database.Db.Create(&payment); errr.Error != nil {
+			c.JSON(403, gin.H{"Error": "Payment creation failed! Try again later."})
+			return
+		}
+
 		c.JSON(200, gin.H{"Message": "Order placed on COD"})
 	} else if method == "PAY NOW" {
 
@@ -108,7 +113,7 @@ func CheckoutCart(c *gin.Context) {
 
 		payment.PaymentId = razorId
 		if errr := database.Db.Create(&payment); errr.Error != nil {
-			c.JSON(403, gin.H{"Error": "Payment  gateway failed! Try again later."})
+			c.JSON(403, gin.H{"Error": "Payment creation failed! Try again later."})
 			return
 		}
 
@@ -125,8 +130,10 @@ func CancelOrder(c *gin.Context) {
 	Logged := c.MustGet("Id").(uint)
 
 	var order models.Orderitem
-	err := database.Db.Preload("Order").Preload("Order.Coupon").Preload("Prdct").First(&order, uint(ord)).Error
-	if err != nil || order.Order.UserId != Logged {
+	var wallet models.Wallet
+	var payment models.Payment
+
+	if err := database.Db.Preload("Order").Preload("Order.Coupon").Preload("Prdct").First(&order, uint(ord)).Error; err != nil || order.Order.UserId != Logged {
 		c.JSON(404, gin.H{"Error": "No such Order found!"})
 		return
 	}
@@ -134,6 +141,12 @@ func CancelOrder(c *gin.Context) {
 		c.JSON(404, gin.H{"Error": "No such order found!"})
 		return
 	}
+
+	if err := database.Db.First(&payment, "Order_Id=?", order.OrderId).Error; err != nil {
+		c.JSON(500, gin.H{"Error": "Couldn't fetch the payment!"})
+		return
+	}
+
 	order.Status = "cancelled"
 	order.Order.SubTotal = order.Order.SubTotal - (order.Prdct.Price * order.Quantity)
 	if order.Order.SubTotal < order.Order.Coupon.Condition {
@@ -144,12 +157,27 @@ func CancelOrder(c *gin.Context) {
 	}
 
 	order.Prdct.Quantity = order.Prdct.Quantity + order.Quantity
-	database.Db.Model(&order.Order).Updates(&order.Order)
 	database.Db.Model(&order.Prdct).Updates(&order.Prdct)
-	er := database.Db.Save(&order).Where("Order.User_Id AND Id", Logged, uint(ord)).Error
-	if er != nil {
+	database.Db.Model(&order.Order).Updates(&order.Order)
+	if err := database.Db.Save(&order).Where("Order.User_Id AND Id", Logged, uint(ord)).Error; err != nil {
 		c.JSON(401, gin.H{"Error": "Couldn't cancel this order!"})
 		return
+	}
+	if err := database.Db.First(&wallet, "User_Id=?", Logged).Error; err != nil {
+		c.JSON(404, gin.H{"Error": "No such wallet found!"})
+		return
+	}
+	if payment.Status == "recieved" {
+		wallet.Balance += (float32(order.Prdct.Price) * float32(order.Quantity)) - (float32(order.Prdct.Price) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
+		if err := database.Db.Save(&wallet).Error; err != nil {
+			c.JSON(500, gin.H{"Error": "Couldn't update wallet!"})
+			return
+		}
+		payment.Status = "refunded"
+		if err := database.Db.Model(&payment).Update("Status", payment.Status).Error; err != nil {
+			c.JSON(500, gin.H{"Error": "Failed to set payment as refunded"})
+			return
+		}
 	}
 	c.JSON(200, gin.H{"Message": "Order cancelled succesfully!"})
 }

@@ -30,7 +30,7 @@ func DbConnect() {
 	if err != nil {
 		fmt.Println("!!!!!!!!!!!!!!!!! Db connection failed !!!!!!!!!!!!!!!!!!")
 	}
-	Db.AutoMigrate(&models.Users{}, &models.Address{}, &models.Banner{}, &models.Cart{}, &models.Category{}, &models.Coupons{}, &models.Orders{}, &models.Otp{}, &models.Payment{}, &models.Products{}, &models.Wishlist{}, &models.Rating{}, &models.Admin{}, &models.Orderitem{})
+	Db.AutoMigrate(&models.Users{}, &models.Address{}, &models.Banner{}, &models.Cart{}, &models.Category{}, &models.Coupons{}, &models.Orders{}, &models.Otp{}, &models.Payment{}, &models.Products{}, &models.Wishlist{}, &models.Rating{}, &models.Admin{}, &models.Orderitem{}, &models.Wallet{})
 
 	Db.Find(&ad)
 

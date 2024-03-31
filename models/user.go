@@ -88,3 +88,8 @@ type Orderitem struct {
 	Order    Orders
 	Prdct    Products
 }
+type Wallet struct {
+	Id     uint `gorm:"primaryKey"`
+	UserId uint
+	Balance float32
+}
