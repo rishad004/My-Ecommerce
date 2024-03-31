@@ -79,30 +79,29 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	var user models.Users
-	eror := database.Db.First(&user, "ID=?", claims.UserID).Error
-	if eror != nil {
-		c.JSON(404, gin.H{"error": "User not found!"})
-		c.Abort()
-		return
-	}
+	if path[1] == 117 {
+		var user models.Users
+		eror := database.Db.First(&user, "ID=?", claims.UserID).Error
+		if eror != nil {
+			c.JSON(404, gin.H{"error": "User not found!"})
+			c.Abort()
+			return
+		}
 
-	if !user.Blocking {
-		c.JSON(401, gin.H{"error": "You are blocked!"})
-		c.Abort()
-		return
-	}
-
-	if path[1] == 97 {
-		if claims.Role != "Admin" {
+		if !user.Blocking {
+			c.JSON(401, gin.H{"error": "You are blocked!"})
+			c.Abort()
+			return
+		}
+		if claims.Role != "User" {
 			c.JSON(401, gin.H{"Error": "Not Authorized"})
 			c.Abort()
 			return
 		}
 	}
 
-	if path[1] == 117 {
-		if claims.Role != "User" {
+	if path[1] == 97 {
+		if claims.Role != "Admin" {
 			c.JSON(401, gin.H{"Error": "Not Authorized"})
 			c.Abort()
 			return

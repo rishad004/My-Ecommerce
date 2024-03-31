@@ -17,7 +17,7 @@ func UserShowP(c *gin.Context) {
 	var product models.Products
 	var category models.Category
 	var show gin.H
-	var s string
+	var s, img string
 	var p []models.Products
 	var r []models.Rating
 	var relatedShow, ratingShow []gin.H
@@ -64,7 +64,12 @@ func UserShowP(c *gin.Context) {
 	}
 	for i := 0; i < len(p); i++ {
 		if p[i].ID != product.ID {
-			relatedShow = append(relatedShow, gin.H{"Image": p[i].ImageURLs[0], "Name": p[i].Name, "Price": p[i].Price})
+			if p[i].ImageURLs == nil {
+				img = ""
+			} else {
+				img = p[i].ImageURLs[0]
+			}
+			relatedShow = append(relatedShow, gin.H{"Image": img, "Name": p[i].Name, "Price": p[i].Price})
 		}
 	}
 	c.JSON(200, gin.H{

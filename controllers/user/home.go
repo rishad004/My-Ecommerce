@@ -15,6 +15,7 @@ func UserHome(c *gin.Context) {
 
 	var product []models.Products
 	var show []gin.H
+	var img string
 	var rate float32
 
 	database.Db.Find(&product)
@@ -30,8 +31,13 @@ func UserHome(c *gin.Context) {
 			} else {
 				rate = rate / float32(len(r))
 			}
+			if product[i].ImageURLs == nil {
+				img = ""
+			} else {
+				img = product[i].ImageURLs[0]
+			}
 			show = append(show, gin.H{
-				"Image":  product[i].ImageURLs[0:1],
+				"Image":  img,
 				"Name":   product[i].Name,
 				"Price":  product[i].Price,
 				"Rating": rate,
@@ -49,6 +55,7 @@ func SortProduct(c *gin.Context) {
 
 	var p []models.Products
 	var show []gin.H
+	var img string
 
 	sortType := c.Query("type")
 	fmt.Println(sortType)
@@ -83,8 +90,13 @@ func SortProduct(c *gin.Context) {
 			rate = rate / float32(len(r))
 		}
 		if product.CtgryBlock {
+			if product.ImageURLs == nil {
+				img = ""
+			} else {
+				img = product.ImageURLs[0]
+			}
 			show = append(show, gin.H{
-				"Image":  product.ImageURLs[0:1],
+				"Image":  img,
 				"Name":   product.Name,
 				"Price":  product.Price,
 				"Rating": rate,
@@ -101,6 +113,7 @@ func UserSearchP(c *gin.Context) {
 
 	var products []models.Products
 	var show []gin.H
+	var img string
 
 	searchQuery := c.Query("search")
 	fmt.Println(searchQuery)
@@ -123,8 +136,13 @@ func UserSearchP(c *gin.Context) {
 			rate = rate / float32(len(r))
 		}
 		if product.CtgryBlock {
+			if product.ImageURLs == nil {
+				img = ""
+			} else {
+				img = product.ImageURLs[0]
+			}
 			show = append(show, gin.H{
-				"Image":  product.ImageURLs[0:1],
+				"Image":  img,
 				"Name":   product.Name,
 				"Price":  product.Price,
 				"Rating": rate,
