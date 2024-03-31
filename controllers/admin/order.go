@@ -63,12 +63,13 @@ func OrdersStatusChange(c *gin.Context) {
 		c.JSON(501, gin.H{"Error": "Failed to find the user wallet!"})
 		return
 	}
-	order.Status = status
 	if status == "cancelled" {
 		if order.Status == "cancelled" {
 			c.JSON(409, gin.H{"Error": "This order is already cancelled"})
 			return
 		}
+
+		order.Status = status
 
 		fmt.Println("Cancelling......................")
 		order.Order.SubTotal = order.Order.SubTotal - (order.Prdct.Price * order.Quantity)
@@ -99,10 +100,17 @@ func OrdersStatusChange(c *gin.Context) {
 				return
 			}
 		}
+	} else if status == "shipped" {
+		order.Status = status
+	} else if status == "delivered" {
+		order.Status = status
+	} else {
+		c.JSON(400, gin.H{"Error": "This status can't be assigned!"})
+		return
 	}
 	er := database.Db.Save(&order).Error
 	if er != nil {
-		c.JSON(401, gin.H{"Error": "Couldn't cancel this order!"})
+		c.JSON(401, gin.H{"Error": "Couldn't change the order status!"})
 		return
 	}
 	if status == "cancelled" {

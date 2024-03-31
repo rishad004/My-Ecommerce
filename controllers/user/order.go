@@ -147,7 +147,12 @@ func CancelOrder(c *gin.Context) {
 		return
 	}
 
-	order.Status = "cancelled"
+	if order.Status == "delivered" {
+		order.Status = "return"
+	} else {
+		order.Status = "cancelled"
+	}
+
 	order.Order.SubTotal = order.Order.SubTotal - (order.Prdct.Price * order.Quantity)
 	if order.Order.SubTotal < order.Order.Coupon.Condition {
 		order.Order.Amount = order.Order.SubTotal
