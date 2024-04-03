@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"project/database"
-	"project/models"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -148,6 +148,51 @@ func UserSearchP(c *gin.Context) {
 				"Rating": rate,
 			})
 		}
+	}
+	c.JSON(200, gin.H{"Products": show})
+}
+
+func FilterProduct(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------SEARCHING PRODUCT------------------------")
+
+	var Product []models.Products
+	var show []gin.H
+	var img string
+	var rate float32
+
+	Category := c.Query("category")
+	fmt.Println(Category)
+
+	if err := database.Db.Preload("Ctgry").Find(&Product).Error; err != nil {
+		c.JSON(404, gin.H{"Error": "Couldn't find any product!"})
+		return
+	}
+
+	for _, v := range Product {
+		if v.Ctgry.Name == Category {
+			if v.ImageURLs == nil {
+				img = ""
+			} else {
+				img = v.ImageURLs[0]
+			}
+			if v.AvrgRating != 0 {
+				rate = v.AvrgRating
+			} else {
+				rate = 0
+			}
+			show = append(show, gin.H{
+				"Image":  img,
+				"Name":   v.Name,
+				"Price":  v.Price,
+				"Rating": rate,
+			})
+		}
+	}
+	if show == nil {
+		c.JSON(404, gin.H{"Message": "No products found in this category!"})
+		return
 	}
 	c.JSON(200, gin.H{"Products": show})
 }

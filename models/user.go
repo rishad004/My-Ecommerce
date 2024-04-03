@@ -34,9 +34,9 @@ type Address struct {
 }
 type Wishlist struct {
 	Id        uint `gorm:"primaryKey"`
-	Productid uint `gorm:"not null"`
+	ProductId uint `gorm:"not null"`
+	Product   Products
 	UserId    uint `gorm:"not null"`
-	Quantity  int  `gorm:"not null"`
 }
 type Payment struct {
 	*gorm.Model
@@ -62,11 +62,11 @@ type Orders struct {
 	Ordernum  int  `gorm:"primaryKey"`
 	UserId    uint `gorm:"not null"`
 	User      Users
-	SubTotal  int
+	SubTotal  float32
 	AddressId uint
 	CouponId  uint
 	Coupon    Coupons
-	Amount    int `gorm:"not null"`
+	Amount    float32
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -89,7 +89,16 @@ type Orderitem struct {
 	Prdct    Products
 }
 type Wallet struct {
+	Id      uint `gorm:"primaryKey"`
+	UserId  uint
+	Balance float32
+}
+type Referral struct {
 	Id     uint `gorm:"primaryKey"`
 	UserId uint
-	Balance float32
+	User   Users
+	Code   string
+	ById   uint
+	By     Users
+	Count  int
 }

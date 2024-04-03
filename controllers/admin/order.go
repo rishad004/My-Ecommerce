@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"project/database"
-	"project/models"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/models"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -24,13 +24,17 @@ func ShowOrders(c *gin.Context) {
 		return
 	}
 	for _, v := range order {
+		var img string
+		if v.Prdct.ImageURLs != nil {
+			img = v.Prdct.ImageURLs[0]
+		}
 		show = append(show, gin.H{
 			"Id":           v.Id,
 			"OrderId":      v.OrderId,
 			"Username":     v.Order.User.Name,
 			"User_Email":   v.Order.User.Email,
 			"Product_Name": v.Prdct.Name,
-			"Image":        v.Prdct.ImageURLs[0],
+			"Image":        img,
 			"Color":        v.Color,
 			"Quantity":     v.Quantity,
 			"Status":       v.Status,
@@ -72,12 +76,12 @@ func OrdersStatusChange(c *gin.Context) {
 		order.Status = status
 
 		fmt.Println("Cancelling......................")
-		order.Order.SubTotal = order.Order.SubTotal - (order.Prdct.Price * order.Quantity)
-		if order.Order.SubTotal < order.Order.Coupon.Condition {
+		order.Order.SubTotal = order.Order.SubTotal - float32(order.Prdct.Price*order.Quantity)
+		if order.Order.SubTotal < float32(order.Order.Coupon.Condition) {
 			order.Order.Amount = order.Order.SubTotal
 			order.Order.CouponId = 1
 		} else {
-			order.Order.Amount = order.Order.SubTotal - (order.Order.SubTotal * order.Order.Coupon.Value / 100)
+			order.Order.Amount = order.Order.SubTotal - (order.Order.SubTotal * float32(order.Order.Coupon.Value) / 100)
 		}
 		if er := database.Db.Save(&order.Order).Error; er != nil {
 			c.JSON(500, gin.H{"Error": "Can't decrease the order amount!"})

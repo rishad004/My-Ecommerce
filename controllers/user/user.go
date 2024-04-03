@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"project/database"
-	"project/helper"
-	"project/middleware"
-	"project/models"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/helper"
+	"github.com/rishad004/My-Ecommerce/middleware"
+	"github.com/rishad004/My-Ecommerce/models"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -117,7 +117,10 @@ func PostLoginU(c *gin.Context) {
 
 	c.BindJSON(&userlog)
 
-	database.Db.First(&check, "Email=?", userlog.Email)
+	if err := database.Db.First(&check, "Email=?", userlog.Email).Error; err != nil {
+		c.JSON(404, gin.H{"Message": "User not found!"})
+		return
+	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(userlog.Pass))
 

@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"project/database"
-	"project/models"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/models"
 	"strconv"
 	"time"
 

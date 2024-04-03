@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"fmt"
-	"project/database"
-	"project/middleware"
-	"project/models"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/middleware"
+	"github.com/rishad004/My-Ecommerce/models"
 	"time"
 
 	"github.com/gin-gonic/gin"

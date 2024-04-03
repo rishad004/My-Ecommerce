@@ -1,8 +1,8 @@
 package main
 
 import (
-	"project/database"
-	"project/routers"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/routers"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"

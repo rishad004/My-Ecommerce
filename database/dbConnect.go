@@ -3,8 +3,10 @@ package database
 import (
 	"fmt"
 	"os"
-	"project/helper"
-	"project/models"
+
+	"github.com/rishad004/My-Ecommerce/models"
+
+	"github.com/rishad004/My-Ecommerce/helper"
 
 	"github.com/joho/godotenv"
 
@@ -30,7 +32,7 @@ func DbConnect() {
 	if err != nil {
 		fmt.Println("!!!!!!!!!!!!!!!!! Db connection failed !!!!!!!!!!!!!!!!!!")
 	}
-	Db.AutoMigrate(&models.Users{}, &models.Address{}, &models.Banner{}, &models.Cart{}, &models.Category{}, &models.Coupons{}, &models.Orders{}, &models.Otp{}, &models.Payment{}, &models.Products{}, &models.Wishlist{}, &models.Rating{}, &models.Admin{}, &models.Orderitem{}, &models.Wallet{})
+	Db.AutoMigrate(&models.Users{}, &models.Address{}, &models.Banner{}, &models.Cart{}, &models.Category{}, &models.Coupons{}, &models.Orders{}, &models.Otp{}, &models.Payment{}, &models.Products{}, &models.Wishlist{}, &models.Rating{}, &models.Admin{}, &models.Orderitem{}, &models.Wallet{}, &models.Referral{})
 
 	Db.Find(&ad)
 

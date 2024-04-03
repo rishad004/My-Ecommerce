@@ -23,6 +23,7 @@ type Products struct {
 	AvrgRating float32
 	ImageURLs  pq.StringArray `gorm:"type:text[]"`
 	CtgryId    uint
+	Ctgry      Category
 	CtgryBlock bool
 }
 type Category struct {

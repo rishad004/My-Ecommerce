@@ -1,8 +1,8 @@
 package routers
 
 import (
-	controllers "project/controllers/user"
-	"project/middleware"
+	controllers "github.com/rishad004/My-Ecommerce/controllers/user"
+	"github.com/rishad004/My-Ecommerce/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +20,7 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/product/:Id", controllers.UserShowP)
 	r.GET("/home/sort", controllers.SortProduct)
 	r.GET("/home/search", controllers.UserSearchP)
+	r.GET("/home/filter", controllers.FilterProduct)
 
 	//---------------Profile
 	r.GET("/profile", middleware.Auth, controllers.UserProfile)
@@ -49,4 +50,9 @@ func UserRouters(r *gin.RouterGroup) {
 	//---------------Payment
 	r.GET("/payment/:payment", middleware.Auth, controllers.RazorPay)
 	r.POST("/payment", middleware.Auth, controllers.RazorPayVerify)
+
+	//---------------Wishlist
+	r.GET("/wishlist", middleware.Auth, controllers.ShowWishlist)
+	r.POST("/wishlist", middleware.Auth, controllers.AddWishlist)
+	r.DELETE("/wishlist", middleware.Auth, controllers.RemoveWishlist)
 }

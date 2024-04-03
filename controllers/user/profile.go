@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"fmt"
-	"project/database"
-	"project/helper"
-	"project/models"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/helper"
+	"github.com/rishad004/My-Ecommerce/models"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"

@@ -1,8 +1,8 @@
 package routers
 
 import (
-	controllers "project/controllers/admin"
-	"project/middleware"
+	controllers "github.com/rishad004/My-Ecommerce/controllers/admin"
+	"github.com/rishad004/My-Ecommerce/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,4 +39,7 @@ func AdminRouters(r *gin.RouterGroup) {
 	//---------------Order
 	r.GET("/order", middleware.Auth, controllers.ShowOrders)
 	r.PATCH("/order", middleware.Auth, controllers.OrdersStatusChange)
+
+	//---------------Sale Report
+	r.GET("/report", middleware.Auth, controllers.GetReportData)
 }

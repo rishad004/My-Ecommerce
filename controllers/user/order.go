@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"fmt"
-	"project/database"
-	"project/helper"
-	"project/models"
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/helper"
+	"github.com/rishad004/My-Ecommerce/models"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -47,9 +47,9 @@ func CheckoutCart(c *gin.Context) {
 		SubTotal += int(v.Quantity) * v.Product.Price
 	}
 
-	order.SubTotal = SubTotal
+	order.SubTotal = float32(SubTotal)
 	order.UserId = Logged
-	order.Amount = order.SubTotal - (order.SubTotal * coupon.Value / 100)
+	order.Amount = order.SubTotal - (order.SubTotal * float32(coupon.Value) / 100)
 	if coupon.Condition < SubTotal && errorr.Error == nil {
 		order.CouponId = coupon.Id
 	} else if coupon.Condition > SubTotal {
@@ -83,7 +83,7 @@ func CheckoutCart(c *gin.Context) {
 	payment := models.Payment{
 		OrderId: order.Ordernum,
 		UserId:  Logged,
-		Amount:  order.Amount,
+		Amount:  int(order.Amount),
 		Status:  "pending",
 	}
 	if method == "COD" {
@@ -148,17 +148,40 @@ func CancelOrder(c *gin.Context) {
 	}
 
 	if order.Status == "delivered" {
-		order.Status = "return"
+		order.Status = "returned"
 	} else {
 		order.Status = "cancelled"
 	}
 
-	order.Order.SubTotal = order.Order.SubTotal - (order.Prdct.Price * order.Quantity)
-	if order.Order.SubTotal < order.Order.Coupon.Condition {
+	if order.Order.SubTotal == (float32(order.Prdct.Price) * float32(order.Quantity)) {
+		payment.Status = "refunded"
+		wall := wallet.Balance + order.Order.Amount
+		database.Db.Model(&order.Order).Update("coupon_id", 1)
+		if payment.Status == "recieved" {
+			if err := database.Db.First(&wallet, "User_Id=?", Logged).Error; err != nil {
+				c.JSON(404, gin.H{"Error": "No such wallet found!"})
+				return
+			}
+			database.Db.Model(&wallet).Update("balance", wall)
+		}
+		database.Db.Model(&order.Order).Update("sub_total", 0)
+		database.Db.Model(&order.Order).Update("amount", 0)
+		database.Db.Save(&order)
+
+		c.JSON(200, gin.H{"Message": "Order cancelled succesfully!"})
+		return
+	}
+
+	order.Order.SubTotal = order.Order.SubTotal - float32(order.Prdct.Price*order.Quantity)
+
+	if order.Order.SubTotal < float32(order.Order.Coupon.Condition) {
+
 		order.Order.Amount = order.Order.SubTotal
 		order.Order.CouponId = 1
+
 	} else {
-		order.Order.Amount = order.Order.SubTotal - (order.Order.SubTotal * order.Order.Coupon.Value / 100)
+
+		order.Order.Amount = order.Order.SubTotal - (order.Order.SubTotal * float32(order.Order.Coupon.Value) / 100)
 	}
 
 	order.Prdct.Quantity = order.Prdct.Quantity + order.Quantity
@@ -168,17 +191,14 @@ func CancelOrder(c *gin.Context) {
 		c.JSON(401, gin.H{"Error": "Couldn't cancel this order!"})
 		return
 	}
-	if err := database.Db.First(&wallet, "User_Id=?", Logged).Error; err != nil {
-		c.JSON(404, gin.H{"Error": "No such wallet found!"})
-		return
-	}
+
 	if payment.Status == "recieved" {
 		wallet.Balance += (float32(order.Prdct.Price) * float32(order.Quantity)) - (float32(order.Prdct.Price) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
 		if err := database.Db.Save(&wallet).Error; err != nil {
 			c.JSON(500, gin.H{"Error": "Couldn't update wallet!"})
 			return
 		}
-		payment.Status = "refunded"
+		payment.Status = "partially refunded"
 		if err := database.Db.Model(&payment).Update("Status", payment.Status).Error; err != nil {
 			c.JSON(500, gin.H{"Error": "Failed to set payment as refunded"})
 			return

@@ -3,9 +3,10 @@ package middleware
 import (
 	"fmt"
 	"os"
-	"project/database"
-	"project/models"
 	"time"
+
+	"github.com/rishad004/My-Ecommerce/database"
+	"github.com/rishad004/My-Ecommerce/models"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
