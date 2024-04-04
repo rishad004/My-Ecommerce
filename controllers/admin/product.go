@@ -58,8 +58,8 @@ func AddProduct(c *gin.Context) {
 	image := file.File["image"]
 
 	for _, k := range image {
-		product.ImageURLs = append(product.ImageURLs, "./image/"+k.Filename)
-		if err := c.SaveUploadedFile(k, "./assets/images/"+k.Filename); err != nil {
+		product.ImageURLs = append(product.ImageURLs, "./assets/products/"+k.Filename)
+		if err := c.SaveUploadedFile(k, "./assets/products/"+k.Filename); err != nil {
 			c.JSON(400, gin.H{"Error": "Failed to save"})
 		}
 	}

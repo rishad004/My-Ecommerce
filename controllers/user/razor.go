@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"os"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/helper"
 	"github.com/rishad004/My-Ecommerce/models"
@@ -65,6 +66,7 @@ func RazorPayVerify(c *gin.Context) {
 	fmt.Println("-----------------------------PAYMENT VERIFY------------------------")
 
 	var verify Razor
+	var order []models.Orderitem
 	var payment models.Payment
 	var ca []models.Cart
 
@@ -84,6 +86,11 @@ func RazorPayVerify(c *gin.Context) {
 		return
 	}
 
+	if err := database.Db.Preload("Order").Preload("Prdct").Find(&order, "Order_Id=?", payment.OrderId).Error; err != nil {
+		c.JSON(500, gin.H{"Error": "Couldn't find order items from databse!"})
+		fmt.Println("Couldn't find order items from databse!")
+		return
+	}
 	eror := helper.RazorPaymentVerification(verify.Signature, verify.Order, verify.Payment)
 	if eror != nil {
 		c.JSON(402, gin.H{"Message": "Payment failed!"})
@@ -115,6 +122,11 @@ func RazorPayVerify(c *gin.Context) {
 	if erorr != nil {
 		c.JSON(500, gin.H{"Error": "Couldn't update payment success in databse!"})
 		fmt.Println("Couldn't update payment success in databse!")
+		return
+	}
+	if err := Invoice(c, payment.OrderId); err != nil {
+		c.JSON(500, gin.H{"Error": "Error on invoice create!"})
+		fmt.Println("Error on invoice create!  ",err)
 		return
 	}
 	c.JSON(200, gin.H{"Message": "Payment Succesfull!"})

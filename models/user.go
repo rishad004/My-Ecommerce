@@ -47,7 +47,7 @@ type Payment struct {
 	Amount        int    `gorm:"not null"`
 	Status        string `gorm:"not null"`
 	PMethod       string `gorm:"not null"`
-	PaymentId     string `gorm:"unique"`
+	PaymentId     string
 	TransactionId string
 }
 type Cart struct {
@@ -64,6 +64,7 @@ type Orders struct {
 	User      Users
 	SubTotal  float32
 	AddressId uint
+	Address   Address
 	CouponId  uint
 	Coupon    Coupons
 	Amount    float32

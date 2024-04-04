@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/helper"
 	"github.com/rishad004/My-Ecommerce/models"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -96,6 +97,12 @@ func CheckoutCart(c *gin.Context) {
 
 		if errr := database.Db.Create(&payment); errr.Error != nil {
 			c.JSON(403, gin.H{"Error": "Payment creation failed! Try again later."})
+			return
+		}
+
+		if err := Invoice(c, order.Ordernum); err != nil {
+			c.JSON(500, gin.H{"Error": "Error on invoice create!", "err": err.Error()})
+			fmt.Println("Error on invoice create!",err.Error())
 			return
 		}
 
