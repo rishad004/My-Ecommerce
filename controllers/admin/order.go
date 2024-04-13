@@ -27,7 +27,13 @@ func ShowOrders(c *gin.Context) {
 	err := database.Db.Preload("Order").Preload("Prdct").Preload("Order.User").Find(&order).Error
 
 	if err != nil {
-		c.JSON(404, gin.H{"Message": "No orders found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "No orders found!!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	for _, v := range order {
@@ -47,7 +53,14 @@ func ShowOrders(c *gin.Context) {
 			"Status":       v.Status,
 		})
 	}
-	c.JSON(200, gin.H{"Orders": show})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Retrieved order details!",
+		"Data": gin.H{
+			"Orders": show,
+		},
+	})
 }
 
 // ChangerOrderStatus godoc
@@ -75,20 +88,43 @@ func OrdersStatusChange(c *gin.Context) {
 	var wallet models.Wallet
 
 	if err := database.Db.Preload("Order").Preload("Order.Coupon").Preload("Prdct").First(&order, uint(ord)).Error; err != nil {
-		c.JSON(404, gin.H{"Error": "No such Order found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "No such Order found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if err := database.Db.First(&payment, "Order_Id=?", order.OrderId).Error; err != nil {
-		c.JSON(500, gin.H{"Error": "No such payment!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "No such payment!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if err := database.Db.First(&wallet, "User_Id=?", order.Order.UserId).Error; err != nil {
-		c.JSON(501, gin.H{"Error": "Failed to find the user wallet!"})
+		c.JSON(501, gin.H{
+			"Status":  "Error!",
+			"Code":    501,
+			"Error":   err.Error(),
+			"Message": "Failed to find the user wallet!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if status == "cancelled" {
 		if order.Status == "cancelled" {
-			c.JSON(409, gin.H{"Error": "This order is already cancelled"})
+			c.JSON(409, gin.H{
+				"Status":  "Error!",
+				"Code":    409,
+				"Message": "This order is already cancelled!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 
@@ -103,23 +139,47 @@ func OrdersStatusChange(c *gin.Context) {
 			order.Order.Amount = order.Order.SubTotal - (order.Order.SubTotal * float32(order.Order.Coupon.Value) / 100)
 		}
 		if er := database.Db.Save(&order.Order).Error; er != nil {
-			c.JSON(500, gin.H{"Error": "Can't decrease the order amount!"})
+			c.JSON(400, gin.H{
+				"Status":  "Error!",
+				"Code":    400,
+				"Error":   er.Error(),
+				"Message": "Can't decrease the order amount!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 		order.Prdct.Quantity += order.Quantity
 		if er := database.Db.Save(&order.Prdct).Error; er != nil {
-			c.JSON(500, gin.H{"Error": "Can't increase product quantity!"})
+			c.JSON(400, gin.H{
+				"Status":  "Error!",
+				"Code":    400,
+				"Error":   er.Error(),
+				"Message": "Can't increase product quantity!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 		if payment.Status == "recieved" {
 			wallet.Balance += (float32(order.Prdct.Price) * float32(order.Quantity)) - (float32(order.Prdct.Price) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
 			if err := database.Db.Save(&wallet).Error; err != nil {
-				c.JSON(500, gin.H{"Error": "Couldn't update wallet!"})
+				c.JSON(400, gin.H{
+					"Status":  "Error!",
+					"Code":    400,
+					"Error":   err.Error(),
+					"Message": "Couldn't update wallet!",
+					"Data":    gin.H{},
+				})
 				return
 			}
 			payment.Status = "partially refunded"
 			if err := database.Db.Model(&payment).Update("Status", payment.Status).Error; err != nil {
-				c.JSON(500, gin.H{"Error": "Failed to set payment as refunded"})
+				c.JSON(400, gin.H{
+					"Status":  "Error!",
+					"Code":    400,
+					"Error":   err.Error(),
+					"Message": "Failed to set payment as refunded!",
+					"Data":    gin.H{},
+				})
 				return
 			}
 		}
@@ -128,17 +188,38 @@ func OrdersStatusChange(c *gin.Context) {
 	} else if status == "delivered" {
 		order.Status = status
 	} else {
-		c.JSON(400, gin.H{"Error": "This status can't be assigned!"})
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Message": "This status can't be assigned!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	er := database.Db.Save(&order).Error
 	if er != nil {
-		c.JSON(401, gin.H{"Error": "Couldn't change the order status!"})
+		c.JSON(401, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   er.Error(),
+			"Message": "Couldn't change the order status!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if status == "cancelled" {
-		c.JSON(200, gin.H{"Message": "Order cancelled succesfully!"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Order cancelled succesfully!",
+			"Data":    gin.H{},
+		})
 		return
 	}
-	c.JSON(200, gin.H{"Message": "Order status updated successfully!"})
+	c.JSON(200, gin.H{
+		"Status":  "Error!",
+		"Code":    200,
+		"Message": "Order status updated successfully!",
+		"Data":    gin.H{},
+	})
 }

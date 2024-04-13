@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
 
@@ -33,7 +34,14 @@ func ShowUser(c *gin.Context) {
 			"Status": status,
 		})
 	}
-	c.JSON(200, gin.H{"Users": l})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "User details retrieved!",
+		"Data": gin.H{
+			"Users": l,
+		},
+	})
 }
 
 func BlockingUser(c *gin.Context) {
@@ -48,12 +56,27 @@ func BlockingUser(c *gin.Context) {
 	if u.ID != 0 {
 		if u.Blocking {
 			database.Db.Model(&u).Update("Blocking", false)
-			c.JSON(200, gin.H{"Message": "Blocked user successfully"})
+			c.JSON(200, gin.H{
+				"Status":  "Success!",
+				"Code":    200,
+				"Message": "Blocked user successfully!",
+				"Data":    gin.H{},
+			})
 		} else {
 			database.Db.Model(&u).Update("Blocking", true)
-			c.JSON(200, gin.H{"Message": "Unblocked user successfully"})
+			c.JSON(200, gin.H{
+				"Status":  "Success!",
+				"Code":    200,
+				"Message": "Unblocked user successfully!",
+				"Data":    gin.H{},
+			})
 		}
 	} else {
-		c.JSON(404, gin.H{"Error": "User not found"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "User not found!",
+			"Data":    gin.H{},
+		})
 	}
 }

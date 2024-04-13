@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +44,14 @@ func ShowProduct(c *gin.Context) {
 			"Description": product[i].Dscptn,
 		})
 	}
-	c.JSON(200, gin.H{"Products": l})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Retrieved product details!",
+		"Data": gin.H{
+			"Products": l,
+		},
+	})
 }
 
 // AddProduct godoc
@@ -80,7 +88,13 @@ func AddProduct(c *gin.Context) {
 	for _, k := range image {
 		product.ImageURLs = append(product.ImageURLs, "./assets/products/"+k.Filename)
 		if err := c.SaveUploadedFile(k, "./assets/products/"+k.Filename); err != nil {
-			c.JSON(400, gin.H{"Error": "Failed to save"})
+			c.JSON(400, gin.H{
+				"Status":  "Error!",
+				"Code":    400,
+				"Error":   err.Error(),
+				"Message": "Failed to save!",
+				"Data":    gin.H{},
+			})
 		}
 	}
 
@@ -98,13 +112,29 @@ func AddProduct(c *gin.Context) {
 	}
 
 	if Product.CtgryId == 0 {
-		c.JSON(404, gin.H{"Message": "The category not found, Please add the category first."})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "The category not found, Please add the category first!",
+			"Data":    gin.H{},
+		})
 	} else {
 		e := database.Db.Create(&Product)
 		if e.Error != nil {
-			c.JSON(409, gin.H{"Message": "Product already exist, Please try to edit."})
+			c.JSON(409, gin.H{
+				"Status":  "Error!",
+				"Code":    409,
+				"Error":   e.Error.Error(),
+				"Message": "Product already exist, Please try to edit!",
+				"Data":    gin.H{},
+			})
 		} else {
-			c.JSON(200, gin.H{"Message": "Product added successfully"})
+			c.JSON(200, gin.H{
+				"Status":  "Fail!",
+				"Code":    200,
+				"Message": "Product added successfully!",
+				"Data":    gin.H{},
+			})
 		}
 	}
 }
@@ -124,7 +154,7 @@ func EditProduct(c *gin.Context) {
 
 	name := c.Query("id")
 
-	var product  pp
+	var product pp
 	var Product models.Products
 	var p models.Products
 	var check models.Category
@@ -162,15 +192,26 @@ func DeleteProduct(c *gin.Context) {
 
 	var product models.Products
 
-	name := c.Param("Name")
+	Id := c.Query("id")
 
-	database.Db.First(&product, "Name=?", name)
+	database.Db.First(&product, "ID=?", Id)
 
 	e := database.Db.Delete(&product)
 	if e.Error != nil {
-		c.JSON(422, gin.H{"Error": "Couldn't delete the product, Please try again."})
+		c.JSON(422, gin.H{
+			"Status":  "Error!",
+			"Code":    422,
+			"Error":   e.Error.Error(),
+			"Message": "Couldn't delete the product, Please try again!",
+			"Data":    gin.H{},
+		})
 	} else {
-		c.JSON(200, gin.H{"Message": "Product deleted successfully"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Product deleted successfully!",
+			"Data":    gin.H{},
+		})
 	}
 
 }

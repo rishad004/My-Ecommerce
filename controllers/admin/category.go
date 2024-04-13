@@ -40,7 +40,14 @@ func ShowCategory(c *gin.Context) {
 			"Status":      Status,
 		})
 	}
-	c.JSON(200, gin.H{"categories": l})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Retrieved category details!",
+		"Data": gin.H{
+			"categories": l,
+		},
+	})
 }
 
 // AddCategory godoc
@@ -64,9 +71,20 @@ func AddCtgry(c *gin.Context) {
 
 	e := database.Db.Create(&ctgry)
 	if e.Error != nil {
-		c.JSON(422, gin.H{"Error": "Fill Category details correctly"})
+		c.JSON(422, gin.H{
+			"Status":  "Error!",
+			"Code":    422,
+			"Error":   e.Error.Error(),
+			"Message": "Fill Category details correctly!",
+			"Data":    gin.H{},
+		})
 	} else {
-		c.JSON(200, gin.H{"Message": "Created Category successfully"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Created Category successfully!",
+			"Data":    gin.H{},
+		})
 	}
 }
 
@@ -76,6 +94,7 @@ func AddCtgry(c *gin.Context) {
 // @Tags Admin Category
 // @Accept  json
 // @Produce  json
+// @Param id query string true "Add Category"
 // @Param cat body models.AddCat true "Add Category"
 // @Router /admin/category [put]
 func EditCategory(c *gin.Context) {
@@ -83,21 +102,31 @@ func EditCategory(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("---------------------------CATEGORY EDITING----------------------")
 
-	name := c.Param("Name")
+	Query := c.Query("id")
 
 	var cat models.AddCat
 	var check models.Category
 
 	c.BindJSON(&cat)
 
-	database.Db.First(&check, "Name=?", name)
+	database.Db.First(&check, "Id=?", Query)
 
 	if check.Id == 0 {
-		c.JSON(404, gin.H{"Error": "Category not found"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "Category not found!",
+			"Data":    gin.H{},
+		})
 	} else {
 		database.Db.Model(&check).Update("Name", cat.Name)
 		database.Db.Model(&check).Update("Dscptn", cat.Description)
-		c.JSON(200, gin.H{"Message": "Category edited successfully"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Category edited successfully!",
+			"Data":    gin.H{},
+		})
 	}
 
 }
@@ -123,13 +152,29 @@ func DeleteCategory(c *gin.Context) {
 	database.Db.First(&product, "Ctgry_Id=?", ctgry.Id)
 
 	if product.ID != 0 {
-		c.JSON(409, gin.H{"Message": "You can't delete, There are some products in this category."})
+		c.JSON(409, gin.H{
+			"Status":  "Fail!",
+			"Code":    409,
+			"Message": "You can't delete, There are some products in this category!",
+			"Data":    gin.H{},
+		})
 	} else {
 		e := database.Db.Delete(&ctgry)
 		if e.Error != nil {
-			c.JSON(422, gin.H{"Error": "Couldn't delete the category, Please try again."})
+			c.JSON(422, gin.H{
+				"Status":  "Error!",
+				"Code":    422,
+				"Error":   e.Error.Error(),
+				"Message": "Couldn't delete the category, Please try again!",
+				"Data":    gin.H{},
+			})
 		} else {
-			c.JSON(200, gin.H{"Message": "Category deleted successfully"})
+			c.JSON(200, gin.H{
+				"Status":  "Success!",
+				"Code":    200,
+				"Message": "Category deleted successfully!",
+				"Data":    gin.H{},
+			})
 		}
 	}
 }
@@ -163,7 +208,10 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"Message": "Category unblocked successfully",
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Category unblocked successfully!",
+			"Data":    gin.H{},
 		})
 	} else {
 		database.Db.Model(&ctgry).Update("Blocking", false)
@@ -174,8 +222,10 @@ func BlockingCategory(c *gin.Context) {
 		}
 
 		c.JSON(200, gin.H{
-			"Message": "Category blocked successfully",
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Category blocked successfully!",
+			"Data":    gin.H{},
 		})
 	}
-
 }

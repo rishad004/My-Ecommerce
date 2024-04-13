@@ -100,9 +100,19 @@ func EditCoupon(c *gin.Context) {
 	database.Db.Model(&models.Coupons{}).Where("Id=?", Id).Updates(rc)
 
 	if cpp.Id == 0 {
-		c.JSON(404, gin.H{"Error": "Coupon not found."})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "Coupon not found!",
+			"Data":    gin.H{},
+		})
 	} else {
-		c.JSON(200, gin.H{"Message": "Coupon edited succesfully."})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Coupon edited succesfully!",
+			"Data":    gin.H{},
+		})
 	}
 
 }
@@ -126,9 +136,19 @@ func DeleteCoupon(c *gin.Context) {
 	database.Db.First(&coupon, Id)
 
 	if coupon.Id == 0 {
-		c.JSON(404, gin.H{"Error": "Coupon not found."})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "Coupon not found!",
+			"Data":    gin.H{},
+		})
 	} else {
 		database.Db.Delete(&coupon)
-		c.JSON(200, gin.H{"Message": "Coupon deleted successfully"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Coupon deleted successfully!",
+			"Data":    gin.H{},
+		})
 	}
 }

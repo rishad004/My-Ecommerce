@@ -32,16 +32,35 @@ func PostLoginA(c *gin.Context) {
 	database.Db.First(&check, "Email=?", adminlog.Email)
 	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(adminlog.Password))
 	if err != nil {
-		c.JSON(401, gin.H{"Message": "Invalid Email or Password", "Error": err.Error()})
+		c.JSON(401, gin.H{
+			"Status":  "Fail!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "Invalid Email or Password!",
+			"Data":    gin.H{},
+		})
 	} else {
 		token, err := middleware.JwtCreate(c, check.Id, check.Email, "Admin")
 		if err != nil {
 			fmt.Println("=======Error JWT Create", err)
-			c.JSON(403, gin.H{"Error": "Failed to create Token"})
+			c.JSON(403, gin.H{
+				"Status":  "Error!",
+				"Code":    400,
+				"Error":   err.Error(),
+				"Message": "Failed to create Token!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 		c.SetCookie("Jwt-Admin", token, int((time.Hour * 1).Seconds()), "/", "localhost", false, true)
-		c.JSON(200, gin.H{"Message": "Admin Login Successfull", "token": token})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Successfully Logged in!",
+			"Data": gin.H{
+				"Token": token,
+			},
+		})
 	}
 }
 
@@ -56,5 +75,10 @@ func LogoutA(c *gin.Context) {
 	fmt.Println("------------------ADMIN LOGGING OUT----------------------")
 
 	c.SetCookie("Jwt-Admin", "", -1, "/", "localhost", false, true)
-	c.JSON(200, gin.H{"Message": "Logged out successfully."})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Logged out successfully!",
+		"Data":    gin.H{},
+	})
 }

@@ -22,7 +22,13 @@ func GetReportData(c *gin.Context) {
 
 	Filter := c.Query("filter")
 	if err := database.Db.Preload("Order").Preload("Order.User").Preload("Prdct").Find(&orders).Error; err != nil {
-		c.JSON(404, gin.H{"Message": "No orders found"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "No orders found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
@@ -97,7 +103,13 @@ func GetReportData(c *gin.Context) {
 
 	path := "./ReportPDF/salesReport_" + time.Now().String()[:10] + "_" + Filter + ".pdf"
 	if err := pdf.OutputFileAndClose(path); err != nil {
-		c.JSON(500, gin.H{"Error": "Couldn't download the report!", "err": err.Error()})
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   err.Error(),
+			"Message": "Couldn't download the report!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
@@ -105,5 +117,10 @@ func GetReportData(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "application/pdf")
 	c.File(path)
 
-	c.JSON(200, gin.H{"Message": "Pdf downloaded successfully!"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Pdf downloaded successfully!",
+		"Data":    gin.H{},
+	})
 }
