@@ -30,15 +30,31 @@ func RazorPay(c *gin.Context) {
 	Logged := c.MustGet("Id").(uint)
 
 	if err := database.Db.Preload("User").First(&payment, "Payment_Id=?", orderId).Error; err != nil {
-		c.JSON(404, gin.H{"Error": "Order not found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "Order not found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if payment.UserId != Logged {
-		c.JSON(404, gin.H{"Error": "Order not found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "Order not found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if err := database.Db.Preload("Prdct").Find(&orderitems, "Order_Id=?", payment.OrderId).Error; err != nil {
-		c.JSON(500, gin.H{"Error": "Cannot fetch Order Items!"})
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Message": "Cannot fetch Order Items!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	for i := 0; i < len(orderitems); i++ {
@@ -74,26 +90,50 @@ func RazorPayVerify(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&verify)
 	if err != nil {
-		c.JSON(404, gin.H{"Error": "Couldn't find any data bind!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "Couldn't find any data bind!",
+			"Data":    gin.H{},
+		})
 		fmt.Println("Couldn't find any data bind!")
 		return
 	}
 
 	er := database.Db.First(&payment, "Payment_Id=?", verify.Order).Error
 	if er != nil {
-		c.JSON(404, gin.H{"Error": "No such order found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   er.Error(),
+			"Message": "No such order found!",
+			"Data":    gin.H{},
+		})
 		fmt.Println("No such order found!")
 		return
 	}
 
 	if err := database.Db.Preload("Order").Preload("Prdct").Find(&order, "Order_Id=?", payment.OrderId).Error; err != nil {
-		c.JSON(500, gin.H{"Error": "Couldn't find order items from databse!"})
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   err.Error(),
+			"Message": "Couldn't find order items from databse!",
+			"Data":    gin.H{},
+		})
 		fmt.Println("Couldn't find order items from databse!")
 		return
 	}
 	eror := helper.RazorPaymentVerification(verify.Signature, verify.Order, verify.Payment)
 	if eror != nil {
-		c.JSON(402, gin.H{"Message": "Payment failed!"})
+		c.JSON(402, gin.H{
+			"Status":  "Error!",
+			"Code":    402,
+			"Error":   eror.Error(),
+			"Message": "Payment failed!",
+			"Data":    gin.H{},
+		})
 		fmt.Println("Payment failed!")
 		return
 	}
@@ -103,14 +143,26 @@ func RazorPayVerify(c *gin.Context) {
 
 	errors := database.Db.Preload("Product").Find(&ca, "User_Id=?", Logged).Error
 	if errors != nil {
-		c.JSON(404, gin.H{"Error": "Nothing in cart!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   errors.Error(),
+			"Message": "Nothing in cart!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	for _, v := range ca {
 		v.Product.Quantity -= int(v.Quantity)
 		erro := database.Db.Model(&v.Product).Updates(&v.Product).Error
 		if erro != nil {
-			c.JSON(402, gin.H{"Error": "Error while updating product"})
+			c.JSON(402, gin.H{
+				"Status":  "Error!",
+				"Code":    402,
+				"Error":   erro.Error(),
+				"Message": "Error while updating product!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 	}
@@ -120,15 +172,32 @@ func RazorPayVerify(c *gin.Context) {
 	}
 
 	if erorr != nil {
-		c.JSON(500, gin.H{"Error": "Couldn't update payment success in databse!"})
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   erorr.Error(),
+			"Message": "Couldn't update payment success in databse!",
+			"Data":    gin.H{},
+		})
 		fmt.Println("Couldn't update payment success in databse!")
 		return
 	}
 	if err := Invoice(c, payment.OrderId); err != nil {
-		c.JSON(500, gin.H{"Error": "Error on invoice create!"})
-		fmt.Println("Error on invoice create!  ",err)
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   err.Error(),
+			"Message": "Error on invoice create!",
+			"Data":    gin.H{},
+		})
+		fmt.Println("Error on invoice create!  ", err)
 		return
 	}
-	c.JSON(200, gin.H{"Message": "Payment Succesfull!"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    400,
+		"Message": "Payment Succesfull!",
+		"Data":    gin.H{},
+	})
 	fmt.Println("Payment Succesfull!")
 }

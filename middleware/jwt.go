@@ -64,7 +64,12 @@ func Auth(c *gin.Context) {
 	}
 
 	if tokenString == "" {
-		c.JSON(401, gin.H{"Error": "No Authorization Token found."})
+		c.JSON(401, gin.H{
+			"Status":  "Error!",
+			"Code":    401,
+			"Message": "No Authorization Token found!",
+			"Data":    gin.H{},
+		})
 		c.Abort()
 		return
 	}
@@ -75,7 +80,12 @@ func Auth(c *gin.Context) {
 	})
 
 	if err != nil || !token.Valid || !claims.Log {
-		c.JSON(401, gin.H{"error": "Invalid token"})
+		c.JSON(401, gin.H{
+			"Status":  "Error!",
+			"Code":    401,
+			"Message": "Invalid token!",
+			"Data":    gin.H{},
+		})
 		c.Abort()
 		return
 	}
@@ -84,18 +94,33 @@ func Auth(c *gin.Context) {
 		var user models.Users
 		eror := database.Db.First(&user, "ID=?", claims.UserID).Error
 		if eror != nil {
-			c.JSON(404, gin.H{"error": "User not found!"})
+			c.JSON(404, gin.H{
+				"Status":  "Error!",
+				"Code":    404,
+				"Message": "User not found!",
+				"Data":    gin.H{},
+			})
 			c.Abort()
 			return
 		}
 
 		if !user.Blocking {
-			c.JSON(401, gin.H{"error": "You are blocked!"})
+			c.JSON(401, gin.H{
+				"Status":  "Error!",
+				"Code":    401,
+				"Message": "You are blocked!",
+				"Data":    gin.H{},
+			})
 			c.Abort()
 			return
 		}
 		if claims.Role != "User" {
-			c.JSON(401, gin.H{"Error": "Not Authorized"})
+			c.JSON(401, gin.H{
+				"Status":  "Error!",
+				"Code":    401,
+				"Message": "Not Authorized!",
+				"Data":    gin.H{},
+			})
 			c.Abort()
 			return
 		}
@@ -103,7 +128,12 @@ func Auth(c *gin.Context) {
 
 	if path[1] == 97 {
 		if claims.Role != "Admin" {
-			c.JSON(401, gin.H{"Error": "Not Authorized"})
+			c.JSON(401, gin.H{
+				"Status":  "Error!",
+				"Code":    401,
+				"Message": "Not Authorized!",
+				"Data":    gin.H{},
+			})
 			c.Abort()
 			return
 		}

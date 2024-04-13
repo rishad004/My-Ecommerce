@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
 
@@ -45,7 +46,12 @@ func UserHome(c *gin.Context) {
 			rate = 0
 		}
 	}
-	c.JSON(200, gin.H{"Products": show})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Showing products in home page!",
+		"Data":    show,
+	})
 }
 
 func SortProduct(c *gin.Context) {
@@ -103,7 +109,12 @@ func SortProduct(c *gin.Context) {
 			})
 		}
 	}
-	c.JSON(200, gin.H{"Products": show})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Showing product by sorting!",
+		"Data":    show,
+	})
 }
 
 func UserSearchP(c *gin.Context) {
@@ -120,7 +131,12 @@ func UserSearchP(c *gin.Context) {
 
 	database.Db.Where("name ILIKE ?", "%"+searchQuery+"%").Find(&products)
 	if len(products) == 0 {
-		c.JSON(404, gin.H{"Message": "Products not found"})
+		c.JSON(404, gin.H{
+			"Status":  "Fail!",
+			"Code":    404,
+			"Message": "Products not found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	for _, product := range products {
@@ -149,7 +165,12 @@ func UserSearchP(c *gin.Context) {
 			})
 		}
 	}
-	c.JSON(200, gin.H{"Products": show})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Showing searched products!",
+		"Data":    show,
+	})
 }
 
 func FilterProduct(c *gin.Context) {
@@ -191,7 +212,12 @@ func FilterProduct(c *gin.Context) {
 		}
 	}
 	if show == nil {
-		c.JSON(404, gin.H{"Message": "No products found in this category!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No products found in this category!",
+			"Data":    show,
+		})
 		return
 	}
 	c.JSON(200, gin.H{"Products": show})

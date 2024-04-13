@@ -14,6 +14,12 @@ type pp struct {
 	Ctgry string `json:"category"`
 }
 
+// ShowProduct godoc
+// @Summary Products Show
+// @Description Showing Products details in admin side
+// @Tags Admin Product
+// @Produce  json
+// @Router /admin/product [get]
 func ShowProduct(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("---------------------PRODUCT SHOWING--------------------")
@@ -40,6 +46,20 @@ func ShowProduct(c *gin.Context) {
 	c.JSON(200, gin.H{"Products": l})
 }
 
+// AddProduct godoc
+// @Summary Product Add
+// @Description Adding Product with it's details
+// @Tags Admin Product
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param name formData string true "Product Name"
+// @Param price formData integer true "Product Price"
+// @Param color formData []string true "Product Color"
+// @Param quantity formData integer true "Product Quantity"
+// @Param description formData string true "Product Description"
+// @Param category formData string true "Product Category"
+// @Param image formData []file true "Product Image"
+// @Router /admin/product [post]
 func AddProduct(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("---------------------PRODUCT ADDING--------------------")
@@ -49,12 +69,12 @@ func AddProduct(c *gin.Context) {
 	var check models.Category
 
 	file, _ := c.MultipartForm()
-	product.Name = file.Value["name"][0]
-	product.Price, _ = strconv.Atoi(file.Value["price"][0])
+	product.Name = c.Request.FormValue("name")
+	product.Price, _ = strconv.Atoi(c.Request.FormValue("price"))
 	product.Color = file.Value["color"]
-	product.Quantity, _ = strconv.Atoi(file.Value["quantity"][0])
-	product.Dscptn = file.Value["description"][0]
-	product.Ctgry = file.Value["category"][0]
+	product.Quantity, _ = strconv.Atoi(c.Request.FormValue("quantity"))
+	product.Dscptn = c.Request.FormValue("description")
+	product.Ctgry = c.Request.FormValue("category")
 	image := file.File["image"]
 
 	for _, k := range image {
@@ -89,13 +109,22 @@ func AddProduct(c *gin.Context) {
 	}
 }
 
+// EditProduct godoc
+// @Summary Product Edit
+// @Description Editing Product with it's details
+// @Tags Admin Product
+// @Accept  json
+// @Produce  json
+// @Param id query string true "name search by id"
+// @Param rc body models.Coup true "Edit Product"
+// @Router /admin/product [put]
 func EditProduct(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("---------------------PRODUCT EDITING--------------------")
 
-	name := c.Param("Name")
+	name := c.Query("id")
 
-	var product pp
+	var product  pp
 	var Product models.Products
 	var p models.Products
 	var check models.Category

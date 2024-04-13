@@ -2,20 +2,13 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
-
-type Scart struct {
-	Product     string
-	Color       string
-	Quantity    uint
-	Description string
-	Price       int
-}
 
 func AddCart(c *gin.Context) {
 
@@ -33,7 +26,12 @@ func AddCart(c *gin.Context) {
 
 	err := database.Db.Where("ID=?", uint(Id)).First(&product).Error
 	if err != nil {
-		c.JSON(404, gin.H{"Error": "Product not found."})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Product found!",
+			"Data":    gin.H{},
+		})
 	} else {
 		eror := database.Db.First(&cc, "Product_Id=?", Id)
 
@@ -41,13 +39,28 @@ func AddCart(c *gin.Context) {
 			if cc.Quantity < 10 && cc.Quantity < uint(product.Quantity) {
 				cc.Quantity++
 				database.Db.Save(&cc)
-				c.JSON(200, gin.H{"Message": "Quantity increased successfully"})
+				c.JSON(200, gin.H{
+					"Status":  "Success!",
+					"Code":    200,
+					"Message": "Quantity increased.",
+					"Data":    gin.H{},
+				})
 			} else {
-				c.JSON(409, gin.H{"Message": "This product can't be added to cart anymore"})
+				c.JSON(409, gin.H{
+					"Status":  "Fail!",
+					"Code":    409,
+					"Message": "This product's max quantity reached in cart.",
+					"Data":    gin.H{},
+				})
 			}
 		} else {
 			if product.Quantity <= 0 {
-				c.JSON(404, gin.H{"Error": "This product is out of stock!"})
+				c.JSON(404, gin.H{
+					"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Address found!",
+			"Data":    gin.H{},
+				})
 				return
 			}
 			for i := 0; i < len(product.Color); i++ {

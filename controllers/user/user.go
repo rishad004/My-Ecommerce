@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/helper"
 	"github.com/rishad004/My-Ecommerce/middleware"
 	"github.com/rishad004/My-Ecommerce/models"
-	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -42,8 +43,11 @@ func PostSignupU(c *gin.Context) {
 	err := helper.SendMail(user.Email, "Otp", "Your verification code is "+otp.Otp)
 	if err != nil {
 		c.JSON(503, gin.H{
-			"Message": "We couldn't send the mail, Please check email address-----------------",
-			"Error":   err,
+			"Status":  "Fail!",
+			"Code":    503,
+			"Error":   err.Error(),
+			"Message": "We couldn't send the mail, Please check email address.",
+			"Data":    gin.H{},
 		})
 		return
 	}
@@ -54,7 +58,14 @@ func PostSignupU(c *gin.Context) {
 	session.Set("signupGender", user.Gender)
 	session.Save()
 
-	c.JSON(200, gin.H{"Message": "Verify Otp, Please check your mail. ", "Otp": otp.Otp})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Verify Email, Please check your mail!",
+		"Data": gin.H{
+			"Otp": otp.Otp,
+		},
+	})
 }
 
 func PostOtpU(c *gin.Context) {
@@ -83,11 +94,21 @@ func PostOtpU(c *gin.Context) {
 		database.Db.Delete(&check)
 
 		if err := database.Db.Create(&user).Error; err != nil {
-			c.JSON(409, gin.H{"Message": "User already exist"})
+			c.JSON(409, gin.H{
+				"Status":  "Fail!",
+				"Code":    409,
+				"Error":   err.Error(),
+				"Message": "User already exist!",
+				"Data":    gin.H{},
+			})
 		} else {
 			c.JSON(200, gin.H{
-				"Message": "Successfully signed up",
-				"UserId":  user.ID,
+				"Status":  "Success!",
+				"Code":    200,
+				"Message": "Successfully signed up!",
+				"Data": gin.H{
+					"UserId": user,
+				},
 			})
 			wallet.UserId = user.ID
 			if er := database.Db.Create(&wallet).Error; er != nil {
@@ -102,7 +123,12 @@ func PostOtpU(c *gin.Context) {
 			session.Save()
 		}
 	} else {
-		c.JSON(401, gin.H{"Message": "Otp expired or invalid, Please try again"})
+		c.JSON(401, gin.H{
+			"Status":  "Fail!",
+			"Code":    401,
+			"Message": "Otp expired or invalid, Please try again!",
+			"Data":    gin.H{},
+		})
 	}
 
 }
@@ -118,26 +144,57 @@ func PostLoginU(c *gin.Context) {
 	c.BindJSON(&userlog)
 
 	if err := database.Db.First(&check, "Email=?", userlog.Email).Error; err != nil {
-		c.JSON(404, gin.H{"Message": "User not found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Fail!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "User not found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(userlog.Pass))
 
 	if !check.Blocking {
-		c.JSON(401, gin.H{"Message": "User blocked by admin"})
+		c.JSON(401, gin.H{
+			"Status":  "Fail!",
+			"Code":    401,
+			"Message": "User blocked by admin!",
+			"Data":    gin.H{},
+		})
 	} else {
 		if err != nil {
-			c.JSON(401, gin.H{"Message": "Inavlid Email or Password"})
+			c.JSON(401, gin.H{
+				"Status":  "Fail!",
+				"Code":    401,
+				"Error":   err.Error(),
+				"Message": "Inavlid Email or Password!",
+				"Data":    gin.H{},
+			})
 		} else {
 			token, erro := middleware.JwtCreate(c, check.ID, check.Email, "User")
 			if erro != nil {
 				fmt.Println("=======Error JWT Create", err)
-				c.JSON(403, gin.H{"Error": "Failed to create Token"})
+				c.JSON(403, gin.H{
+					"Status":  "Error!",
+					"Code":    400,
+					"Error":   erro.Error(),
+					"Message": "Failed to create Token!",
+					"Data":    gin.H{},
+				})
 				return
 			}
 			c.SetCookie("Jwt-User", token, int((time.Hour * 1).Seconds()), "/", "localhost", false, true)
-			c.JSON(200, gin.H{"Message": "Successfully Logged in", "Token": token, "Id": check.ID})
+			c.JSON(200, gin.H{
+				"Status":  "Success!",
+				"Code":    200,
+				"Message": "Successfully Logged in!",
+				"Data": gin.H{
+					"Token": token,
+					"Id":    check.ID,
+				},
+			})
 		}
 	}
 }
@@ -148,5 +205,10 @@ func LogoutU(c *gin.Context) {
 	fmt.Println("------------------USER LOGGING OUT----------------------")
 
 	c.SetCookie("Jwt-User", "", -1, "/", "localhost", false, true)
-	c.JSON(200, gin.H{"Message": "Logged out successfully."})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Logged out successfully!",
+		"Data":    gin.H{},
+	})
 }

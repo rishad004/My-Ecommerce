@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/helper"
 	"github.com/rishad004/My-Ecommerce/models"
@@ -67,16 +68,32 @@ func UpdatePass(c *gin.Context) {
 	err := bcrypt.CompareHashAndPassword([]byte(use.Pass), []byte(data.CurrentPass))
 
 	if err != nil {
-		c.JSON(401, gin.H{"Message": "Current password is not correct"})
+		c.JSON(401, gin.H{
+			"Status":  "Fail!",
+			"Code":    401,
+			"Message": "Current password is not correct!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if data.NewPass != data.RepeatPass {
-		c.JSON(406, gin.H{"Message": "Both new and repeat pass are not the same"})
+		c.JSON(406, gin.H{
+			"Status":  "Fail!",
+			"Code":    401,
+			"Message": "Both new and repeat pass are not the same!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	use.Pass = helper.HashPass(data.NewPass)
 	database.Db.Save(&use)
-	c.JSON(200, gin.H{"Message": "Successfully updated your password"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Successfully updated your password!",
+		"Data":    gin.H{},
+	})
 }
 
 func EditProfile(c *gin.Context) {
@@ -96,8 +113,19 @@ func EditProfile(c *gin.Context) {
 	err := database.Db.Save(&use)
 
 	if err.Error != nil {
-		c.JSON(409, gin.H{"Message": "User already exist with this number."})
+		c.JSON(409, gin.H{
+			"Status":  "Fail!",
+			"Code":    409,
+			"Message": "User already exist with this number!",
+			"Error":   err.Error,
+			"Data":    gin.H{},
+		})
 		return
 	}
-	c.JSON(200, gin.H{"Message": "Profile udpated successfully"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Profile udpated successfully!",
+		"Data":    gin.H{},
+	})
 }

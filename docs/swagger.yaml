@@ -1,0 +1,310 @@
+basePath: /
+definitions:
+  models.AddCat:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  models.Coup:
+    properties:
+      code:
+        type: string
+      condition:
+        type: integer
+      day:
+        type: integer
+      description:
+        type: string
+      name:
+        type: string
+      "off":
+        type: integer
+    type: object
+  models.Login:
+    properties:
+      email:
+        type: string
+      pass:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: B Y E C O M  is your ecom. shop solution, where you can sell anything
+    online with ease and at an affordable price. We provide an eCommerce platform
+    for businesses to sell their products online and connect with customers worldwide.
+  title: B Y E C O M  LTD
+  version: "1.0"
+paths:
+  /admin/category:
+    delete:
+      description: Deleting category completely
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Category Delete
+      tags:
+      - Admin Category
+    get:
+      description: Showing category details in admin side
+      produces:
+      - application/json
+      responses: {}
+      summary: Category Show
+      tags:
+      - Admin Category
+    patch:
+      description: Blocking or unblocking category with products
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Category Blocking/Unblocking
+      tags:
+      - Admin Category
+    post:
+      consumes:
+      - application/json
+      description: Adding category with it's details
+      parameters:
+      - description: Add Category
+        in: body
+        name: cat
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddCat'
+      produces:
+      - application/json
+      responses: {}
+      summary: Category Add
+      tags:
+      - Admin Category
+    put:
+      consumes:
+      - application/json
+      description: Editing category with it's details
+      parameters:
+      - description: Add Category
+        in: body
+        name: cat
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddCat'
+      produces:
+      - application/json
+      responses: {}
+      summary: Category Edit
+      tags:
+      - Admin Category
+  /admin/coupon:
+    delete:
+      description: Deleting coupon completely
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Coupon Delete
+      tags:
+      - Admin Coupon
+    get:
+      description: Showing Coupon details in admin side
+      produces:
+      - application/json
+      responses: {}
+      summary: Coupon Show
+      tags:
+      - Admin Coupon
+    post:
+      consumes:
+      - application/json
+      description: Adding Coupon with it's details
+      parameters:
+      - description: Add Coupon
+        in: body
+        name: rcc
+        required: true
+        schema:
+          $ref: '#/definitions/models.Coup'
+      produces:
+      - application/json
+      responses: {}
+      summary: Coupon Add
+      tags:
+      - Admin Coupon
+    put:
+      consumes:
+      - application/json
+      description: Editing Coupon with it's details
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        type: string
+      - description: Edit Coupon
+        in: body
+        name: rc
+        required: true
+        schema:
+          $ref: '#/definitions/models.Coup'
+      produces:
+      - application/json
+      responses: {}
+      summary: Coupon Edit
+      tags:
+      - Admin Coupon
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: Admin Login with email and password
+      parameters:
+      - description: Admin Login
+        in: body
+        name: adminlog
+        required: true
+        schema:
+          $ref: '#/definitions/models.Login'
+      produces:
+      - application/json
+      responses: {}
+      summary: Admin Login
+      tags:
+      - Admin
+  /admin/logout:
+    delete:
+      description: Admin Logout by clearing cookie
+      produces:
+      - application/json
+      responses: {}
+      summary: Admin Logout
+      tags:
+      - Admin
+  /admin/order:
+    get:
+      description: Showing orders details in admin side
+      produces:
+      - application/json
+      responses: {}
+      summary: Orders Show
+      tags:
+      - Admin Order
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Changing order status on any order by admin
+      parameters:
+      - description: Status of order
+        in: formData
+        name: status
+        required: true
+        type: string
+      - description: name search by order
+        in: query
+        name: order
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Order status change
+      tags:
+      - Admin Order
+  /admin/product:
+    get:
+      description: Showing Products details in admin side
+      produces:
+      - application/json
+      responses: {}
+      summary: Products Show
+      tags:
+      - Admin Product
+    post:
+      consumes:
+      - multipart/form-data
+      description: Adding Product with it's details
+      parameters:
+      - description: Product Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Product Price
+        in: formData
+        name: price
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: Product Color
+        in: formData
+        items:
+          type: string
+        name: color
+        required: true
+        type: array
+      - description: Product Quantity
+        in: formData
+        name: quantity
+        required: true
+        type: integer
+      - description: Product Description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Product Category
+        in: formData
+        name: category
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Product Image
+        in: formData
+        items:
+          type: file
+        name: image
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses: {}
+      summary: Product Add
+      tags:
+      - Admin Product
+    put:
+      consumes:
+      - application/json
+      description: Editing Coupon with it's details
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        type: string
+      - description: Edit Coupon
+        in: body
+        name: rc
+        required: true
+        schema:
+          $ref: '#/definitions/models.Coup'
+      produces:
+      - application/json
+      responses: {}
+      summary: Coupon Edit
+      tags:
+      - Admin Coupon
+swagger: "2.0"

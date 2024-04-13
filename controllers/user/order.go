@@ -32,12 +32,22 @@ func CheckoutCart(c *gin.Context) {
 	database.Db.Preload("Product").Find(&ca, "User_Id=?", Logged)
 
 	if a.Id == 0 || a.User_Id != Logged {
-		c.JSON(404, gin.H{"Error": "No Address Found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No address found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	order.AddressId = uint(address)
 	if len(ca) == 0 {
-		c.JSON(404, gin.H{"Error": "Your cart is empty!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "Your cart is empty!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	errorr := database.Db.First(&coupon, "Code=?", Coupon)
@@ -54,13 +64,23 @@ func CheckoutCart(c *gin.Context) {
 	if coupon.Condition < SubTotal && errorr.Error == nil {
 		order.CouponId = coupon.Id
 	} else if coupon.Condition > SubTotal {
-		c.JSON(401, gin.H{"Message": "This coupon is not valid for this amount!"})
+		c.JSON(401, gin.H{
+			"Status":  "Fail!",
+			"Code":    401,
+			"Message": "Amount doesn't meet the min of coupon!",
+			"Data":    gin.H{},
+		})
 		return
 	} else if errorr.Error != nil {
 		if Coupon == "" {
 			order.CouponId = 1
 		} else {
-			c.JSON(404, gin.H{"Message": "Coupon code is not valid."})
+			c.JSON(404, gin.H{
+				"Status":  "Error!",
+				"Code":    404,
+				"Message": "Not a valid coupon code!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 	}
@@ -74,7 +94,13 @@ func CheckoutCart(c *gin.Context) {
 			Status:   "Pending",
 		}
 		if er := database.Db.Create(&orderitem); er.Error != nil {
-			c.JSON(403, gin.H{"Error": "Couldn't place the order the. Please try again later."})
+			c.JSON(403, gin.H{
+				"Status":  "Error!",
+				"Code":    403,
+				"Message": "Couldn't place the order. Please try again later.",
+				"Error":   er.Error,
+				"Data":    gin.H{},
+			})
 			return
 		}
 		v.Product.Quantity -= int(v.Quantity)
@@ -96,17 +122,34 @@ func CheckoutCart(c *gin.Context) {
 		}
 
 		if errr := database.Db.Create(&payment); errr.Error != nil {
-			c.JSON(403, gin.H{"Error": "Payment creation failed! Try again later."})
+			c.JSON(403, gin.H{
+				"Status":  "Error!",
+				"Code":    403,
+				"Message": "Payment creation failed! Try again later!",
+				"Error":   errr.Error,
+				"Data":    gin.H{},
+			})
 			return
 		}
 
 		if err := Invoice(c, order.Ordernum); err != nil {
-			c.JSON(500, gin.H{"Error": "Error on invoice create!", "err": err.Error()})
-			fmt.Println("Error on invoice create!",err.Error())
+			c.JSON(500, gin.H{
+				"Status":  "Error!",
+				"Code":    500,
+				"Message": "Error on invoice create!",
+				"Error":   err.Error(),
+				"Data":    gin.H{},
+			})
+			fmt.Println("Error on invoice create!", err.Error())
 			return
 		}
 
-		c.JSON(200, gin.H{"Message": "Order placed on COD"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Order placed on COD!",
+			"Data":    gin.H{},
+		})
 	} else if method == "PAY NOW" {
 
 		payment.PMethod = "RAZOR PAY"
@@ -114,17 +157,34 @@ func CheckoutCart(c *gin.Context) {
 		razorId, err := helper.Executerazorpay(num, payment.Amount)
 
 		if err != nil {
-			c.JSON(406, gin.H{"Error": "Payment gateway not initiated"})
+			c.JSON(406, gin.H{
+				"Status":  "Error!",
+				"Code":    406,
+				"Message": "Payment gateway not initiated!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 
 		payment.PaymentId = razorId
 		if errr := database.Db.Create(&payment); errr.Error != nil {
-			c.JSON(403, gin.H{"Error": "Payment creation failed! Try again later."})
+			c.JSON(403, gin.H{
+				"Status":  "Error!",
+				"Code":    403,
+				"Message": "Payment creation failed! Try again later.!",
+				"Data":    gin.H{},
+			})
 			return
 		}
 
-		c.JSON(200, gin.H{"Payment": razorId, "Message": "Complete the payment to place the order"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Complete the payment to place the order!",
+			"Data": gin.H{
+				"Payment": razorId,
+			},
+		})
 	}
 }
 
@@ -141,16 +201,33 @@ func CancelOrder(c *gin.Context) {
 	var payment models.Payment
 
 	if err := database.Db.Preload("Order").Preload("Order.Coupon").Preload("Prdct").First(&order, uint(ord)).Error; err != nil || order.Order.UserId != Logged {
-		c.JSON(404, gin.H{"Error": "No such Order found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Order found!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if order.Status == "cancelled" {
-		c.JSON(404, gin.H{"Error": "No such order found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Order found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
 	if err := database.Db.First(&payment, "Order_Id=?", order.OrderId).Error; err != nil {
-		c.JSON(500, gin.H{"Error": "Couldn't fetch the payment!"})
+		c.JSON(500, gin.H{
+			"Status":  "Error!",
+			"Code":    500,
+			"Message": "Couldn't fetch the payment!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
 		return
 	}
 
@@ -166,7 +243,13 @@ func CancelOrder(c *gin.Context) {
 		database.Db.Model(&order.Order).Update("coupon_id", 1)
 		if payment.Status == "recieved" {
 			if err := database.Db.First(&wallet, "User_Id=?", Logged).Error; err != nil {
-				c.JSON(404, gin.H{"Error": "No such wallet found!"})
+				c.JSON(404, gin.H{
+					"Status":  "Error!",
+					"Code":    404,
+					"Message": "No such wallet found!",
+					"Error":   err.Error(),
+					"Data":    gin.H{},
+				})
 				return
 			}
 			database.Db.Model(&wallet).Update("balance", wall)
@@ -175,7 +258,12 @@ func CancelOrder(c *gin.Context) {
 		database.Db.Model(&order.Order).Update("amount", 0)
 		database.Db.Save(&order)
 
-		c.JSON(200, gin.H{"Message": "Order cancelled succesfully!"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Order cancelled succesfully!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
@@ -195,7 +283,13 @@ func CancelOrder(c *gin.Context) {
 	database.Db.Model(&order.Prdct).Updates(&order.Prdct)
 	database.Db.Model(&order.Order).Updates(&order.Order)
 	if err := database.Db.Save(&order).Where("Order.User_Id AND Id", Logged, uint(ord)).Error; err != nil {
-		c.JSON(401, gin.H{"Error": "Couldn't cancel this order!"})
+		c.JSON(401, gin.H{
+			"Status":  "Error!",
+			"Code":    401,
+			"Message": "Couldn't cancel this order!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
 		return
 	}
 
@@ -207,11 +301,22 @@ func CancelOrder(c *gin.Context) {
 		}
 		payment.Status = "partially refunded"
 		if err := database.Db.Model(&payment).Update("Status", payment.Status).Error; err != nil {
-			c.JSON(500, gin.H{"Error": "Failed to set payment as refunded"})
+			c.JSON(500, gin.H{
+				"Status":  "Error!",
+				"Code":    500,
+				"Message": "Failed to set payment as refunded!",
+				"Error":   err.Error(),
+				"Data":    gin.H{},
+			})
 			return
 		}
 	}
-	c.JSON(200, gin.H{"Message": "Order cancelled succesfully!"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Order cancelled succesfully!",
+		"Data":    gin.H{},
+	})
 }
 
 func ShowOrder(c *gin.Context) {
@@ -226,7 +331,13 @@ func ShowOrder(c *gin.Context) {
 
 	err := database.Db.Preload("Order").Preload("Prdct").Find(&orderitem).Where("Order.User_Id=?", Logged).Error
 	if err != nil {
-		c.JSON(404, gin.H{"Message": "No orders found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No Orders found!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
 		return
 	}
 	for _, v := range orderitem {
@@ -252,5 +363,12 @@ func ShowOrder(c *gin.Context) {
 			}
 		}
 	}
-	c.JSON(200, gin.H{"Orders": show})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Retrieved orders and showing!",
+		"Data": gin.H{
+			"Orders": show,
+		},
+	})
 }

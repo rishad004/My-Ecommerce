@@ -2,13 +2,20 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
+// ShowOrder godoc
+// @Summary Orders Show
+// @Description Showing orders details in admin side
+// @Tags Admin Order
+// @Produce  json
+// @Router /admin/order [get]
 func ShowOrders(c *gin.Context) {
 
 	fmt.Println("")
@@ -43,13 +50,25 @@ func ShowOrders(c *gin.Context) {
 	c.JSON(200, gin.H{"Orders": show})
 }
 
+// ChangerOrderStatus godoc
+// @Summary Order status change
+// @Description Changing order status on any order by admin
+// @Tags Admin Order
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param status formData string true "Status of order"
+// @Param order query string true "name search by order"
+// @Router /admin/order [patch]
 func OrdersStatusChange(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------ORDER STATUS CHANGING------------------------")
 
+	status := c.Request.FormValue("status")
+
 	ord, _ := strconv.Atoi(c.Query("order"))
-	status := c.PostForm("status")
+
+	fmt.Println(status)
 
 	var order models.Orderitem
 	var payment models.Payment

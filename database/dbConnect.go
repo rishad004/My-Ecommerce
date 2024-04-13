@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rishad004/My-Ecommerce/models"
-
 	"github.com/rishad004/My-Ecommerce/helper"
+	"github.com/rishad004/My-Ecommerce/models"
 
 	"github.com/joho/godotenv"
 

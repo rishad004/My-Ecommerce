@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,14 +20,24 @@ func AddAddress(c *gin.Context) {
 	var address models.Address
 
 	c.BindJSON(&address)
-	if Logged != 0 {
-		address.User_Id = Logged
 
-		database.Db.Create(&address)
-		c.JSON(201, gin.H{"Message": "Address added  successfully"})
-	} else {
-		c.JSON(401, gin.H{"Error": "You must be logged in to add an address!"})
+	address.User_Id = Logged
+
+	if err := database.Db.Create(&address).Error; err != nil {
+		c.JSON(500, gin.H{
+			"Status":  "Fail!",
+			"Code":    500,
+			"Message": "Address coudln't add!",
+			"Data":    gin.H{},
+		})
+		return
 	}
+	c.JSON(201, gin.H{
+		"Status":  "Success!",
+		"Code":    201,
+		"Message": "Address added successfully",
+		"Data":    address,
+	})
 }
 
 func EditAddress(c *gin.Context) {
@@ -41,12 +52,22 @@ func EditAddress(c *gin.Context) {
 	c.BindJSON(&ad)
 
 	if err := database.Db.First(&address, "Id=?", uint(Id)).Error; err != nil {
-		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Address found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
 	if address.User_Id != Logged {
-		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Address found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
@@ -58,7 +79,12 @@ func EditAddress(c *gin.Context) {
 	database.Db.Model(&address).Update("Landmark", ad.Landmark)
 	database.Db.Model(&address).Update("Address", ad.Address)
 
-	c.JSON(200, gin.H{"Message": "The Address has been updated."})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Address  Updated Successfully.",
+		"Data":    ad,
+	})
 }
 
 func DeleteAddress(c *gin.Context) {
@@ -73,15 +99,30 @@ func DeleteAddress(c *gin.Context) {
 	err := database.Db.Where("Id=?", uint(Id)).First(&ad)
 
 	if err.Error != nil {
-		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Address found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	if ad.User_Id != Logged {
-		c.JSON(404, gin.H{"Error": "No address found. Please add address!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Address found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
 	database.Db.Delete(&ad)
 
-	c.JSON(200, gin.H{"Message": "Address deleted  successfully"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Address Deleted Successfully.",
+		"Data":    gin.H{},
+	})
 }

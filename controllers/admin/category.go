@@ -2,12 +2,20 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
 
 	"github.com/gin-gonic/gin"
 )
 
+// ShowCategory godoc
+// @Summary Category Show
+// @Description Showing category details in admin side
+// @Tags Admin Category
+// @Produce  json
+// @Router /admin/category [get]
 func ShowCategory(c *gin.Context) {
 
 	fmt.Println("")
@@ -35,14 +43,23 @@ func ShowCategory(c *gin.Context) {
 	c.JSON(200, gin.H{"categories": l})
 }
 
+// AddCategory godoc
+// @Summary Category Add
+// @Description Adding category with it's details
+// @Tags Admin Category
+// @Accept  json
+// @Produce  json
+// @Param cat body models.AddCat true "Add Category"
+// @Router /admin/category [post]
 func AddCtgry(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("---------------------------CATEGORY ADDING----------------------")
 
+	var cat models.AddCat
 	var ctgry models.Category
 
-	c.BindJSON(&ctgry)
+	c.BindJSON(&cat)
 	ctgry.Blocking = true
 
 	e := database.Db.Create(&ctgry)
@@ -53,6 +70,14 @@ func AddCtgry(c *gin.Context) {
 	}
 }
 
+// EditCategory godoc
+// @Summary Category Edit
+// @Description Editing category with it's details
+// @Tags Admin Category
+// @Accept  json
+// @Produce  json
+// @Param cat body models.AddCat true "Add Category"
+// @Router /admin/category [put]
 func EditCategory(c *gin.Context) {
 
 	fmt.Println("")
@@ -60,34 +85,41 @@ func EditCategory(c *gin.Context) {
 
 	name := c.Param("Name")
 
-	var ctgry models.Category
+	var cat models.AddCat
 	var check models.Category
 
-	c.BindJSON(&ctgry)
+	c.BindJSON(&cat)
 
 	database.Db.First(&check, "Name=?", name)
 
 	if check.Id == 0 {
 		c.JSON(404, gin.H{"Error": "Category not found"})
 	} else {
-		database.Db.Model(&check).Update("Name", ctgry.Name)
-		database.Db.Model(&check).Update("Dscptn", ctgry.Dscptn)
+		database.Db.Model(&check).Update("Name", cat.Name)
+		database.Db.Model(&check).Update("Dscptn", cat.Description)
 		c.JSON(200, gin.H{"Message": "Category edited successfully"})
 	}
 
 }
 
+// DeleteCategory godoc
+// @Summary Category Delete
+// @Description Deleting category completely
+// @Tags Admin Category
+// @Produce  json
+// @Param id query string false "name search by id"
+// @Router /admin/category [delete]
 func DeleteCategory(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("---------------------------CATEGORY DELETING----------------------")
 
-	name := c.Param("Name")
+	Id, _ := strconv.Atoi(c.Query("id"))
 
 	var ctgry models.Category
 	var product models.Products
 
-	database.Db.First(&ctgry, "Name=?", name)
+	database.Db.First(&ctgry, "Id=?", uint(Id))
 	database.Db.First(&product, "Ctgry_Id=?", ctgry.Id)
 
 	if product.ID != 0 {
@@ -102,17 +134,24 @@ func DeleteCategory(c *gin.Context) {
 	}
 }
 
+// BlockingCategory godoc
+// @Summary Category Blocking/Unblocking
+// @Description Blocking or unblocking category with products
+// @Tags Admin Category
+// @Produce  json
+// @Param id query string false "name search by id"
+// @Router /admin/category [patch]
 func BlockingCategory(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("---------------------------CATEGORY BLOCKING----------------------")
 
-	name := c.Param("Name")
+	Id, _ := strconv.Atoi(c.Query("id"))
 
 	var ctgry models.Category
 	var product []models.Products
 
-	database.Db.First(&ctgry, "Name=?", name)
+	database.Db.First(&ctgry, "Id=?", uint(Id))
 	database.Db.Find(&product, "Ctgry_Id=?", ctgry.Id)
 
 	if !ctgry.Blocking {

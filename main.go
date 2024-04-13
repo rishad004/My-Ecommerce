@@ -7,7 +7,16 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	_ "github.com/rishad004/My-Ecommerce/docs"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/files"
 )
+
+//	@title			B Y E C O M  LTD
+//	@version		1.0
+//	@description	B Y E C O M  is your ecom. shop solution, where you can sell anything online with ease and at an affordable price. We provide an eCommerce platform for businesses to sell their products online and connect with customers worldwide.
+// @host      localhost:8080
+// @BasePath  /
 
 func init() {
 	database.EnvLoad()
@@ -28,5 +37,6 @@ func main() {
 	admin := router.Group("/admin")
 	routers.AdminRouters(admin)
 
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	router.Run(":8080")
 }

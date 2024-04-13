@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,13 @@ func AddWishlist(c *gin.Context) {
 	ProductID, _ := strconv.Atoi(c.Query("Id"))
 
 	if err := database.Db.Where("Product_Id=? AND User_Id=?", uint(ProductID), Logged).First(&Wishlist).Error; err == nil {
-		c.JSON(409, gin.H{"Message": "Product already exist in wishlist!"})
+		c.JSON(409, gin.H{
+			"Status":  "Fail!",
+			"Code":    409,
+			"Error":   err,
+			"Message": "Product already exist in wishlist!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	Wishlist = models.Wishlist{
@@ -28,10 +35,21 @@ func AddWishlist(c *gin.Context) {
 		ProductId: uint(ProductID),
 	}
 	if err := database.Db.Create(&Wishlist).Error; err != nil {
-		c.JSON(500, gin.H{"Error": "Couldn't create the wishlist!"})
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   err.Error(),
+			"Message": "Couldn't create the wishlist!",
+			"Data":    gin.H{},
+		})
 		return
 	}
-	c.JSON(200, gin.H{"Message": "Added to wishlist!"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Added to wishlist!",
+		"Data":    gin.H{},
+	})
 }
 
 func RemoveWishlist(c *gin.Context) {
@@ -45,15 +63,32 @@ func RemoveWishlist(c *gin.Context) {
 	ProductID, _ := strconv.Atoi(c.Query("Id"))
 
 	if err := database.Db.Where("Product_Id=? AND User_Id=?", uint(ProductID), Logged).First(&Wishlist).Error; err != nil {
-		c.JSON(404, gin.H{"Error": "Product not found in wishlist!"})
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "Product not found in wishlist!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
 	if err := database.Db.Delete(&Wishlist).Error; err != nil {
-		c.JSON(500, gin.H{"Error": "Couldn't delete the wishlist!"})
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   err.Error(),
+			"Message": "Couldn't delete the wishlist!",
+			"Data":    gin.H{},
+		})
 		return
 	}
-	c.JSON(200, gin.H{"Message": "Deleted from wishlist!"})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Deleted from wishlist!",
+		"Data":    gin.H{},
+	})
 }
 
 func ShowWishlist(c *gin.Context) {
@@ -68,7 +103,13 @@ func ShowWishlist(c *gin.Context) {
 	Logged := c.MustGet("Id").(uint)
 
 	if err := database.Db.Preload("Product").Where("User_Id=?", Logged).Find(&wishlist).Error; err != nil {
-		c.JSON(404, gin.H{"Message": "No products found in wishlist!"})
+		c.JSON(404, gin.H{
+			"Status":  "Fail!",
+			"Code":    404,
+			"Error":   err.Error(),
+			"Message": "No products found in wishlist!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 
@@ -85,5 +126,12 @@ func ShowWishlist(c *gin.Context) {
 			"Image": img,
 		})
 	}
-	c.JSON(200, gin.H{"Products": show})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Retrieved whishlist data!",
+		"Data": gin.H{
+			"Products": show,
+		},
+	})
 }

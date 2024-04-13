@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/models"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +27,11 @@ func UserShowP(c *gin.Context) {
 
 	err := database.Db.Where("id=?", uint(Id)).First(&product).Error
 	if err != nil {
-		c.JSON(404, gin.H{"Error": "Product not found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Fail!",
+			"Code":    404,
+			"Message": "Product not found!",
+			"Data":    gin.H{}})
 		return
 	}
 	database.Db.Find(&r, "Prdct_Id=?", product.ID)
@@ -59,7 +64,12 @@ func UserShowP(c *gin.Context) {
 		}
 		database.Db.Where("Ctgry_Id=?", category.Id).Find(&p)
 	} else {
-		c.JSON(404, gin.H{"Error": "Product not found!"})
+		c.JSON(404, gin.H{
+			"Status":  "Fail!",
+			"Code":    404,
+			"Message": "Product not found!",
+			"Data":    gin.H{},
+		})
 		return
 	}
 	for i := 0; i < len(p); i++ {
@@ -73,10 +83,13 @@ func UserShowP(c *gin.Context) {
 		}
 	}
 	c.JSON(200, gin.H{
-		"Product":         show,
-		"RatingReview":    ratingShow,
-		"RelatedProducts": relatedShow,
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Retrieved product detail with it's related products!",
+		"Data": gin.H{
+			"Product":         show,
+			"RatingReview":    ratingShow,
+			"RelatedProducts": relatedShow,
+		},
 	})
-	product = models.Products{}
-	category = models.Category{}
 }

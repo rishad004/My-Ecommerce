@@ -15,6 +15,10 @@ func UserRouters(r *gin.RouterGroup) {
 	r.POST("/login", controllers.PostLoginU)
 	r.DELETE("/logout", middleware.Auth, controllers.LogoutU)
 
+	//---------------Google
+	r.GET("/google/login", controllers.GoogleLogin)
+	r.GET("/google/callback", controllers.GoogleCallback)
+
 	//---------------Home & Product
 	r.GET("/home", controllers.UserHome)
 	r.GET("/product/:Id", controllers.UserShowP)
