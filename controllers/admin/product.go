@@ -10,11 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type pp struct {
-	models.Products
-	Ctgry string `json:"category"`
-}
-
 // ShowProduct godoc
 // @Summary Products Show
 // @Description Showing Products details in admin side
@@ -72,21 +67,21 @@ func AddProduct(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("---------------------PRODUCT ADDING--------------------")
 
-	var product pp
 	var Product models.Products
 	var check models.Category
 
 	file, _ := c.MultipartForm()
-	product.Name = c.Request.FormValue("name")
-	product.Price, _ = strconv.Atoi(c.Request.FormValue("price"))
-	product.Color = file.Value["color"]
-	product.Quantity, _ = strconv.Atoi(c.Request.FormValue("quantity"))
-	product.Dscptn = c.Request.FormValue("description")
-	product.Ctgry = c.Request.FormValue("category")
+	Product.Name = c.Request.FormValue("name")
+	Product.Price, _ = strconv.Atoi(c.Request.FormValue("price"))
+	Product.Color = file.Value["color"]
+	Product.Quantity, _ = strconv.Atoi(c.Request.FormValue("quantity"))
+	Product.Dscptn = c.Request.FormValue("description")
+	Product.CtgryBlock = true
+	Category := c.Request.FormValue("category")
 	image := file.File["image"]
 
 	for _, k := range image {
-		product.ImageURLs = append(product.ImageURLs, "./assets/products/"+k.Filename)
+		Product.ImageURLs = append(Product.ImageURLs, "./assets/products/"+k.Filename)
 		if err := c.SaveUploadedFile(k, "./assets/products/"+k.Filename); err != nil {
 			c.JSON(400, gin.H{
 				"Status":  "Error!",
@@ -98,18 +93,9 @@ func AddProduct(c *gin.Context) {
 		}
 	}
 
-	database.Db.First(&check, "Name=?", product.Ctgry)
+	database.Db.First(&check, "Name=?", Category)
 
-	Product = models.Products{
-		Name:       product.Name,
-		Price:      product.Price,
-		Color:      product.Color,
-		Quantity:   product.Quantity,
-		Dscptn:     product.Dscptn,
-		CtgryId:    check.Id,
-		CtgryBlock: true,
-		ImageURLs:  product.ImageURLs,
-	}
+	Product.CtgryId = check.Id
 
 	if Product.CtgryId == 0 {
 		c.JSON(404, gin.H{
@@ -130,7 +116,7 @@ func AddProduct(c *gin.Context) {
 			})
 		} else {
 			c.JSON(200, gin.H{
-				"Status":  "Fail!",
+				"Status":  "Success!",
 				"Code":    200,
 				"Message": "Product added successfully!",
 				"Data":    gin.H{},
@@ -146,7 +132,13 @@ func AddProduct(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id query string true "name search by id"
-// @Param rc body models.Coup true "Edit Product"
+// @Param name formData string true "Product Name"
+// @Param price formData integer true "Product Price"
+// @Param color formData []string true "Product Color"
+// @Param quantity formData integer true "Product Quantity"
+// @Param description formData string true "Product Description"
+// @Param category formData string true "Product Category"
+// @Param image formData []file true "Product Image"
 // @Router /admin/product [put]
 func EditProduct(c *gin.Context) {
 	fmt.Println("")
@@ -154,23 +146,36 @@ func EditProduct(c *gin.Context) {
 
 	name := c.Query("id")
 
-	var product pp
 	var Product models.Products
 	var p models.Products
 	var check models.Category
 
-	c.BindJSON(&product)
+	file, _ := c.MultipartForm()
+	Product.Name = c.Request.FormValue("name")
+	Product.Price, _ = strconv.Atoi(c.Request.FormValue("price"))
+	Product.Color = file.Value["color"]
+	Product.Quantity, _ = strconv.Atoi(c.Request.FormValue("quantity"))
+	Product.Dscptn = c.Request.FormValue("description")
+	Product.CtgryBlock = true
+	Category := c.Request.FormValue("category")
+	image := file.File["image"]
 
-	database.Db.First(&check, "Name=?", product.Ctgry)
-
-	Product = models.Products{
-		Name:     product.Name,
-		Price:    product.Price,
-		Color:    product.Color,
-		Quantity: product.Quantity,
-		Dscptn:   product.Dscptn,
-		CtgryId:  check.Id,
+	for _, k := range image {
+		Product.ImageURLs = append(Product.ImageURLs, "./assets/products/"+k.Filename)
+		if err := c.SaveUploadedFile(k, "./assets/products/"+k.Filename); err != nil {
+			c.JSON(400, gin.H{
+				"Status":  "Error!",
+				"Code":    400,
+				"Error":   err.Error(),
+				"Message": "Failed to save!",
+				"Data":    gin.H{},
+			})
+		}
 	}
+
+	database.Db.First(&check, "Name=?", Category)
+
+	Product.CtgryId = check.Id
 
 	if Product.CtgryId == 0 {
 		c.JSON(404, gin.H{"Message": "The category not found, Please add the category first."})
@@ -186,6 +191,13 @@ func EditProduct(c *gin.Context) {
 
 }
 
+// DeleteProduct godoc
+// @Summary Product Delete
+// @Description Deleting product completely
+// @Tags Admin Product
+// @Produce  json
+// @Param id query string true "name search by id"
+// @Router /admin/product [delete]
 func DeleteProduct(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("---------------------PRODUCT DELETING--------------------")

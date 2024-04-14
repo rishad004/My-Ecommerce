@@ -12,6 +12,12 @@ import (
 	"github.com/go-pdf/fpdf"
 )
 
+// ShowReport godoc
+// @Summary Report Show
+// @Description Showing sales details in admin side
+// @Tags Admin Report
+// @Produce  json
+// @Router /admin/report [get]
 func GetReportData(c *gin.Context) {
 
 	fmt.Println("")
@@ -113,7 +119,7 @@ func GetReportData(c *gin.Context) {
 		return
 	}
 
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", path))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "salesReport_" + time.Now().String()[:10] + "_" + Filter + ".pdf"))
 	c.Writer.Header().Set("Content-Type", "application/pdf")
 	c.File(path)
 

@@ -7,6 +7,27 @@ definitions:
       name:
         type: string
     type: object
+  models.Address:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      id:
+        type: integer
+      landmark:
+        type: string
+      name:
+        type: string
+      phone:
+        type: integer
+      pincode:
+        type: integer
+      state:
+        type: string
+      user_Id:
+        type: integer
+    type: object
   models.Coup:
     properties:
       code:
@@ -95,6 +116,11 @@ paths:
       - application/json
       description: Editing category with it's details
       parameters:
+      - description: Add Category
+        in: query
+        name: id
+        required: true
+        type: string
       - description: Add Category
         in: body
         name: cat
@@ -226,6 +252,20 @@ paths:
       tags:
       - Admin Order
   /admin/product:
+    delete:
+      description: Deleting product completely
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Product Delete
+      tags:
+      - Admin Product
     get:
       description: Showing Products details in admin side
       produces:
@@ -289,22 +329,107 @@ paths:
     put:
       consumes:
       - application/json
-      description: Editing Coupon with it's details
+      description: Editing Product with it's details
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Product Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Product Price
+        in: formData
+        name: price
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: Product Color
+        in: formData
+        items:
+          type: string
+        name: color
+        required: true
+        type: array
+      - description: Product Quantity
+        in: formData
+        name: quantity
+        required: true
+        type: integer
+      - description: Product Description
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Product Category
+        in: formData
+        name: category
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: Product Image
+        in: formData
+        items:
+          type: file
+        name: image
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses: {}
+      summary: Product Edit
+      tags:
+      - Admin Product
+  /admin/report:
+    get:
+      description: Showing sales details in admin side
+      produces:
+      - application/json
+      responses: {}
+      summary: Report Show
+      tags:
+      - Admin Report
+  /admin/user:
+    get:
+      description: Showing Users details in admin side
+      produces:
+      - application/json
+      responses: {}
+      summary: Users Show
+      tags:
+      - Admin User
+    patch:
+      description: Blocking or unblocking User
       parameters:
       - description: name search by id
         in: query
         name: id
         type: string
-      - description: Edit Coupon
-        in: body
-        name: rc
-        required: true
-        schema:
-          $ref: '#/definitions/models.Coup'
       produces:
       - application/json
       responses: {}
-      summary: Coupon Edit
+      summary: User Blocking/Unblocking
       tags:
-      - Admin Coupon
+      - Admin User
+  /user/address:
+    post:
+      consumes:
+      - application/json
+      description: Adding Address with it's details
+      parameters:
+      - description: Add Address
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/models.Address'
+      produces:
+      - application/json
+      responses: {}
+      summary: Address Add
+      tags:
+      - User Address
 swagger: "2.0"

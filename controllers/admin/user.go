@@ -9,6 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ShowUser godoc
+// @Summary Users Show
+// @Description Showing Users details in admin side
+// @Tags Admin User
+// @Produce  json
+// @Router /admin/user [get]
 func ShowUser(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("-------------------------SHOWING USERS-------------------------")
@@ -44,11 +50,18 @@ func ShowUser(c *gin.Context) {
 	})
 }
 
+// BlockingUser godoc
+// @Summary User Blocking/Unblocking
+// @Description Blocking or unblocking User
+// @Tags Admin User
+// @Produce  json
+// @Param id query string false "name search by id"
+// @Router /admin/user [patch]
 func BlockingUser(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("-------------------------BLOCKING USER-------------------------")
 
-	Id := c.Param("Id")
+	Id := c.Query("id")
 
 	var u models.Users
 

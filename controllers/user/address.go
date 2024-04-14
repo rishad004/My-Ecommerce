@@ -10,6 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddAddress godoc
+// @Summary Address Add
+// @Description Adding Address with it's details
+// @Tags User Address
+// @Accept  json
+// @Produce  json
+// @Param address body models.Address true "Add Address"
+// @Router /user/address [post]
 func AddAddress(c *gin.Context) {
 
 	fmt.Println("")

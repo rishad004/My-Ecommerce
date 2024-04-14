@@ -41,6 +41,13 @@ const docTemplate = `{
                 "summary": "Category Edit",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Add Category",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "Add Category",
                         "name": "cat",
                         "in": "body",
@@ -301,7 +308,7 @@ const docTemplate = `{
                 "responses": {}
             },
             "put": {
-                "description": "Editing Coupon with it's details",
+                "description": "Editing Product with it's details",
                 "consumes": [
                     "application/json"
                 ],
@@ -309,24 +316,73 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin Coupon"
+                    "Admin Product"
                 ],
-                "summary": "Coupon Edit",
+                "summary": "Product Edit",
                 "parameters": [
                     {
                         "type": "string",
                         "description": "name search by id",
                         "name": "id",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
-                        "description": "Edit Coupon",
-                        "name": "rc",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Coup"
-                        }
+                        "type": "string",
+                        "description": "Product Name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product Price",
+                        "name": "price",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Product Color",
+                        "name": "color",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product Quantity",
+                        "name": "quantity",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Description",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Category",
+                        "name": "category",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "file"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Product Image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -403,6 +459,98 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
+            },
+            "delete": {
+                "description": "Deleting product completely",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Product"
+                ],
+                "summary": "Product Delete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name search by id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/admin/report": {
+            "get": {
+                "description": "Showing sales details in admin side",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Report"
+                ],
+                "summary": "Report Show",
+                "responses": {}
+            }
+        },
+        "/admin/user": {
+            "get": {
+                "description": "Showing Users details in admin side",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin User"
+                ],
+                "summary": "Users Show",
+                "responses": {}
+            },
+            "patch": {
+                "description": "Blocking or unblocking User",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin User"
+                ],
+                "summary": "User Blocking/Unblocking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name search by id",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/address": {
+            "post": {
+                "description": "Adding Address with it's details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Address"
+                ],
+                "summary": "Address Add",
+                "parameters": [
+                    {
+                        "description": "Add Address",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Address"
+                        }
+                    }
+                ],
+                "responses": {}
             }
         }
     },
@@ -415,6 +563,38 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Address": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "landmark": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "integer"
+                },
+                "pincode": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "user_Id": {
+                    "type": "integer"
                 }
             }
         },
