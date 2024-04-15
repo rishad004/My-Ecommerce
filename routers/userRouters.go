@@ -21,7 +21,7 @@ func UserRouters(r *gin.RouterGroup) {
 
 	//---------------Home & Product
 	r.GET("/home", controllers.UserHome)
-	r.GET("/product/:Id", controllers.UserShowP)
+	r.GET("/product", controllers.UserShowP)
 	r.GET("/home/sort", controllers.SortProduct)
 	r.GET("/home/search", controllers.UserSearchP)
 	r.GET("/home/filter", controllers.FilterProduct)
@@ -33,18 +33,18 @@ func UserRouters(r *gin.RouterGroup) {
 
 	//---------------Address
 	r.POST("/address", middleware.Auth, controllers.AddAddress)
-	r.PUT("/address/:Id", middleware.Auth, controllers.EditAddress)
-	r.DELETE("/address/:Id", middleware.Auth, controllers.DeleteAddress)
+	r.PUT("/address", middleware.Auth, controllers.EditAddress)
+	r.DELETE("/address", middleware.Auth, controllers.DeleteAddress)
 
 	//---------------Rating
-	r.POST("/rating/:Id", middleware.Auth, controllers.AddRating)
-	r.PUT("/rating/:Id", middleware.Auth, controllers.EditRating)
+	r.POST("/rating", middleware.Auth, controllers.AddRating)
+	r.PUT("/rating", middleware.Auth, controllers.EditRating)
 
 	//---------------Cart
-	r.POST("/cart/:Id/:Color", middleware.Auth, controllers.AddCart)
+	r.POST("/cart", middleware.Auth, controllers.AddCart)
 	r.GET("/cart", middleware.Auth, controllers.ShowCart)
-	r.PATCH("/cart/:Id", middleware.Auth, controllers.LessCart)
-	r.DELETE("/cart/:Id", middleware.Auth, controllers.DeleteCart)
+	r.PATCH("/cart", middleware.Auth, controllers.LessCart)
+	r.DELETE("/cart", middleware.Auth, controllers.DeleteCart)
 
 	//---------------Order
 	r.POST("/cart/checkout", middleware.Auth, controllers.CheckoutCart)
@@ -52,7 +52,7 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/order", middleware.Auth, controllers.ShowOrder)
 
 	//---------------Payment
-	r.GET("/payment/:payment", middleware.Auth, controllers.RazorPay)
+	r.GET("/payment", middleware.Auth, controllers.RazorPay)
 	r.POST("/payment", middleware.Auth, controllers.RazorPayVerify)
 
 	//---------------Wishlist

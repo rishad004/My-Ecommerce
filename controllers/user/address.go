@@ -14,9 +14,15 @@ import (
 // @Summary Address Add
 // @Description Adding Address with it's details
 // @Tags User Address
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
-// @Param address body models.Address true "Add Address"
+// @Param name formData string true "Name"
+// @Param phone formData string true "Phone"
+// @Param pincode formData string true "Pincode"
+// @Param city formData string true "City"
+// @Param state formData string true "State"
+// @Param landmark formData string true "Landmark"
+// @Param address formData string true "Address"
 // @Router /user/address [post]
 func AddAddress(c *gin.Context) {
 
@@ -27,7 +33,13 @@ func AddAddress(c *gin.Context) {
 
 	var address models.Address
 
-	c.BindJSON(&address)
+	address.Name = c.Request.FormValue("name")
+	address.Phone = c.Request.FormValue("phone")
+	address.PinCode = c.Request.FormValue("pincode")
+	address.City = c.Request.FormValue("city")
+	address.State = c.Request.FormValue("state")
+	address.Landmark = c.Request.FormValue("landmark")
+	address.Address = c.Request.FormValue("address")
 
 	address.User_Id = Logged
 
@@ -48,16 +60,30 @@ func AddAddress(c *gin.Context) {
 	})
 }
 
+// EditAddress godoc
+// @Summary Address Edit
+// @Description Editing Address with it's details
+// @Tags User Address
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param id query string true "address id"
+// @Param name formData string true "Name"
+// @Param phone formData string true "Phone"
+// @Param pincode formData string true "Pincode"
+// @Param city formData string true "City"
+// @Param state formData string true "State"
+// @Param landmark formData string true "Landmark"
+// @Param address formData string true "Address"
+// @Router /user/address [put]
 func EditAddress(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------ADDRESS EDITING------------------------")
 
-	var address, ad models.Address
+	var address models.Address
 
-	Id, _ := strconv.Atoi(c.Param("Id"))
+	Id, _ := strconv.Atoi(c.Query("Id"))
 	Logged := c.MustGet("Id").(uint)
-	c.BindJSON(&ad)
 
 	if err := database.Db.First(&address, "Id=?", uint(Id)).Error; err != nil {
 		c.JSON(404, gin.H{
@@ -78,23 +104,38 @@ func EditAddress(c *gin.Context) {
 		})
 		return
 	}
-
-	database.Db.Model(&address).Update("Name", ad.Name)
-	database.Db.Model(&address).Update("Phone", ad.Phone)
-	database.Db.Model(&address).Update("PinCode", ad.PinCode)
-	database.Db.Model(&address).Update("City", ad.City)
-	database.Db.Model(&address).Update("State", ad.State)
-	database.Db.Model(&address).Update("Landmark", ad.Landmark)
-	database.Db.Model(&address).Update("Address", ad.Address)
+	address.Name = c.Request.FormValue("name")
+	address.Phone = c.Request.FormValue("phone")
+	address.PinCode = c.Request.FormValue("pincode")
+	address.City = c.Request.FormValue("city")
+	address.State = c.Request.FormValue("state")
+	address.Landmark = c.Request.FormValue("landmark")
+	address.Address = c.Request.FormValue("address")
+	if err := database.Db.Save(&address).Error; err != nil {
+		c.JSON(400, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Message": "Address  Not Updated!",
+			"Data":    gin.H{},
+		})
+		return
+	}
 
 	c.JSON(200, gin.H{
 		"Status":  "Success!",
 		"Code":    200,
 		"Message": "Address  Updated Successfully.",
-		"Data":    ad,
+		"Data":    address,
 	})
 }
 
+// DeleteAddress godoc
+// @Summary Address Delete
+// @Description Deleting address completely
+// @Tags User Address
+// @Produce  json
+// @Param id query string true "name search by id"
+// @Router /user/address [delete]
 func DeleteAddress(c *gin.Context) {
 
 	fmt.Println("")

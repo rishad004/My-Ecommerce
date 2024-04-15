@@ -25,8 +25,8 @@ type Address struct {
 	Id       uint   `gorm:"primaryKey"`
 	User_Id  uint   `gorm:"not null"`
 	Name     string `gorm:"not null" json:"name"`
-	Phone    uint   `gorm:"not null" json:"phone"`
-	PinCode  uint   `gorm:"not null" json:"pincode"`
+	Phone    string   `gorm:"not null" json:"phone"`
+	PinCode  string   `gorm:"not null" json:"pincode"`
 	City     string `gorm:"not null" json:"city"`
 	State    string `gorm:"not null" json:"state"`
 	Landmark string `gorm:"not null" json:"landmark"`

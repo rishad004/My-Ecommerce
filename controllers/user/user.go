@@ -14,6 +14,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// SignupUser godoc
+// @Summary Signup User
+// @Description Sigining up user
+// @Tags User Login&Signup
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param name formData string true "User name"
+// @Param email formData string true "User email"
+// @Param pass formData string true "User pass"
+// @Param phone formData string true "User phone"
+// @Param gender formData string true "User gender"
+// @Router /user/signup [post]
 func PostSignupU(c *gin.Context) {
 
 	fmt.Println("")
@@ -23,7 +35,11 @@ func PostSignupU(c *gin.Context) {
 	var otp models.Otp
 	var oottpp models.Otp
 
-	c.ShouldBindJSON(&user)
+	user.Email = c.Request.FormValue("email")
+	user.Name = c.Request.FormValue("name")
+	user.Phone = c.Request.FormValue("phone")
+	user.Gender = c.Request.FormValue("gender")
+
 	session := sessions.Default(c)
 
 	user.Pass = helper.HashPass(user.Pass)
@@ -68,17 +84,25 @@ func PostSignupU(c *gin.Context) {
 	})
 }
 
+// OtpVerify godoc
+// @Summary Otp verify
+// @Description Verifying the user otp and creating user
+// @Tags User Login&Signup
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param otp formData string true "User Otp"
+// @Router /user/signup/otp [post]
 func PostOtpU(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("------------------OTP VERIFYING----------------------")
 
 	var check models.Otp
-	var rc models.Otp
 	var user models.Users
 	var wallet models.Wallet
 
-	c.BindJSON(&rc)
+	otp := c.Request.FormValue("otp")
+
 	session := sessions.Default(c)
 	user.Email = session.Get("signupEmail").(string)
 	user.Name = session.Get("signupName").(string)
@@ -90,7 +114,7 @@ func PostOtpU(c *gin.Context) {
 
 	database.Db.Where("User_Mail=? AND Expr > ?", user.Email, time.Now()).First(&check)
 
-	if check.Otp == rc.Otp {
+	if check.Otp == otp {
 		database.Db.Delete(&check)
 
 		if err := database.Db.Create(&user).Error; err != nil {
@@ -133,6 +157,15 @@ func PostOtpU(c *gin.Context) {
 
 }
 
+// LoginUser godoc
+// @Summary Login User
+// @Description Logging in user with email and pass
+// @Tags User Login&Signup
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param email formData string true "User email"
+// @Param pass formData string true "User pass"
+// @Router /user/login [post]
 func PostLoginU(c *gin.Context) {
 
 	fmt.Println("")
@@ -141,7 +174,8 @@ func PostLoginU(c *gin.Context) {
 	var userlog models.Users
 	var check models.Users
 
-	c.BindJSON(&userlog)
+	userlog.Email = c.Request.FormValue("email")
+	userlog.Pass = c.Request.FormValue("pass")
 
 	if err := database.Db.First(&check, "Email=?", userlog.Email).Error; err != nil {
 		c.JSON(404, gin.H{
@@ -199,6 +233,12 @@ func PostLoginU(c *gin.Context) {
 	}
 }
 
+// LogoutUser godoc
+// @Summary Logout User
+// @Description Logging out user
+// @Tags User Login&Signup
+// @Produce  json
+// @Router /user/signup [delete]
 func LogoutU(c *gin.Context) {
 
 	fmt.Println("")

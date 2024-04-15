@@ -10,6 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ShowProduct godoc
+// @Summary Show Product
+// @Description Showing Product details
+// @Tags User Home&Product
+// @Param id query string true "product id"
+// @Produce  json
+// @Router /user/product [get]
 func UserShowP(c *gin.Context) {
 
 	fmt.Println("")
@@ -23,7 +30,7 @@ func UserShowP(c *gin.Context) {
 	var r []models.Rating
 	var relatedShow, ratingShow []gin.H
 
-	Id, _ := strconv.Atoi(c.Param("Id"))
+	Id, _ := strconv.Atoi(c.Query("id"))
 
 	err := database.Db.Where("id=?", uint(Id)).First(&product).Error
 	if err != nil {

@@ -129,7 +129,7 @@ func AddProduct(c *gin.Context) {
 // @Summary Product Edit
 // @Description Editing Product with it's details
 // @Tags Admin Product
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
 // @Param id query string true "name search by id"
 // @Param name formData string true "Product Name"

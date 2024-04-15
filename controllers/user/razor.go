@@ -17,6 +17,11 @@ type Razor struct {
 	Signature string `json:"Signature"`
 }
 
+// RazorPay godoc
+// @Summary Razor Pay
+// @Description Razor Pay payment gateway
+// @Tags User Payment
+// @Router /user/payment [get]
 func RazorPay(c *gin.Context) {
 
 	fmt.Println("")
@@ -26,7 +31,7 @@ func RazorPay(c *gin.Context) {
 	var orderitems []models.Orderitem
 	var detail string
 
-	orderId := c.Param("payment")
+	orderId := c.Query("payment")
 	Logged := c.MustGet("Id").(uint)
 
 	if err := database.Db.Preload("User").First(&payment, "Payment_Id=?", orderId).Error; err != nil {
@@ -76,6 +81,14 @@ func RazorPay(c *gin.Context) {
 	})
 }
 
+// PaymentVerify godoc
+// @Summary Verify Payment
+// @Description Verifying Payment and updating payment status
+// @Tags User Payment
+// @Accept  json
+// @Produce  json
+// @Param verify body Razor true "Payment details"
+// @Router /user/payment [post]
 func RazorPayVerify(c *gin.Context) {
 
 	fmt.Println("")

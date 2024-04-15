@@ -74,7 +74,7 @@ func Invoice(c *gin.Context, OrderId int) error {
 	pdf.Ln(-1)
 
 	pdf.Cell(150, 5, "673620")
-	pdf.Cell(0, 5, strconv.Itoa(int(address.PinCode)))
+	pdf.Cell(0, 5, address.PinCode)
 
 	pdf.Ln(-1)
 

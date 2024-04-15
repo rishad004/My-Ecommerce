@@ -9,6 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ShowHome godoc
+// @Summary Home Show
+// @Description Showing all Products details in user side
+// @Tags User Home&Product
+// @Produce  json
+// @Router /user/home [get]
 func UserHome(c *gin.Context) {
 
 	fmt.Println("")
@@ -54,6 +60,13 @@ func UserHome(c *gin.Context) {
 	})
 }
 
+// ShowSortedHome godoc
+// @Summary Sorted Home Show
+// @Description Showing all Products details by sorting in user side
+// @Tags User Home&Product
+// @Param type query string true "sort type"
+// @Produce  json
+// @Router /user/sort [get]
 func SortProduct(c *gin.Context) {
 
 	fmt.Println("")
@@ -117,6 +130,13 @@ func SortProduct(c *gin.Context) {
 	})
 }
 
+// SearchingProduct godoc
+// @Summary Searching Products
+// @Description Searching Products in user side
+// @Tags User Home&Product
+// @Param search query string true "product search"
+// @Produce  json
+// @Router /user/search [get]
 func UserSearchP(c *gin.Context) {
 
 	fmt.Println("")
@@ -173,6 +193,13 @@ func UserSearchP(c *gin.Context) {
 	})
 }
 
+// FilterProduct godoc
+// @Summary Filtered Products
+// @Description Filtering Products in user side
+// @Tags User Home&Product
+// @Param category query string true "filter search"
+// @Produce  json
+// @Router /user/filter [get]
 func FilterProduct(c *gin.Context) {
 
 	fmt.Println("")

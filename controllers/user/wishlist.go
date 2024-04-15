@@ -10,6 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddWishlist godoc
+// @Summary Wishlist Add
+// @Description Adding a product into wishlist
+// @Tags User Wishlist
+// @Produce  json
+// @Param id query string true "Product Id"
+// @Router /user/wishlist [post]
 func AddWishlist(c *gin.Context) {
 
 	fmt.Println("")
@@ -18,7 +25,7 @@ func AddWishlist(c *gin.Context) {
 	var Wishlist models.Wishlist
 
 	Logged := c.MustGet("Id").(uint)
-	ProductID, _ := strconv.Atoi(c.Query("Id"))
+	ProductID, _ := strconv.Atoi(c.Query("id"))
 
 	if err := database.Db.Where("Product_Id=? AND User_Id=?", uint(ProductID), Logged).First(&Wishlist).Error; err == nil {
 		c.JSON(409, gin.H{
@@ -52,6 +59,13 @@ func AddWishlist(c *gin.Context) {
 	})
 }
 
+// RemoveWishlist godoc
+// @Summary Remove Wishlist
+// @Description Removing product from wishlist
+// @Tags User Wishlist
+// @Produce  json
+// @Param id query string true "Product id"
+// @Router /user/wishlist [delete]
 func RemoveWishlist(c *gin.Context) {
 
 	fmt.Println("")
@@ -60,7 +74,7 @@ func RemoveWishlist(c *gin.Context) {
 	var Wishlist models.Wishlist
 
 	Logged := c.MustGet("Id").(uint)
-	ProductID, _ := strconv.Atoi(c.Query("Id"))
+	ProductID, _ := strconv.Atoi(c.Query("id"))
 
 	if err := database.Db.Where("Product_Id=? AND User_Id=?", uint(ProductID), Logged).First(&Wishlist).Error; err != nil {
 		c.JSON(404, gin.H{
@@ -91,6 +105,12 @@ func RemoveWishlist(c *gin.Context) {
 	})
 }
 
+// ShowWishlist godoc
+// @Summary Show Wishlist
+// @Description Showing products from wishlist
+// @Tags User Wishlist
+// @Produce  json
+// @Router /user/wishlist [get]
 func ShowWishlist(c *gin.Context) {
 
 	fmt.Println("")

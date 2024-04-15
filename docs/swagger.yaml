@@ -1,32 +1,20 @@
 basePath: /
 definitions:
+  controllers.Razor:
+    properties:
+      OrderID:
+        type: string
+      PaymentID:
+        type: string
+      Signature:
+        type: string
+    type: object
   models.AddCat:
     properties:
       description:
         type: string
       name:
         type: string
-    type: object
-  models.Address:
-    properties:
-      address:
-        type: string
-      city:
-        type: string
-      id:
-        type: integer
-      landmark:
-        type: string
-      name:
-        type: string
-      phone:
-        type: integer
-      pincode:
-        type: integer
-      state:
-        type: string
-      user_Id:
-        type: integer
     type: object
   models.Coup:
     properties:
@@ -328,7 +316,7 @@ paths:
       - Admin Product
     put:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Editing Product with it's details
       parameters:
       - description: name search by id
@@ -407,6 +395,7 @@ paths:
       - description: name search by id
         in: query
         name: id
+        required: true
         type: string
       produces:
       - application/json
@@ -415,21 +404,550 @@ paths:
       tags:
       - Admin User
   /user/address:
+    delete:
+      description: Deleting address completely
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Address Delete
+      tags:
+      - User Address
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: Adding Address with it's details
       parameters:
-      - description: Add Address
-        in: body
+      - description: Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Phone
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: Pincode
+        in: formData
+        name: pincode
+        required: true
+        type: string
+      - description: City
+        in: formData
+        name: city
+        required: true
+        type: string
+      - description: State
+        in: formData
+        name: state
+        required: true
+        type: string
+      - description: Landmark
+        in: formData
+        name: landmark
+        required: true
+        type: string
+      - description: Address
+        in: formData
         name: address
         required: true
-        schema:
-          $ref: '#/definitions/models.Address'
+        type: string
       produces:
       - application/json
       responses: {}
       summary: Address Add
       tags:
       - User Address
+    put:
+      consumes:
+      - multipart/form-data
+      description: Editing Address with it's details
+      parameters:
+      - description: address id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Phone
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: Pincode
+        in: formData
+        name: pincode
+        required: true
+        type: string
+      - description: City
+        in: formData
+        name: city
+        required: true
+        type: string
+      - description: State
+        in: formData
+        name: state
+        required: true
+        type: string
+      - description: Landmark
+        in: formData
+        name: landmark
+        required: true
+        type: string
+      - description: Address
+        in: formData
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Address Edit
+      tags:
+      - User Address
+  /user/cart:
+    delete:
+      description: Deleting a Product from Cart completely
+      parameters:
+      - description: name search by id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Cart Delete
+      tags:
+      - User Cart
+    get:
+      description: Showing Cart details in user side
+      produces:
+      - application/json
+      responses: {}
+      summary: Cart Show
+      tags:
+      - User Cart
+    patch:
+      description: Decreasing Cart quantity
+      parameters:
+      - description: cart id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Less Cart
+      tags:
+      - User Cart
+    post:
+      description: Adding Cart with it's details
+      parameters:
+      - description: product id
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: product color
+        in: query
+        name: color
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Cart Add
+      tags:
+      - User Cart
+  /user/cart/checkout:
+    get:
+      description: Buying cart products
+      parameters:
+      - description: address id
+        in: formData
+        name: address
+        required: true
+        type: string
+      - description: coupon code
+        in: formData
+        name: coupon
+        required: true
+        type: string
+      - description: payment method
+        in: formData
+        name: method
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Cart Chekout Only
+      tags:
+      - User Order
+  /user/filter:
+    get:
+      description: Filtering Products in user side
+      parameters:
+      - description: filter search
+        in: query
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Filtered Products
+      tags:
+      - User Home&Product
+  /user/google/callback:
+    get:
+      description: Callback function after getting details
+      produces:
+      - application/json
+      responses: {}
+      summary: Google Callback
+      tags:
+      - User Google
+  /user/google/login:
+    get:
+      description: Logging in/Signing up with google auth
+      produces:
+      - application/json
+      responses: {}
+      summary: Google Login
+      tags:
+      - User Google
+  /user/home:
+    get:
+      description: Showing all Products details in user side
+      produces:
+      - application/json
+      responses: {}
+      summary: Home Show
+      tags:
+      - User Home&Product
+  /user/login:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Logging in user with email and pass
+      parameters:
+      - description: User email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: User pass
+        in: formData
+        name: pass
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Login User
+      tags:
+      - User Login&Signup
+  /user/order:
+    get:
+      description: Showing Orders with its details
+      produces:
+      - application/json
+      responses: {}
+      summary: Show Orders
+      tags:
+      - User Order
+    patch:
+      description: Cancelling ordered products individually
+      parameters:
+      - description: order id
+        in: query
+        name: order
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Cancelling Order
+      tags:
+      - User Order
+  /user/password:
+    patch:
+      description: Updating user password
+      parameters:
+      - description: address id
+        in: formData
+        name: address
+        required: true
+        type: string
+      - description: coupon code
+        in: formData
+        name: coupon
+        required: true
+        type: string
+      - description: payment method
+        in: formData
+        name: method
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Updating Password
+      tags:
+      - User Profile
+  /user/payment:
+    get:
+      description: Razor Pay payment gateway
+      responses: {}
+      summary: Razor Pay
+      tags:
+      - User Payment
+    post:
+      consumes:
+      - application/json
+      description: Verifying Payment and updating payment status
+      parameters:
+      - description: Payment details
+        in: body
+        name: verify
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.Razor'
+      produces:
+      - application/json
+      responses: {}
+      summary: Verify Payment
+      tags:
+      - User Payment
+  /user/product:
+    get:
+      description: Showing Product details
+      parameters:
+      - description: product id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Show Product
+      tags:
+      - User Home&Product
+  /user/profile:
+    get:
+      description: Showing User Profile
+      responses: {}
+      summary: Show Profile
+      tags:
+      - User Profile
+    patch:
+      description: Editing user profile
+      parameters:
+      - description: user's name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: user's phone
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: user's gender
+        in: formData
+        name: gender
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Editing Profile
+      tags:
+      - User Profile
+  /user/rating:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Adding Rating and Review for product
+      parameters:
+      - description: Product review
+        in: formData
+        name: rating
+        required: true
+        type: string
+      - description: Product rating
+        in: formData
+        name: review
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Rating Add
+      tags:
+      - User Rating
+    put:
+      consumes:
+      - multipart/form-data
+      description: Editing Rating and Review for product
+      parameters:
+      - description: Product review
+        in: formData
+        name: rating
+        required: true
+        type: string
+      - description: Product rating
+        in: formData
+        name: review
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Rating Editing
+      tags:
+      - User Rating
+  /user/search:
+    get:
+      description: Searching Products in user side
+      parameters:
+      - description: product search
+        in: query
+        name: search
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Searching Products
+      tags:
+      - User Home&Product
+  /user/signup:
+    delete:
+      description: Logging out user
+      produces:
+      - application/json
+      responses: {}
+      summary: Logout User
+      tags:
+      - User Login&Signup
+    post:
+      consumes:
+      - multipart/form-data
+      description: Sigining up user
+      parameters:
+      - description: User name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: User email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: User pass
+        in: formData
+        name: pass
+        required: true
+        type: string
+      - description: User phone
+        in: formData
+        name: phone
+        required: true
+        type: string
+      - description: User gender
+        in: formData
+        name: gender
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Signup User
+      tags:
+      - User Login&Signup
+  /user/signup/otp:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Verifying the user otp and creating user
+      parameters:
+      - description: User Otp
+        in: formData
+        name: otp
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Otp verify
+      tags:
+      - User Login&Signup
+  /user/sort:
+    get:
+      description: Showing all Products details by sorting in user side
+      parameters:
+      - description: sort type
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Sorted Home Show
+      tags:
+      - User Home&Product
+  /user/wishlist:
+    delete:
+      description: Removing product from wishlist
+      parameters:
+      - description: Product id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Remove Wishlist
+      tags:
+      - User Wishlist
+    get:
+      description: Showing products from wishlist
+      produces:
+      - application/json
+      responses: {}
+      summary: Show Wishlist
+      tags:
+      - User Wishlist
+    post:
+      description: Adding a product into wishlist
+      parameters:
+      - description: Product Id
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Wishlist Add
+      tags:
+      - User Wishlist
 swagger: "2.0"

@@ -55,7 +55,7 @@ func ShowUser(c *gin.Context) {
 // @Description Blocking or unblocking User
 // @Tags Admin User
 // @Produce  json
-// @Param id query string false "name search by id"
+// @Param id query string true "name search by id"
 // @Router /admin/user [patch]
 func BlockingUser(c *gin.Context) {
 	fmt.Println("")

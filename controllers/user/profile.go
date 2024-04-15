@@ -11,6 +11,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// ProfileShow godoc
+// @Summary Show Profile
+// @Description Showing User Profile
+// @Tags User Profile
+// @Router /user/profile [get]
 func UserProfile(c *gin.Context) {
 
 	fmt.Println("")
@@ -49,23 +54,29 @@ func UserProfile(c *gin.Context) {
 	})
 }
 
+// UpdatePass godoc
+// @Summary Updating Password
+// @Description Updating user password
+// @Tags User Profile
+// @Param address formData string true "address id"
+// @Param coupon formData string true "coupon code"
+// @Param method formData string true "payment method"
+// @Produce  json
+// @Router /user/password [patch]
 func UpdatePass(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------CHANGING PASSWORD------------------------")
 
-	type Pass struct {
-		CurrentPass string `json:"currentpass"`
-		NewPass     string `json:"newpass"`
-		RepeatPass  string `json:"repeatpass"`
-	}
-	var data Pass
+	CurrentPass := c.Request.FormValue("currentpass")
+	NewPass := c.Request.FormValue("newpass")
+	RepeatPass := c.Request.FormValue("repeatpass")
+
 	var use models.Users
 	Logged := c.MustGet("Id").(uint)
-	c.BindJSON(&data)
 
 	database.Db.First(&use, Logged)
-	err := bcrypt.CompareHashAndPassword([]byte(use.Pass), []byte(data.CurrentPass))
+	err := bcrypt.CompareHashAndPassword([]byte(use.Pass), []byte(CurrentPass))
 
 	if err != nil {
 		c.JSON(401, gin.H{
@@ -77,7 +88,7 @@ func UpdatePass(c *gin.Context) {
 		})
 		return
 	}
-	if data.NewPass != data.RepeatPass {
+	if NewPass != RepeatPass {
 		c.JSON(406, gin.H{
 			"Status":  "Fail!",
 			"Code":    401,
@@ -86,7 +97,7 @@ func UpdatePass(c *gin.Context) {
 		})
 		return
 	}
-	use.Pass = helper.HashPass(data.NewPass)
+	use.Pass = helper.HashPass(NewPass)
 	database.Db.Save(&use)
 	c.JSON(200, gin.H{
 		"Status":  "Success!",
@@ -96,20 +107,27 @@ func UpdatePass(c *gin.Context) {
 	})
 }
 
+// EditProfile godoc
+// @Summary Editing Profile
+// @Description Editing user profile
+// @Tags User Profile
+// @Param name formData string true "user's name"
+// @Param phone formData string true "user's phone"
+// @Param gender formData string true "user's gender"
+// @Produce  json
+// @Router /user/profile [patch]
 func EditProfile(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------EDITING PROFILE------------------------")
 
-	var us, use models.Users
-
-	c.BindJSON(&us)
+	var use models.Users
 
 	Logged := c.MustGet("Id").(uint)
 	database.Db.First(&use, Logged)
-	use.Name = us.Name
-	use.Phone = us.Phone
-	use.Gender = us.Gender
+	use.Name = c.Request.FormValue("name")
+	use.Phone = c.Request.FormValue("phone")
+	use.Gender = c.Request.FormValue("gender")
 	err := database.Db.Save(&use)
 
 	if err.Error != nil {

@@ -10,6 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddRating godoc
+// @Summary Rating Add
+// @Description Adding Rating and Review for product
+// @Tags User Rating
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param rating formData string true "Product review"
+// @Param review formData string true "Product rating"
+// @Router /user/rating [post]
 func AddRating(c *gin.Context) {
 
 	fmt.Println("")
@@ -21,15 +30,18 @@ func AddRating(c *gin.Context) {
 	var sum float32
 
 	Logged := c.MustGet("Id").(uint)
-	id, _ := strconv.Atoi(c.Param("Id"))
+	id, _ := strconv.Atoi(c.Query("id"))
 	er := database.Db.Where("Prdct_Id=? AND User_Id=?", id, Logged).First(&alrdyRate).Error
 
-	c.BindJSON(&rating)
+	rate, _ := strconv.Atoi(c.Request.FormValue("rating"))
+	rating.Review = c.Request.FormValue("review")
+	rating.Rating = float32(rate)
+
 	if rating.Rating > 5 {
 		c.JSON(401, gin.H{
 			"Status":  "Error!",
 			"Code":    401,
-			"Message": "Rating should be less than or equal to 5!",
+			"Message": "Rating should be less than or equal to 5 and not less than 1!",
 			"Data":    gin.H{},
 		})
 		return
@@ -74,15 +86,24 @@ func AddRating(c *gin.Context) {
 
 }
 
+// EditingRating godoc
+// @Summary Rating Editing
+// @Description Editing Rating and Review for product
+// @Tags User Rating
+// @Accept  multipart/form-data
+// @Produce  json
+// @Param rating formData string true "Product review"
+// @Param review formData string true "Product rating"
+// @Router /user/rating [put]
 func EditRating(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------EDIT RATING------------------------")
 
-	id, _ := strconv.Atoi(c.Param("Id"))
+	id, _ := strconv.Atoi(c.Query("Id"))
 	Logged := c.MustGet("Id").(uint)
 
-	var rate, rating models.Rating
+	var rate models.Rating
 	var rates []models.Rating
 	var sum float32
 
@@ -106,8 +127,10 @@ func EditRating(c *gin.Context) {
 		return
 	}
 
-	c.BindJSON(&rating)
-	if rating.Rating > 5 {
+	rating, _ := strconv.Atoi(c.Request.FormValue("rating"))
+	rate.Review = c.Request.FormValue("review")
+	rate.Rating = float32(rating)
+	if rate.Rating > 5 {
 		c.JSON(401, gin.H{
 			"Status":  "Error!",
 			"Code":    401,

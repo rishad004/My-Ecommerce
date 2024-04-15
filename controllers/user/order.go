@@ -11,6 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CheckoutCart godoc
+// @Summary Cart Chekout Only
+// @Description Buying cart products
+// @Tags User Order
+// @Param address formData string true "address id"
+// @Param coupon formData string true "coupon code"
+// @Param method formData string true "payment method"
+// @Produce  json
+// @Router /user/cart/checkout [get]
 func CheckoutCart(c *gin.Context) {
 
 	fmt.Println("")
@@ -188,6 +197,13 @@ func CheckoutCart(c *gin.Context) {
 	}
 }
 
+// CancelOrder godoc
+// @Summary Cancelling Order
+// @Description Cancelling ordered products individually
+// @Tags User Order
+// @Param order query string true "order id"
+// @Produce  json
+// @Router /user/order [patch]
 func CancelOrder(c *gin.Context) {
 
 	fmt.Println("")
@@ -319,6 +335,12 @@ func CancelOrder(c *gin.Context) {
 	})
 }
 
+// ShowOrders godoc
+// @Summary Show Orders
+// @Description Showing Orders with its details
+// @Tags User Order
+// @Produce  json
+// @Router /user/order [get]
 func ShowOrder(c *gin.Context) {
 
 	fmt.Println("")

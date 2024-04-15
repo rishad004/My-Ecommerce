@@ -10,6 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddCart godoc
+// @Summary Cart Add
+// @Description Adding Cart with it's details
+// @Tags User Cart
+// @Produce  json
+// @Param id query string true "product id"
+// @Param color query string true "product color"
+// @Router /user/cart [post]
 func AddCart(c *gin.Context) {
 
 	fmt.Println("")
@@ -17,8 +25,8 @@ func AddCart(c *gin.Context) {
 
 	Logged := c.MustGet("Id").(uint)
 
-	Id, _ := strconv.Atoi(c.Param("Id"))
-	Color, _ := strconv.Atoi(c.Param("Color"))
+	Id, _ := strconv.Atoi(c.Query("id"))
+	Color, _ := strconv.Atoi(c.Query("color"))
 
 	var product models.Products
 	var color string
@@ -57,9 +65,9 @@ func AddCart(c *gin.Context) {
 			if product.Quantity <= 0 {
 				c.JSON(404, gin.H{
 					"Status":  "Error!",
-			"Code":    404,
-			"Message": "No such Address found!",
-			"Data":    gin.H{},
+					"Code":    404,
+					"Message": "No such Address found!",
+					"Data":    gin.H{},
 				})
 				return
 			}
@@ -80,6 +88,12 @@ func AddCart(c *gin.Context) {
 	}
 }
 
+// ShowCart godoc
+// @Summary Cart Show
+// @Description Showing Cart details in user side
+// @Tags User Cart
+// @Produce  json
+// @Router /user/cart [get]
 func ShowCart(c *gin.Context) {
 
 	fmt.Println("")
@@ -114,6 +128,13 @@ func ShowCart(c *gin.Context) {
 	})
 }
 
+// LessCart godoc
+// @Summary Less Cart
+// @Description Decreasing Cart quantity
+// @Tags User Cart
+// @Produce  json
+// @Param id query string true "cart id"
+// @Router /user/cart [patch]
 func LessCart(c *gin.Context) {
 
 	fmt.Println("")
@@ -121,7 +142,7 @@ func LessCart(c *gin.Context) {
 
 	Logged := c.MustGet("Id").(uint)
 
-	Id, _ := strconv.Atoi(c.Param("Id"))
+	Id, _ := strconv.Atoi(c.Query("id"))
 
 	var cc models.Cart
 
@@ -140,6 +161,13 @@ func LessCart(c *gin.Context) {
 	}
 }
 
+// DeleteCartgodoc
+// @Summary Cart Delete
+// @Description Deleting a Product from Cart completely
+// @Tags User Cart
+// @Produce  json
+// @Param id query string true "name search by id"
+// @Router /user/cart [delete]
 func DeleteCart(c *gin.Context) {
 
 	fmt.Println("")
@@ -148,7 +176,7 @@ func DeleteCart(c *gin.Context) {
 	var cc models.Cart
 
 	Logged := c.MustGet("Id").(uint)
-	Id, _ := strconv.Atoi(c.Param("Id"))
+	Id, _ := strconv.Atoi(c.Query("id"))
 
 	database.Db.First(&cc, "Product_Id=? AND User_Id=?", Id, Logged)
 	err := database.Db.Delete(&cc)
