@@ -42,4 +42,6 @@ func AdminRouters(r *gin.RouterGroup) {
 
 	//---------------Sale Report
 	r.GET("/report", middleware.Auth, controllers.GetReportData)
+
+	r.GET("/dashboard", middleware.Auth, controllers.Dashboard)
 }

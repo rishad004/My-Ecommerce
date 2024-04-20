@@ -33,6 +33,7 @@ func ShowProduct(c *gin.Context) {
 			"Id":          product[i].ID,
 			"Name":        product[i].Name,
 			"Price":       product[i].Price,
+			"Offer":       product[i].Offer,
 			"Color":       product[i].Color,
 			"Quantity":    product[i].Quantity,
 			"Category":    cat.Name,
@@ -57,6 +58,7 @@ func ShowProduct(c *gin.Context) {
 // @Produce  json
 // @Param name formData string true "Product Name"
 // @Param price formData integer true "Product Price"
+// @Param offer formData integer true "Product Offer"
 // @Param color formData []string true "Product Color"
 // @Param quantity formData integer true "Product Quantity"
 // @Param description formData string true "Product Description"
@@ -73,12 +75,23 @@ func AddProduct(c *gin.Context) {
 	file, _ := c.MultipartForm()
 	Product.Name = c.Request.FormValue("name")
 	Product.Price, _ = strconv.Atoi(c.Request.FormValue("price"))
+	Product.Offer, _ = strconv.Atoi(c.Request.FormValue("offer"))
 	Product.Color = file.Value["color"]
 	Product.Quantity, _ = strconv.Atoi(c.Request.FormValue("quantity"))
 	Product.Dscptn = c.Request.FormValue("description")
 	Product.CtgryBlock = true
 	Category := c.Request.FormValue("category")
 	image := file.File["image"]
+
+	if Product.Offer > Product.Price {
+		c.JSON(401, gin.H{
+			"Status":  "Fail!",
+			"Code":    401,
+			"Message": "Offer price can't be more than the original price.!",
+			"Data":    gin.H{},
+		})
+		return
+	}
 
 	for _, k := range image {
 		Product.ImageURLs = append(Product.ImageURLs, "./assets/products/"+k.Filename)
@@ -96,6 +109,9 @@ func AddProduct(c *gin.Context) {
 	database.Db.First(&check, "Name=?", Category)
 
 	Product.CtgryId = check.Id
+	if Product.Offer == 0 {
+		Product.Offer = Product.Price
+	}
 
 	if Product.CtgryId == 0 {
 		c.JSON(404, gin.H{
@@ -153,12 +169,26 @@ func EditProduct(c *gin.Context) {
 	file, _ := c.MultipartForm()
 	Product.Name = c.Request.FormValue("name")
 	Product.Price, _ = strconv.Atoi(c.Request.FormValue("price"))
+	Product.Offer, _ = strconv.Atoi(c.Request.FormValue("offer"))
 	Product.Color = file.Value["color"]
 	Product.Quantity, _ = strconv.Atoi(c.Request.FormValue("quantity"))
 	Product.Dscptn = c.Request.FormValue("description")
 	Product.CtgryBlock = true
 	Category := c.Request.FormValue("category")
 	image := file.File["image"]
+
+	if Product.Offer > Product.Price {
+		c.JSON(401, gin.H{
+			"Status":  "Fail!",
+			"Code":    401,
+			"Message": "Offer price can't be more than the original price.!",
+			"Data":    gin.H{},
+		})
+		return
+	}
+	if Product.Offer == 0 {
+		Product.Offer = Product.Price
+	}
 
 	for _, k := range image {
 		Product.ImageURLs = append(Product.ImageURLs, "./assets/products/"+k.Filename)

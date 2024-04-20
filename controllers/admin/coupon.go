@@ -40,16 +40,26 @@ func ShowCoupon(c *gin.Context) {
 			"Expires_Days": days,
 		})
 	}
-	c.JSON(200, gin.H{"Coupons": l})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Retrieved coupon details!",
+		"Data":    l,
+	})
 }
 
 // AddCoupon godoc
 // @Summary Coupon Add
 // @Description Adding Coupon with it's details
 // @Tags Admin Coupon
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
-// @Param rcc body models.Coup true "Add Coupon"
+// @Param name formData string true "coupon name"
+// @Param description formData string true "coupon description"
+// @Param code formData string true "coupon code"
+// @Param condition formData string true "coupon condition"
+// @Param value formData string true "coupon value"
+// @Param expires formData string true "coupon expires"
 // @Router /admin/coupon [post]
 func AddCoupon(c *gin.Context) {
 
@@ -57,21 +67,30 @@ func AddCoupon(c *gin.Context) {
 	fmt.Println("---------------------------COUPON ADDING----------------------")
 
 	var coupon models.Coupons
-	var rcc models.Coup
 
-	c.BindJSON(&rcc)
-	coupon.Name = rcc.Name
-	coupon.Dscptn = rcc.Description
-	coupon.Code = rcc.Code
-	coupon.Condition = rcc.Condition
-	coupon.Value = rcc.Value
-	coupon.Expr = time.Now().AddDate(0, 0, rcc.Duration)
+	coupon.Name = c.Request.FormValue("name")
+	coupon.Dscptn = c.Request.FormValue("description")
+	coupon.Code = c.Request.FormValue("code")
+	coupon.Condition, _ = strconv.Atoi(c.Request.FormValue("condition"))
+	coupon.Value, _ = strconv.Atoi(c.Request.FormValue("value"))
+	exp, _ := strconv.Atoi(c.Request.FormValue("expires"))
+	coupon.Expr = time.Now().AddDate(0, 0, exp)
 
 	err := database.Db.Create(&coupon)
 	if err.Error != nil {
-		c.JSON(409, gin.H{"Message": "Coupon name or code already exist, please try to edit"})
+		c.JSON(409, gin.H{
+			"Status":  "Fail!",
+			"Code":    409,
+			"Message": "Coupon name or code already exist, please try to edit!",
+			"Data":    gin.H{},
+		})
 	} else {
-		c.JSON(200, gin.H{"Message": "Coupon added successfully"})
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Coupon added successfully!",
+			"Data":    gin.H{},
+		})
 	}
 }
 
@@ -81,8 +100,12 @@ func AddCoupon(c *gin.Context) {
 // @Tags Admin Coupon
 // @Accept  json
 // @Produce  json
-// @Param id query string false "name search by id"
-// @Param rc body models.Coup true "Edit Coupon"
+// @Param id query string true "name search by id"
+// @Param name formData string true "coupon name"
+// @Param description formData string true "coupon description"
+// @Param code formData string true "coupon code"
+// @Param condition formData string true "coupon condition"
+// @Param value formData string true "coupon value""
 // @Router /admin/coupon [put]
 func EditCoupon(c *gin.Context) {
 
@@ -91,15 +114,10 @@ func EditCoupon(c *gin.Context) {
 
 	Id, _ := strconv.Atoi(c.Query("id"))
 
-	var rc models.Coup
 	var cpp models.Coupons
 
-	c.BindJSON(&rc)
+	if err := database.Db.First(&cpp, Id).Error; err != nil {
 
-	database.Db.First(&cpp, Id)
-	database.Db.Model(&models.Coupons{}).Where("Id=?", Id).Updates(rc)
-
-	if cpp.Id == 0 {
 		c.JSON(404, gin.H{
 			"Status":  "Error!",
 			"Code":    404,
@@ -107,6 +125,13 @@ func EditCoupon(c *gin.Context) {
 			"Data":    gin.H{},
 		})
 	} else {
+		cpp.Name = c.Request.FormValue("name")
+		cpp.Dscptn = c.Request.FormValue("description")
+		cpp.Code = c.Request.FormValue("code")
+		cpp.Condition, _ = strconv.Atoi(c.Request.FormValue("condition"))
+		cpp.Value, _ = strconv.Atoi(c.Request.FormValue("value"))
+
+		database.Db.Save(&cpp)
 		c.JSON(200, gin.H{
 			"Status":  "Success!",
 			"Code":    200,

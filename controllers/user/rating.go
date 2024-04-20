@@ -16,6 +16,7 @@ import (
 // @Tags User Rating
 // @Accept  multipart/form-data
 // @Produce  json
+// @Param id query string true "Product Id"
 // @Param rating formData string true "Product review"
 // @Param review formData string true "Product rating"
 // @Router /user/rating [post]

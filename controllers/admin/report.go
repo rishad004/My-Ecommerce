@@ -25,6 +25,7 @@ func GetReportData(c *gin.Context) {
 
 	var orders []models.Orderitem
 	var today time.Time
+	var sales, salesreturn = 0, 0
 
 	Filter := c.Query("filter")
 	if err := database.Db.Preload("Order").Preload("Order.User").Preload("Prdct").Find(&orders).Error; err != nil {
@@ -81,31 +82,41 @@ func GetReportData(c *gin.Context) {
 	pdf.SetFont("Arial", "", 9)
 
 	for _, v := range orders {
+		if v.Status == "pending" || v.Status == "delivered" {
+			sales++
+		} else if v.Status == "cancelled" || v.Status == "returned" {
+			salesreturn++
+		}
 		if today == time.Now() {
-
+			amount := v.Quantity * v.Prdct.Offer
 			pdf.CellFormat(colWidth[0], lineHt, fmt.Sprintf("%d", v.OrderId), "1", 0, "C", false, 0, "")
 			pdf.CellFormat(colWidth[1], lineHt, v.Prdct.Name, "1", 0, "C", false, 0, "")
-			pdf.CellFormat(colWidth[2], lineHt, strconv.Itoa(v.Prdct.Price), "1", 0, "C", false, 0, "")
+			pdf.CellFormat(colWidth[2], lineHt, strconv.Itoa(v.Prdct.Offer), "1", 0, "C", false, 0, "")
 			pdf.CellFormat(colWidth[3], lineHt, strconv.Itoa(v.Quantity), "1", 0, "C", false, 0, "")
-			pdf.CellFormat(colWidth[4], lineHt, strconv.Itoa(int(v.Order.Amount)), "1", 0, "C", false, 0, "")
+			pdf.CellFormat(colWidth[4], lineHt, strconv.Itoa(amount), "1", 0, "C", false, 0, "")
 			pdf.CellFormat(colWidth[5], lineHt, v.Order.CreatedAt.String()[:10], "1", 0, "C", false, 0, "")
 			pdf.CellFormat(colWidth[6], lineHt, v.Status, "1", 0, "C", false, 0, "")
 			pdf.Ln(-1)
 
 		} else {
 			if time.Now().After(today) {
-
+				amount := v.Quantity * v.Prdct.Offer
 				pdf.CellFormat(colWidth[0], lineHt, fmt.Sprintf("%d", v.OrderId), "1", 0, "C", false, 0, "")
 				pdf.CellFormat(colWidth[1], lineHt, v.Prdct.Name, "1", 0, "C", false, 0, "")
-				pdf.CellFormat(colWidth[2], lineHt, strconv.Itoa(v.Prdct.Price), "1", 0, "C", false, 0, "")
+				pdf.CellFormat(colWidth[2], lineHt, strconv.Itoa(v.Prdct.Offer), "1", 0, "C", false, 0, "")
 				pdf.CellFormat(colWidth[3], lineHt, strconv.Itoa(v.Quantity), "1", 0, "C", false, 0, "")
-				pdf.CellFormat(colWidth[4], lineHt, strconv.Itoa(int(v.Order.Amount)), "1", 0, "C", false, 0, "")
+				pdf.CellFormat(colWidth[4], lineHt, strconv.Itoa(amount), "1", 0, "C", false, 0, "")
 				pdf.CellFormat(colWidth[5], lineHt, v.Order.CreatedAt.String()[:10], "1", 0, "C", false, 0, "")
 				pdf.CellFormat(colWidth[6], lineHt, v.Status, "1", 0, "C", false, 0, "")
 				pdf.Ln(-1)
 			}
 		}
 	}
+	pdf.SetFont("Arial", "B", 10)
+	pdf.Ln(5)
+	pdf.CellFormat(0, 0, fmt.Sprint("Sales : ", sales), "1", 0, "R", false, 0, "")
+	pdf.Ln(5)
+	pdf.CellFormat(0, 0, fmt.Sprint("Sales return : ", salesreturn), "1", 0, "R", false, 0, "")
 
 	path := "./ReportPDF/salesReport_" + time.Now().String()[:10] + "_" + Filter + ".pdf"
 	if err := pdf.OutputFileAndClose(path); err != nil {
@@ -119,7 +130,7 @@ func GetReportData(c *gin.Context) {
 		return
 	}
 
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "salesReport_" + time.Now().String()[:10] + "_" + Filter + ".pdf"))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "salesReport_"+time.Now().String()[:10]+"_"+Filter+".pdf"))
 	c.Writer.Header().Set("Content-Type", "application/pdf")
 	c.File(path)
 

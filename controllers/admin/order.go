@@ -131,7 +131,7 @@ func OrdersStatusChange(c *gin.Context) {
 		order.Status = status
 
 		fmt.Println("Cancelling......................")
-		order.Order.SubTotal = order.Order.SubTotal - float32(order.Prdct.Price*order.Quantity)
+		order.Order.SubTotal = order.Order.SubTotal - float32(order.Prdct.Offer*order.Quantity)
 		if order.Order.SubTotal < float32(order.Order.Coupon.Condition) {
 			order.Order.Amount = order.Order.SubTotal
 			order.Order.CouponId = 1
@@ -160,7 +160,7 @@ func OrdersStatusChange(c *gin.Context) {
 			return
 		}
 		if payment.Status == "recieved" {
-			wallet.Balance += (float32(order.Prdct.Price) * float32(order.Quantity)) - (float32(order.Prdct.Price) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
+			wallet.Balance += (float32(order.Prdct.Offer) * float32(order.Quantity)) - (float32(order.Prdct.Offer) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
 			if err := database.Db.Save(&wallet).Error; err != nil {
 				c.JSON(400, gin.H{
 					"Status":  "Error!",

@@ -15,14 +15,16 @@ type Admin struct {
 }
 type Products struct {
 	*gorm.Model
-	Name       string         `gorm:"not null; unique" json:"name"`
-	Price      int            `gorm:"not null" json:"price"`
+	Name       string `gorm:"not null; unique" json:"name"`
+	Price      int    `gorm:"not null" json:"price"`
+	Offer      int
 	Color      pq.StringArray `gorm:"not null;type:text[]" json:"color"`
 	Quantity   int            `gorm:"not null" json:"quantity"`
 	Dscptn     string         `gorm:"not null" json:"description"`
 	AvrgRating float32
 	ImageURLs  pq.StringArray `gorm:"type:text[]"`
 	CtgryId    uint
+	Sold       int
 	Ctgry      Category
 	CtgryBlock bool
 }
@@ -30,7 +32,8 @@ type Category struct {
 	Id       uint   `gorm:"primaryKey"`
 	Name     string `gorm:"not null; unique" json:"name"`
 	Dscptn   string `gorm:"not null" json:"description"`
-	Blocking bool   `gorm:"not null"`
+	Sold     int
+	Blocking bool `gorm:"not null"`
 }
 type Coupons struct {
 	Id        uint   `gorm:"primaryKey"`

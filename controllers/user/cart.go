@@ -118,9 +118,9 @@ func ShowCart(c *gin.Context) {
 			"Color":       cart[i].Color,
 			"Quantity":    cart[i].Quantity,
 			"Description": products[i].Dscptn,
-			"Price":       products[i].Price,
+			"Price":       products[i].Offer,
 		})
-		SubTotal += int(cart[i].Quantity) * products[i].Price
+		SubTotal += int(cart[i].Quantity) * products[i].Offer
 	}
 	c.JSON(200, gin.H{
 		"Products": l,

@@ -30,6 +30,8 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/profile", middleware.Auth, controllers.UserProfile)
 	r.PATCH("/password", middleware.Auth, controllers.UpdatePass)
 	r.PATCH("/profile", middleware.Auth, controllers.EditProfile)
+	r.POST("/reset/password", controllers.ForgotPassword)
+	r.POST("/reset",controllers.ResetPassword)
 
 	//---------------Address
 	r.POST("/address", middleware.Auth, controllers.AddAddress)
@@ -59,4 +61,7 @@ func UserRouters(r *gin.RouterGroup) {
 	r.GET("/wishlist", middleware.Auth, controllers.ShowWishlist)
 	r.POST("/wishlist", middleware.Auth, controllers.AddWishlist)
 	r.DELETE("/wishlist", middleware.Auth, controllers.RemoveWishlist)
+
+	//---------------Wallet
+	r.GET("/wallet", middleware.Auth, controllers.ShowWallet)
 }

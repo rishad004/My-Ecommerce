@@ -11,8 +11,8 @@ type Users struct {
 	Name     string `gorm:"not null" json:"username"`
 	Email    string `gorm:"not null;unique" json:"usermail"`
 	Pass     string `gorm:"not null" json:"userpass"`
-	Phone    string `gorm:"not null;unique" json:"userphone"`
-	Gender   string `gorm:"not null" json:"usergender"`
+	Phone    string `json:"userphone"`
+	Gender   string `json:"usergender"`
 	Blocking bool
 }
 type Otp struct {
@@ -25,8 +25,8 @@ type Address struct {
 	Id       uint   `gorm:"primaryKey"`
 	User_Id  uint   `gorm:"not null"`
 	Name     string `gorm:"not null" json:"name"`
-	Phone    string   `gorm:"not null" json:"phone"`
-	PinCode  string   `gorm:"not null" json:"pincode"`
+	Phone    string `gorm:"not null" json:"phone"`
+	PinCode  string `gorm:"not null" json:"pincode"`
 	City     string `gorm:"not null" json:"city"`
 	State    string `gorm:"not null" json:"state"`
 	Landmark string `gorm:"not null" json:"landmark"`

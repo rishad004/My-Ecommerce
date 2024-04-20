@@ -115,12 +115,12 @@ func Invoice(c *gin.Context, OrderId int) error {
 		// Column 1: Unit
 		// Column 2: Description
 		// Column 3: Price per unit
-		amount := Order[i].Quantity * Order[i].Prdct.Price
+		amount := Order[i].Quantity * Order[i].Prdct.Offer
 
 		pdf.CellFormat(colWidth[0], lineHt, fmt.Sprintf("%d", i+1), "1", 0, "C", false, 0, "")
 		pdf.CellFormat(colWidth[1], lineHt, Order[i].Prdct.Name, "1", 0, "LM", false, 0, "")
 		pdf.CellFormat(colWidth[2], lineHt, fmt.Sprintf("%d", Order[i].Quantity), "1", 0, "C", false, 0, "")
-		pdf.CellFormat(colWidth[3], lineHt, fmt.Sprintf("%d", Order[i].Prdct.Price), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(colWidth[3], lineHt, fmt.Sprintf("%d", Order[i].Prdct.Offer), "1", 0, "C", false, 0, "")
 		pdf.CellFormat(colWidth[4], lineHt, fmt.Sprintf("%d", amount), "1", 0, "C", false, 0, "")
 		pdf.Ln(-1)
 	}
@@ -136,13 +136,13 @@ func Invoice(c *gin.Context, OrderId int) error {
 	pdf.CellFormat(colWidth[4], lineHt, fmt.Sprintf("%.2f", Order[0].Order.Amount), "1", 0, "C", false, 0, "")
 	pdf.Ln(-1)
 
-	taxAmount := 0
+	DeliveryCharge := 0
 	pdf.SetX(marginX + leftIndent)
-	pdf.CellFormat(colWidth[3], lineHt, "Tax Amount", "1", 0, "C", false, 0, "")
-	pdf.CellFormat(colWidth[3], lineHt, fmt.Sprintf("%d", taxAmount), "1", 0, "C", false, 0, "")
+	pdf.CellFormat(colWidth[3], lineHt, "Delivery Charge", "1", 0, "C", false, 0, "")
+	pdf.CellFormat(colWidth[3], lineHt, fmt.Sprintf("%d", DeliveryCharge), "1", 0, "C", false, 0, "")
 	pdf.Ln(-1)
 
-	grandTotal := float64(Order[0].Order.Amount) + float64(taxAmount)
+	grandTotal := float64(Order[0].Order.Amount) + float64(DeliveryCharge)
 	pdf.SetX(marginX + leftIndent)
 	pdf.CellFormat(colWidth[3], lineHt, "Grand total", "1", 0, "C", false, 0, "")
 	pdf.CellFormat(colWidth[3], lineHt, fmt.Sprintf("%.2f", grandTotal), "1", 0, "C", false, 0, "")

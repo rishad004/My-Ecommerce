@@ -30,7 +30,7 @@ const docTemplate = `{
             "put": {
                 "description": "Editing category with it's details",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -42,19 +42,24 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Add Category",
+                        "description": "category id",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Add Category",
-                        "name": "cat",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.AddCat"
-                        }
+                        "type": "string",
+                        "description": "cateory name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "cateory description",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -62,7 +67,7 @@ const docTemplate = `{
             "post": {
                 "description": "Adding category with it's details",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -73,13 +78,18 @@ const docTemplate = `{
                 "summary": "Category Add",
                 "parameters": [
                     {
-                        "description": "Add Category",
-                        "name": "cat",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.AddCat"
-                        }
+                        "type": "string",
+                        "description": "cateory name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "cateory description",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -152,16 +162,43 @@ const docTemplate = `{
                         "type": "string",
                         "description": "name search by id",
                         "name": "id",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     },
                     {
-                        "description": "Edit Coupon",
-                        "name": "rc",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Coup"
-                        }
+                        "type": "string",
+                        "description": "coupon name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon description",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon code",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon condition",
+                        "name": "condition",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon value",
+                        "name": "value",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -169,7 +206,7 @@ const docTemplate = `{
             "post": {
                 "description": "Adding Coupon with it's details",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -180,13 +217,46 @@ const docTemplate = `{
                 "summary": "Coupon Add",
                 "parameters": [
                     {
-                        "description": "Add Coupon",
-                        "name": "rcc",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Coup"
-                        }
+                        "type": "string",
+                        "description": "coupon name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon description",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon code",
+                        "name": "code",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon condition",
+                        "name": "condition",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon value",
+                        "name": "value",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "coupon expires",
+                        "name": "expires",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -216,7 +286,7 @@ const docTemplate = `{
             "post": {
                 "description": "Admin Login with email and password",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -227,13 +297,18 @@ const docTemplate = `{
                 "summary": "Admin Login",
                 "parameters": [
                     {
-                        "description": "Admin Login",
-                        "name": "adminlog",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Login"
-                        }
+                        "type": "string",
+                        "description": "admin email",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "admin password",
+                        "name": "pass",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {}
@@ -411,6 +486,13 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Product Price",
                         "name": "price",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Product Offer",
+                        "name": "offer",
                         "in": "formData",
                         "required": true
                     },
@@ -767,7 +849,7 @@ const docTemplate = `{
             }
         },
         "/user/cart/checkout": {
-            "get": {
+            "post": {
                 "description": "Buying cart products",
                 "produces": [
                     "application/json"
@@ -788,8 +870,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "coupon code",
                         "name": "coupon",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -971,6 +1052,15 @@ const docTemplate = `{
                     "User Payment"
                 ],
                 "summary": "Razor Pay",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Payment id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             },
             "post": {
@@ -1111,6 +1201,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Product Id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Product review",
                         "name": "rating",
                         "in": "formData",
@@ -1120,6 +1217,70 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Product rating",
                         "name": "review",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/reset": {
+            "post": {
+                "description": "Changing user password without login",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User ForgetPass"
+                ],
+                "summary": "Changing Pass",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Reset code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "New Pass",
+                        "name": "newpass",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Repeat Pass",
+                        "name": "repeatpass",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/reset/password": {
+            "post": {
+                "description": "Initialilzing forgot password without login",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User ForgetPass"
+                ],
+                "summary": "Forgot Pass Init",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User email",
+                        "name": "email",
                         "in": "formData",
                         "required": true
                     }
@@ -1260,6 +1421,16 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/user/wallet": {
+            "get": {
+                "description": "Showing User Wallet",
+                "tags": [
+                    "User Wallet"
+                ],
+                "summary": "Show Wallet",
+                "responses": {}
+            }
+        },
         "/user/wishlist": {
             "get": {
                 "description": "Showing products from wishlist",
@@ -1325,51 +1496,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "Signature": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.AddCat": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Coup": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "condition": {
-                    "type": "integer"
-                },
-                "day": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "off": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.Login": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "pass": {
                     "type": "string"
                 }
             }

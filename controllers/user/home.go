@@ -46,7 +46,7 @@ func UserHome(c *gin.Context) {
 			show = append(show, gin.H{
 				"Image":  img,
 				"Name":   product[i].Name,
-				"Price":  product[i].Price,
+				"Price":  product[i].Offer,
 				"Rating": rate,
 			})
 			rate = 0
@@ -117,7 +117,7 @@ func SortProduct(c *gin.Context) {
 			show = append(show, gin.H{
 				"Image":  img,
 				"Name":   product.Name,
-				"Price":  product.Price,
+				"Price":  product.Offer,
 				"Rating": rate,
 			})
 		}
@@ -180,7 +180,7 @@ func UserSearchP(c *gin.Context) {
 			show = append(show, gin.H{
 				"Image":  img,
 				"Name":   product.Name,
-				"Price":  product.Price,
+				"Price":  product.Offer,
 				"Rating": rate,
 			})
 		}
@@ -233,7 +233,7 @@ func FilterProduct(c *gin.Context) {
 			show = append(show, gin.H{
 				"Image":  img,
 				"Name":   v.Name,
-				"Price":  v.Price,
+				"Price":  v.Offer,
 				"Rating": rate,
 			})
 		}

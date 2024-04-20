@@ -54,19 +54,20 @@ func ShowCategory(c *gin.Context) {
 // @Summary Category Add
 // @Description Adding category with it's details
 // @Tags Admin Category
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
-// @Param cat body models.AddCat true "Add Category"
+// @Param name formData string true "cateory name"
+// @Param description formData string true "cateory description"
 // @Router /admin/category [post]
 func AddCtgry(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("---------------------------CATEGORY ADDING----------------------")
 
-	var cat models.AddCat
 	var ctgry models.Category
 
-	c.BindJSON(&cat)
+	ctgry.Name = c.Request.FormValue("name")
+	ctgry.Dscptn = c.Request.FormValue("description")
 	ctgry.Blocking = true
 
 	e := database.Db.Create(&ctgry)
@@ -92,10 +93,11 @@ func AddCtgry(c *gin.Context) {
 // @Summary Category Edit
 // @Description Editing category with it's details
 // @Tags Admin Category
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
-// @Param id query string true "Add Category"
-// @Param cat body models.AddCat true "Add Category"
+// @Param id query string true "category id"
+// @Param name formData string true "cateory name"
+// @Param description formData string true "cateory description"
 // @Router /admin/category [put]
 func EditCategory(c *gin.Context) {
 
@@ -104,10 +106,7 @@ func EditCategory(c *gin.Context) {
 
 	Query := c.Query("id")
 
-	var cat models.AddCat
 	var check models.Category
-
-	c.BindJSON(&cat)
 
 	database.Db.First(&check, "Id=?", Query)
 
@@ -119,8 +118,9 @@ func EditCategory(c *gin.Context) {
 			"Data":    gin.H{},
 		})
 	} else {
-		database.Db.Model(&check).Update("Name", cat.Name)
-		database.Db.Model(&check).Update("Dscptn", cat.Description)
+		check.Name = c.Request.FormValue("name")
+		check.Dscptn = c.Request.FormValue("description")
+		database.Db.Save(&check)
 		c.JSON(200, gin.H{
 			"Status":  "Success!",
 			"Code":    200,

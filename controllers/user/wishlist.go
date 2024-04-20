@@ -142,7 +142,7 @@ func ShowWishlist(c *gin.Context) {
 		show = append(show, gin.H{
 			"Id":    v.Id,
 			"Name":  v.Product.Name,
-			"Price": v.Product.Price,
+			"Price": v.Product.Offer,
 			"Image": img,
 		})
 	}

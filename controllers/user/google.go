@@ -4,9 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rishad004/My-Ecommerce/database"
 	"github.com/rishad004/My-Ecommerce/helper"
+	"github.com/rishad004/My-Ecommerce/middleware"
+	"github.com/rishad004/My-Ecommerce/models"
 )
 
 // GoogleLogin godoc
@@ -45,6 +49,8 @@ func GoogleCallback(c *gin.Context) {
 
 	fmt.Println("")
 	fmt.Println("-----------------------------GOOGLE LOGIN CHECKING------------------------")
+
+	var User models.Users
 
 	conf := helper.Google()
 
@@ -96,7 +102,51 @@ func GoogleCallback(c *gin.Context) {
 		})
 		return
 	}
-	l := user["email"]
-	fmt.Println("details:==== ", l)
-	c.Redirect(302, "/user/home")
+
+	if !user["email_verified"].(bool) {
+		c.JSON(401, gin.H{
+			"Status":  "Error!",
+			"Code":    401,
+			"Message": "Email not verified!",
+			"Data":    gin.H{},
+		})
+	}
+
+	if er := database.Db.First(&User, "Email=?", user["email"].(string)).Error; er != nil {
+		User.Name = user["name"].(string)
+		User.Email = user["email"].(string)
+		User.Pass = user["sub"].(string)
+		User.Blocking = true
+		if er := database.Db.Create(&User).Error; er != nil {
+			c.JSON(400, gin.H{
+				"Status":  "Error!",
+				"Code":    400,
+				"Message": "Couldn't create user!",
+				"Error":   er.Error(),
+				"Data":    gin.H{},
+			})
+			return
+		}
+	}
+	jwtTok, erro := middleware.JwtCreate(c, User.ID, User.Email, "User")
+	if erro != nil {
+		c.JSON(403, gin.H{
+			"Status":  "Error!",
+			"Code":    400,
+			"Error":   erro.Error(),
+			"Message": "Failed to create Token!",
+			"Data":    gin.H{},
+		})
+		return
+	}
+	c.SetCookie("Jwt-User", jwtTok, int((time.Hour * 1).Seconds()), "/", "localhost", false, true)
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Successfully Logged in!",
+		"Data": gin.H{
+			"Token": jwtTok,
+			"Id":    User.ID,
+		},
+	})
 }

@@ -20,6 +20,7 @@ type Razor struct {
 // RazorPay godoc
 // @Summary Razor Pay
 // @Description Razor Pay payment gateway
+// @Param id query string true "Payment id"
 // @Tags User Payment
 // @Router /user/payment [get]
 func RazorPay(c *gin.Context) {
@@ -31,7 +32,7 @@ func RazorPay(c *gin.Context) {
 	var orderitems []models.Orderitem
 	var detail string
 
-	orderId := c.Query("payment")
+	orderId := c.Query("id")
 	Logged := c.MustGet("Id").(uint)
 
 	if err := database.Db.Preload("User").First(&payment, "Payment_Id=?", orderId).Error; err != nil {

@@ -16,21 +16,23 @@ import (
 // @Summary Admin Login
 // @Description Admin Login with email and password
 // @Tags Admin
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
-// @Param adminlog body models.Login true "Admin Login"
+// @Param email formData string true "admin email"
+// @Param pass formData string true "admin password"
 // @Router /admin/login [post]
 func PostLoginA(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("------------------ADMIN LOGGING IN----------------------")
 
-	var adminlog models.Login
+	var adminlog models.Admin
 	var check models.Admin
 
-	c.BindJSON(&adminlog)
+	adminlog.Email = c.Request.FormValue("email")
+	adminlog.Pass = c.Request.FormValue("pass")
 
 	database.Db.First(&check, "Email=?", adminlog.Email)
-	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(adminlog.Password))
+	err := bcrypt.CompareHashAndPassword([]byte(check.Pass), []byte(adminlog.Pass))
 	if err != nil {
 		c.JSON(401, gin.H{
 			"Status":  "Fail!",

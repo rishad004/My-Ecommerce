@@ -16,10 +16,10 @@ import (
 // @Description Buying cart products
 // @Tags User Order
 // @Param address formData string true "address id"
-// @Param coupon formData string true "coupon code"
+// @Param coupon formData string false "coupon code"
 // @Param method formData string true "payment method"
 // @Produce  json
-// @Router /user/cart/checkout [get]
+// @Router /user/cart/checkout [post]
 func CheckoutCart(c *gin.Context) {
 
 	fmt.Println("")
@@ -37,8 +37,8 @@ func CheckoutCart(c *gin.Context) {
 	method := c.PostForm("method")
 	address, _ := strconv.Atoi(c.PostForm("address"))
 
-	database.Db.First(&a, "Id=?", uint(address)).Where("User_Id = ? ", Logged)
-	database.Db.Preload("Product").Find(&ca, "User_Id=?", Logged)
+	database.Db.Where("User_Id = ? ", Logged).First(&a, "Id=?", uint(address))
+	database.Db.Preload("Product").Preload("Product.Ctgry").Find(&ca, "User_Id=?", Logged)
 
 	if a.Id == 0 || a.User_Id != Logged {
 		c.JSON(404, gin.H{
@@ -64,7 +64,7 @@ func CheckoutCart(c *gin.Context) {
 	num := helper.GenerateInt()
 	order.Ordernum, _ = strconv.Atoi(num)
 	for _, v := range ca {
-		SubTotal += int(v.Quantity) * v.Product.Price
+		SubTotal += int(v.Quantity) * v.Product.Offer
 	}
 
 	order.SubTotal = float32(SubTotal)
@@ -113,7 +113,11 @@ func CheckoutCart(c *gin.Context) {
 			return
 		}
 		v.Product.Quantity -= int(v.Quantity)
+		v.Product.Sold += int(v.Quantity)
+		v.Product.Ctgry.Sold += int(v.Quantity)
 		database.Db.Model(v.Product).Update("Quantity", v.Product.Quantity)
+		database.Db.Model(v.Product).Update("Sold", v.Product.Sold)
+		database.Db.Model(&v.Product.Ctgry).Update("Sold", v.Product.Ctgry.Sold)
 	}
 
 	payment := models.Payment{
@@ -123,7 +127,16 @@ func CheckoutCart(c *gin.Context) {
 		Status:  "pending",
 	}
 	if method == "COD" {
+		if order.Amount < 1000 {
+			c.JSON(401, gin.H{
+				"Status":  "Error!",
+				"Code":    401,
+				"Message": "Minimum order amount for Cash On Delivery is 1000",
+				"Data":    gin.H{},
+			})
+			return
 
+		}
 		payment.PMethod = "COD"
 
 		for _, v := range ca {
@@ -230,7 +243,7 @@ func CancelOrder(c *gin.Context) {
 		c.JSON(404, gin.H{
 			"Status":  "Error!",
 			"Code":    404,
-			"Message": "No such Order found!",
+			"Message": "Order is already cancelled!",
 			"Data":    gin.H{},
 		})
 		return
@@ -253,21 +266,24 @@ func CancelOrder(c *gin.Context) {
 		order.Status = "cancelled"
 	}
 
-	if order.Order.SubTotal == (float32(order.Prdct.Price) * float32(order.Quantity)) {
+	if err := database.Db.Where("User_Id=?", Logged).First(&wallet).Error; err != nil {
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such wallet found!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
+		return
+	}
+
+	fmt.Println(order.Order.SubTotal, "   ", order.Prdct.Offer*order.Quantity)
+	if order.Order.SubTotal == (float32(order.Prdct.Offer) * float32(order.Quantity)) {
 		payment.Status = "refunded"
-		wall := wallet.Balance + order.Order.Amount
 		database.Db.Model(&order.Order).Update("coupon_id", 1)
-		if payment.Status == "recieved" {
-			if err := database.Db.First(&wallet, "User_Id=?", Logged).Error; err != nil {
-				c.JSON(404, gin.H{
-					"Status":  "Error!",
-					"Code":    404,
-					"Message": "No such wallet found!",
-					"Error":   err.Error(),
-					"Data":    gin.H{},
-				})
-				return
-			}
+		if payment.Status == "recieved" || payment.Status == "partially refunded" || payment.Status == "refunded" {
+			wall := wallet.Balance + order.Order.Amount
+			fmt.Println(wall)
 			database.Db.Model(&wallet).Update("balance", wall)
 		}
 		database.Db.Model(&order.Order).Update("sub_total", 0)
@@ -283,7 +299,7 @@ func CancelOrder(c *gin.Context) {
 		return
 	}
 
-	order.Order.SubTotal = order.Order.SubTotal - float32(order.Prdct.Price*order.Quantity)
+	order.Order.SubTotal = order.Order.SubTotal - float32(order.Prdct.Offer*order.Quantity)
 
 	if order.Order.SubTotal < float32(order.Order.Coupon.Condition) {
 
@@ -308,10 +324,11 @@ func CancelOrder(c *gin.Context) {
 		})
 		return
 	}
-
-	if payment.Status == "recieved" {
-		wallet.Balance += (float32(order.Prdct.Price) * float32(order.Quantity)) - (float32(order.Prdct.Price) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
-		if err := database.Db.Save(&wallet).Error; err != nil {
+	fmt.Println(payment.Status)
+	if payment.Status == "recieved" || payment.Status == "partially refunded" || payment.Status == "refunded" {
+		wall := wallet.Balance + ((float32(order.Prdct.Offer) * float32(order.Quantity)) - (float32(order.Prdct.Offer) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100))
+		fmt.Println(wall)
+		if err := database.Db.Model(&wallet).Update("Balance", wall).Error; err != nil {
 			c.JSON(500, gin.H{"Error": "Couldn't update wallet!"})
 			return
 		}
@@ -350,6 +367,7 @@ func ShowOrder(c *gin.Context) {
 
 	var orderitem []models.Orderitem
 	var show []gin.H
+	Sort := make(map[int][]gin.H)
 
 	err := database.Db.Preload("Order").Preload("Prdct").Find(&orderitem).Where("Order.User_Id=?", Logged).Error
 	if err != nil {
@@ -363,34 +381,105 @@ func ShowOrder(c *gin.Context) {
 		return
 	}
 	for _, v := range orderitem {
-		if v.Status != "cancelled" {
-			if len(v.Prdct.ImageURLs) > 0 {
-				show = append(show, gin.H{
-					"Id":       v.Id,
-					"OrderId":  v.OrderId,
-					"Name":     v.Prdct.Name,
-					"Image":    v.Prdct.ImageURLs[0],
-					"Color":    v.Color,
-					"Quantity": v.Quantity,
-				})
-			} else {
-				show = append(show, gin.H{
-					"Id":       v.Id,
-					"OrderId":  v.OrderId,
-					"Name":     v.Prdct.Name,
-					"Image":    "",
-					"Color":    v.Color,
-					"Quantity": v.Quantity,
-				})
-			}
+		if len(v.Prdct.ImageURLs) > 0 {
+			show = append(show, gin.H{
+				"Id":       v.Id,
+				"OrderId":  v.OrderId,
+				"Name":     v.Prdct.Name,
+				"Image":    v.Prdct.ImageURLs[0],
+				"Color":    v.Color,
+				"Quantity": v.Quantity,
+				"Status":   v.Status,
+			})
+		} else {
+			show = append(show, gin.H{
+				"Id":       v.Id,
+				"OrderId":  v.OrderId,
+				"Name":     v.Prdct.Name,
+				"Image":    "",
+				"Color":    v.Color,
+				"Quantity": v.Quantity,
+				"Status":   v.Status,
+			})
 		}
+
+	}
+
+	for i := 0; i < len(orderitem); i++ {
+		Sort[orderitem[i].OrderId] = append(Sort[orderitem[i].OrderId], show[i])
 	}
 	c.JSON(200, gin.H{
 		"Status":  "Success!",
 		"Code":    200,
 		"Message": "Retrieved orders and showing!",
 		"Data": gin.H{
-			"Orders": show,
+			"Orders": Sort,
 		},
 	})
+}
+
+func OrderCancel(c *gin.Context) {
+
+	fmt.Println("")
+	fmt.Println("-----------------------------CANCEL ORDER------------------------")
+
+	ord, _ := strconv.Atoi(c.Query("order"))
+	Logged := c.MustGet("Id").(uint)
+
+	var orderitem models.Orderitem
+	if err := database.Db.Preload("Order").Preload("Order.Coupon").Preload("Prdct").Where("Id=?", ord).First(&orderitem).Error; err != nil {
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Order found!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
+		return
+	}
+	if orderitem.Order.UserId != Logged {
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Order found!",
+			"Data":    gin.H{},
+		})
+		return
+	}
+	if orderitem.Status == "cancelled" {
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "Order is already cancelled!",
+			"Data":    gin.H{},
+		})
+		return
+	}
+	var payment models.Payment
+	if err := database.Db.Where("Order_Id=?", orderitem.OrderId).First(&payment).Error; err != nil {
+		c.JSON(500, gin.H{
+			"Status":  "Error!",
+			"Code":    500,
+			"Message": "Couldn't fetch the payment!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
+		return
+	}
+	var wallet models.Wallet
+	if err := database.Db.Where("User_Id=?", Logged).First(&wallet).Error; err != nil {
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such Wallet found!",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
+		return
+	}
+	database.Db.Model(&orderitem).Update("Status", "cancelled")
+	if payment.Status == "recieved" {
+		wallet.Balance += (float32(orderitem.Prdct.Offer) * float32(orderitem.Quantity)) - ((float32(orderitem.Prdct.Offer) * float32(orderitem.Quantity)) * (float32(orderitem.Order.Coupon.Value) / 100))
+		database.Db.Save(&wallet)
+	}
 }

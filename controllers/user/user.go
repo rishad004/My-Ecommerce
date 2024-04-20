@@ -39,6 +39,7 @@ func PostSignupU(c *gin.Context) {
 	user.Name = c.Request.FormValue("name")
 	user.Phone = c.Request.FormValue("phone")
 	user.Gender = c.Request.FormValue("gender")
+	user.Pass = c.Request.FormValue("pass")
 
 	session := sessions.Default(c)
 
@@ -125,27 +126,29 @@ func PostOtpU(c *gin.Context) {
 				"Message": "User already exist!",
 				"Data":    gin.H{},
 			})
-		} else {
-			c.JSON(200, gin.H{
-				"Status":  "Success!",
-				"Code":    200,
-				"Message": "Successfully signed up!",
-				"Data": gin.H{
-					"UserId": user,
-				},
-			})
-			wallet.UserId = user.ID
-			if er := database.Db.Create(&wallet).Error; er != nil {
-				c.JSON(500, gin.H{"Error": "Couldn't create the wallet!"})
-				return
-			}
-			session.Delete("signupEmail")
-			session.Delete("signupName")
-			session.Delete("signupPhone")
-			session.Delete("signupGender")
-			session.Delete("signupPass")
-			session.Save()
+			return
 		}
+
+		wallet.UserId = user.ID
+		if er := database.Db.Create(&wallet).Error; er != nil {
+			c.JSON(500, gin.H{"Error": "Couldn't create the wallet!"})
+			return
+		}
+		session.Delete("signupEmail")
+		session.Delete("signupName")
+		session.Delete("signupPhone")
+		session.Delete("signupGender")
+		session.Delete("signupPass")
+		session.Save()
+
+		c.JSON(200, gin.H{
+			"Status":  "Success!",
+			"Code":    200,
+			"Message": "Successfully signed up!",
+			"Data": gin.H{
+				"UserId": user,
+			},
+		})
 	} else {
 		c.JSON(401, gin.H{
 			"Status":  "Fail!",

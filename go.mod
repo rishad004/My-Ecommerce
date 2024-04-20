@@ -9,6 +9,7 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/swag v1.16.3
 	golang.org/x/oauth2 v0.19.0
+	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/gorm v1.25.9
 )
 
@@ -23,6 +24,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	golang.org/x/tools v0.20.0 // indirect
+	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 )
 
 require (
