@@ -1,6 +1,6 @@
 module github.com/rishad004/My-Ecommerce
 
-go 1.21.6
+go 1.22.2
 
 require (
 	github.com/gin-gonic/gin v1.9.1
@@ -25,7 +25,6 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/knz/go-libedit v1.10.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	golang.org/x/tools v0.20.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
@@ -48,7 +47,6 @@ require (
 
 require (
 	github.com/bytedance/sonic v1.11.5 // indirect
-	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/gin-contrib/sessions v1.0.0
