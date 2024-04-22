@@ -85,7 +85,7 @@ func EditAddress(c *gin.Context) {
 	Id, _ := strconv.Atoi(c.Query("Id"))
 	Logged := c.MustGet("Id").(uint)
 
-	if err := database.Db.First(&address, "Id=?", uint(Id)).Error; err != nil {
+	if err := database.Db.Where("Id=?", uint(Id)).First(&address).Error; err != nil {
 		c.JSON(404, gin.H{
 			"Status":  "Error!",
 			"Code":    404,
