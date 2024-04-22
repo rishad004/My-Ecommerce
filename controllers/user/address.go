@@ -90,6 +90,7 @@ func EditAddress(c *gin.Context) {
 			"Status":  "Error!",
 			"Code":    404,
 			"Message": "No such Address found!",
+			"Error":   err.Error(),
 			"Data":    gin.H{},
 		})
 		return
