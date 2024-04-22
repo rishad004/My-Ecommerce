@@ -26,7 +26,7 @@ func DbConnect() {
 	var err error
 	var ad []models.Admin
 	var coupon models.Coupons
-	DSN := "host=" + os.Getenv("HOST") + " user=" + os.Getenv("USER") + " password=" + os.Getenv("PASS") + " dbname=" + os.Getenv("DB_NAME") + " port=" + os.Getenv("PORT") + " sslmode=disable TimeZone=Asia/Taipei"
+	DSN := "host=" + os.Getenv("HOST") + " user=" + os.Getenv("USER_ID") + " password=" + os.Getenv("PASS") + " dbname=" + os.Getenv("DB_NAME") + " port=" + os.Getenv("PORT") + " sslmode=disable TimeZone=Asia/Taipei"
 	Db, err = gorm.Open(postgres.Open(DSN))
 	if err != nil {
 		fmt.Println("!!!!!!!!!!!!!!!!! Db connection failed !!!!!!!!!!!!!!!!!!")

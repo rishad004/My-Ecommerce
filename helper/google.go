@@ -12,7 +12,7 @@ func Google() *oauth2.Config {
 	conf := &oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_ID"),
 		ClientSecret: os.Getenv("GOOGLE_SECRET"),
-		RedirectURL:  "http://localhost:8080/user/google/callback",
+		RedirectURL:  "https://byecom.shop/user/google/callback",
 		Scopes: []string{
 			"openid",
 			"profile",
