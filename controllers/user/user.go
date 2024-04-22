@@ -241,7 +241,7 @@ func PostLoginU(c *gin.Context) {
 // @Description Logging out user
 // @Tags User Login&Signup
 // @Produce  json
-// @Router /user/signup [delete]
+// @Router /user/logout [delete]
 func LogoutU(c *gin.Context) {
 
 	fmt.Println("")
