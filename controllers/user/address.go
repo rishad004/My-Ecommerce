@@ -82,7 +82,7 @@ func EditAddress(c *gin.Context) {
 
 	var address models.Address
 
-	Id, _ := strconv.Atoi(c.Query("Id"))
+	Id, _ := strconv.Atoi(c.Query("id"))
 	Logged := c.MustGet("Id").(uint)
 
 	if err := database.Db.Where("Id=?", uint(Id)).First(&address).Error; err != nil {
