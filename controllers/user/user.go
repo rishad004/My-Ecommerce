@@ -222,7 +222,7 @@ func PostLoginU(c *gin.Context) {
 				})
 				return
 			}
-			c.SetCookie("Jwt-User", token, int((time.Hour * 1).Seconds()), "/", "localhost", false, true)
+			c.SetCookie("Jwt-User", token, int((time.Hour * 1).Seconds()), "/", "byecom.shop", false, false)
 			c.JSON(200, gin.H{
 				"Status":  "Success!",
 				"Code":    200,
@@ -247,7 +247,7 @@ func LogoutU(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("------------------USER LOGGING OUT----------------------")
 
-	c.SetCookie("Jwt-User", "", -1, "/", "localhost", false, true)
+	c.SetCookie("Jwt-User", "", -1, "/", "byecom.shop", false, true)
 	c.JSON(200, gin.H{
 		"Status":  "Success!",
 		"Code":    200,
