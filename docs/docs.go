@@ -1506,7 +1506,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "https://byecom.shop",
+	Host:             "byecom.shop",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "B Y E C O M  LTD",

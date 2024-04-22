@@ -9,7 +9,7 @@ definitions:
       Signature:
         type: string
     type: object
-host: https://byecom.shop
+host: byecom.shop
 info:
   contact: {}
   description: B Y E C O M  is your ecom. shop solution, where you can sell anything
