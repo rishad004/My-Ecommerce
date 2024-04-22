@@ -1,6 +1,6 @@
 module github.com/rishad004/My-Ecommerce
 
-go 1.22.2
+go 1.21.6
 
 require (
 	github.com/gin-gonic/gin v1.9.1
