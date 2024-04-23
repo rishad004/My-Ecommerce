@@ -151,7 +151,7 @@ func DeleteCategory(c *gin.Context) {
 	database.Db.First(&ctgry, "Id=?", uint(Id))
 	err := database.Db.First(&product, "Ctgry_Id=?", ctgry.Id).Error
 
-	if err != nil {
+	if err == nil {
 		c.JSON(409, gin.H{
 			"Status":  "Fail!",
 			"Code":    409,
