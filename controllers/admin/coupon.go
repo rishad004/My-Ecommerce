@@ -131,7 +131,17 @@ func EditCoupon(c *gin.Context) {
 		cpp.Condition, _ = strconv.Atoi(c.Request.FormValue("condition"))
 		cpp.Value, _ = strconv.Atoi(c.Request.FormValue("value"))
 
-		database.Db.Save(&cpp)
+		ERR := database.Db.Save(&cpp).Error
+		if ERR != nil {
+			c.JSON(400, gin.H{
+				"Status":  "Error!",
+				"Code":    404,
+				"Message": "Coupon not updated!",
+				"Error":   ERR.Error(),
+				"Data":    gin.H{},
+			})
+			return
+		}
 		c.JSON(200, gin.H{
 			"Status":  "Success!",
 			"Code":    200,
