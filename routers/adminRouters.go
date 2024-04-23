@@ -16,19 +16,19 @@ func AdminRouters(r *gin.RouterGroup) {
 	//---------------Product
 	r.GET("/product", middleware.Auth, controllers.ShowProduct)
 	r.POST("/product", middleware.Auth, controllers.AddProduct)
-	r.PUT("/product/:Name", middleware.Auth, controllers.EditProduct)
-	r.DELETE("/product/:Name", middleware.Auth, controllers.DeleteProduct)
+	r.PUT("/product", middleware.Auth, controllers.EditProduct)
+	r.DELETE("/product", middleware.Auth, controllers.DeleteProduct)
 
 	//---------------Category
 	r.GET("/category", middleware.Auth, controllers.ShowCategory)
 	r.POST("/category", middleware.Auth, controllers.AddCtgry)
-	r.PUT("/category/:Name", middleware.Auth, controllers.EditCategory)
-	r.DELETE("/category/:Name", middleware.Auth, controllers.DeleteCategory)
-	r.PATCH("/category/:Name", middleware.Auth, controllers.BlockingCategory)
+	r.PUT("/category", middleware.Auth, controllers.EditCategory)
+	r.DELETE("/category", middleware.Auth, controllers.DeleteCategory)
+	r.PATCH("/category", middleware.Auth, controllers.BlockingCategory)
 
 	//---------------User
 	r.GET("/user", middleware.Auth, controllers.ShowUser)
-	r.PATCH("/user/:Id", middleware.Auth, controllers.BlockingUser)
+	r.PATCH("/user", middleware.Auth, controllers.BlockingUser)
 
 	//---------------Coupon
 	r.GET("/coupon", middleware.Auth, controllers.ShowCoupon)
@@ -43,5 +43,6 @@ func AdminRouters(r *gin.RouterGroup) {
 	//---------------Sale Report
 	r.GET("/report", middleware.Auth, controllers.GetReportData)
 
+	//---------------Admin Dashboard
 	r.GET("/dashboard", middleware.Auth, controllers.Dashboard)
 }
