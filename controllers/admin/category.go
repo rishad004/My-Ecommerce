@@ -149,12 +149,13 @@ func DeleteCategory(c *gin.Context) {
 	var product models.Products
 
 	database.Db.First(&ctgry, "Id=?", uint(Id))
-	database.Db.First(&product, "Ctgry_Id=?", ctgry.Id)
+	err := database.Db.First(&product, "Ctgry_Id=?", ctgry.Id).Error
 
-	if product.ID != 0 {
+	if err != nil {
 		c.JSON(409, gin.H{
 			"Status":  "Fail!",
 			"Code":    409,
+			"Error":   err.Error(),
 			"Message": "You can't delete, There are some products in this category!",
 			"Data":    gin.H{},
 		})
