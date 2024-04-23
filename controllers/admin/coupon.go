@@ -135,7 +135,7 @@ func EditCoupon(c *gin.Context) {
 		if ERR != nil {
 			c.JSON(400, gin.H{
 				"Status":  "Error!",
-				"Code":    404,
+				"Code":    400,
 				"Message": "Coupon not updated!",
 				"Error":   ERR.Error(),
 				"Data":    gin.H{},
