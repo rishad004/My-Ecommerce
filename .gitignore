@@ -2,5 +2,5 @@
 /*.pgsql
 
 vendor/
-ReportPDF/
-assets/products/
+ReportPDF/*.pdf
+assets/products/*
