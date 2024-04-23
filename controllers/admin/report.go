@@ -119,16 +119,16 @@ func GetReportData(c *gin.Context) {
 	pdf.CellFormat(0, 0, fmt.Sprint("Sales return : ", salesreturn), "1", 0, "R", false, 0, "")
 
 	path := "./ReportPDF/salesReport_" + time.Now().String()[:10] + "_" + Filter + ".pdf"
-	if err := pdf.OutputFileAndClose(path); err != nil {
-		c.JSON(400, gin.H{
-			"Status":  "Error!",
-			"Code":    400,
-			"Error":   err.Error(),
-			"Message": "Couldn't download the report!",
-			"Data":    gin.H{},
-		})
-		return
-	}
+	// if err := pdf.OutputFileAndClose(path); err != nil {
+	// 	c.JSON(400, gin.H{
+	// 		"Status":  "Error!",
+	// 		"Code":    400,
+	// 		"Error":   err.Error(),
+	// 		"Message": "Couldn't download the report!",
+	// 		"Data":    gin.H{},
+	// 	})
+	// 	return
+	// }
 
 	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "salesReport_"+time.Now().String()[:10]+"_"+Filter+".pdf"))
 	c.Writer.Header().Set("Content-Type", "application/pdf")
