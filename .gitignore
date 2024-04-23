@@ -3,4 +3,5 @@
 
 vendor/
 ReportPDF/*.pdf
-assets/products/*
+assets/products/*.png
+assets/products/*.jpg
