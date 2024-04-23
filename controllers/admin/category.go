@@ -155,7 +155,7 @@ func DeleteCategory(c *gin.Context) {
 		c.JSON(409, gin.H{
 			"Status":  "Fail!",
 			"Code":    409,
-			"Error":   err.Error(),
+			"Error":   err,
 			"Message": "You can't delete, There are some products in this category!",
 			"Data":    gin.H{},
 		})
