@@ -877,28 +877,6 @@
                 "responses": {}
             }
         },
-        "/user/filter": {
-            "get": {
-                "description": "Filtering Products in user side",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User Home\u0026Product"
-                ],
-                "summary": "Filtered Products",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "filter search",
-                        "name": "category",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/user/google/callback": {
             "get": {
                 "description": "Callback function after getting details",
@@ -935,6 +913,72 @@
                     "User Home\u0026Product"
                 ],
                 "summary": "Home Show",
+                "responses": {}
+            }
+        },
+        "/user/home/filter": {
+            "get": {
+                "description": "Filtering Products in user side",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Home\u0026Product"
+                ],
+                "summary": "Filtered Products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "filter search",
+                        "name": "category",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/home/search": {
+            "get": {
+                "description": "Searching Products in user side",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Home\u0026Product"
+                ],
+                "summary": "Searching Products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "product search",
+                        "name": "search",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/user/home/sort": {
+            "get": {
+                "description": "Showing all Products details by sorting in user side",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Home\u0026Product"
+                ],
+                "summary": "Sorted Home Show",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sort type",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {}
             }
         },
@@ -1295,28 +1339,6 @@
                 "responses": {}
             }
         },
-        "/user/search": {
-            "get": {
-                "description": "Searching Products in user side",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User Home\u0026Product"
-                ],
-                "summary": "Searching Products",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "product search",
-                        "name": "search",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/user/signup": {
             "post": {
                 "description": "Sigining up user",
@@ -1389,28 +1411,6 @@
                         "description": "User Otp",
                         "name": "otp",
                         "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/user/sort": {
-            "get": {
-                "description": "Showing all Products details by sorting in user side",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User Home\u0026Product"
-                ],
-                "summary": "Sorted Home Show",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "sort type",
-                        "name": "type",
-                        "in": "query",
                         "required": true
                     }
                 ],

@@ -627,21 +627,6 @@ paths:
       summary: Cart Chekout Only
       tags:
       - User Order
-  /user/filter:
-    get:
-      description: Filtering Products in user side
-      parameters:
-      - description: filter search
-        in: query
-        name: category
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Filtered Products
-      tags:
-      - User Home&Product
   /user/google/callback:
     get:
       description: Callback function after getting details
@@ -667,6 +652,51 @@ paths:
       - application/json
       responses: {}
       summary: Home Show
+      tags:
+      - User Home&Product
+  /user/home/filter:
+    get:
+      description: Filtering Products in user side
+      parameters:
+      - description: filter search
+        in: query
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Filtered Products
+      tags:
+      - User Home&Product
+  /user/home/search:
+    get:
+      description: Searching Products in user side
+      parameters:
+      - description: product search
+        in: query
+        name: search
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Searching Products
+      tags:
+      - User Home&Product
+  /user/home/sort:
+    get:
+      description: Showing all Products details by sorting in user side
+      parameters:
+      - description: sort type
+        in: query
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Sorted Home Show
       tags:
       - User Home&Product
   /user/login:
@@ -916,21 +946,6 @@ paths:
       summary: Forgot Pass Init
       tags:
       - User ForgetPass
-  /user/search:
-    get:
-      description: Searching Products in user side
-      parameters:
-      - description: product search
-        in: query
-        name: search
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Searching Products
-      tags:
-      - User Home&Product
   /user/signup:
     post:
       consumes:
@@ -985,21 +1000,6 @@ paths:
       summary: Otp verify
       tags:
       - User Login&Signup
-  /user/sort:
-    get:
-      description: Showing all Products details by sorting in user side
-      parameters:
-      - description: sort type
-        in: query
-        name: type
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Sorted Home Show
-      tags:
-      - User Home&Product
   /user/wallet:
     get:
       description: Showing User Wallet

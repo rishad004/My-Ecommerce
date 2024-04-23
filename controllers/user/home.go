@@ -66,7 +66,7 @@ func UserHome(c *gin.Context) {
 // @Tags User Home&Product
 // @Param type query string true "sort type"
 // @Produce  json
-// @Router /user/sort [get]
+// @Router /user/home/sort [get]
 func SortProduct(c *gin.Context) {
 
 	fmt.Println("")
@@ -136,7 +136,7 @@ func SortProduct(c *gin.Context) {
 // @Tags User Home&Product
 // @Param search query string true "product search"
 // @Produce  json
-// @Router /user/search [get]
+// @Router /user/home/search [get]
 func UserSearchP(c *gin.Context) {
 
 	fmt.Println("")
@@ -199,7 +199,7 @@ func UserSearchP(c *gin.Context) {
 // @Tags User Home&Product
 // @Param category query string true "filter search"
 // @Produce  json
-// @Router /user/filter [get]
+// @Router /user/home/filter [get]
 func FilterProduct(c *gin.Context) {
 
 	fmt.Println("")
