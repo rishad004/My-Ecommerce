@@ -691,6 +691,15 @@ paths:
       summary: Login User
       tags:
       - User Login&Signup
+  /user/logout:
+    delete:
+      description: Logging out user
+      produces:
+      - application/json
+      responses: {}
+      summary: Logout User
+      tags:
+      - User Login&Signup
   /user/order:
     get:
       description: Showing Orders with its details
@@ -718,19 +727,19 @@ paths:
     patch:
       description: Updating user password
       parameters:
-      - description: address id
+      - description: current pass
         in: formData
-        name: address
+        name: currentpass
         required: true
         type: string
-      - description: coupon code
+      - description: new pass
         in: formData
-        name: coupon
+        name: newpass
         required: true
         type: string
-      - description: payment method
+      - description: repeat pass
         in: formData
-        name: method
+        name: repeatpass
         required: true
         type: string
       produces:
@@ -923,14 +932,6 @@ paths:
       tags:
       - User Home&Product
   /user/signup:
-    delete:
-      description: Logging out user
-      produces:
-      - application/json
-      responses: {}
-      summary: Logout User
-      tags:
-      - User Login&Signup
     post:
       consumes:
       - multipart/form-data

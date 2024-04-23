@@ -976,6 +976,19 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/user/logout": {
+            "delete": {
+                "description": "Logging out user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Login\u0026Signup"
+                ],
+                "summary": "Logout User",
+                "responses": {}
+            }
+        },
         "/user/order": {
             "get": {
                 "description": "Showing Orders with its details",
@@ -1022,22 +1035,22 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "address id",
-                        "name": "address",
+                        "description": "current pass",
+                        "name": "currentpass",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "coupon code",
-                        "name": "coupon",
+                        "description": "new pass",
+                        "name": "newpass",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "payment method",
-                        "name": "method",
+                        "description": "repeat pass",
+                        "name": "repeatpass",
                         "in": "formData",
                         "required": true
                     }
@@ -1360,17 +1373,6 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Logging out user",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User Login\u0026Signup"
-                ],
-                "summary": "Logout User",
                 "responses": {}
             }
         },

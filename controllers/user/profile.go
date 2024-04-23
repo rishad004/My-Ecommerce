@@ -66,9 +66,9 @@ func UserProfile(c *gin.Context) {
 // @Summary Updating Password
 // @Description Updating user password
 // @Tags User Profile
-// @Param address formData string true "address id"
-// @Param coupon formData string true "coupon code"
-// @Param method formData string true "payment method"
+// @Param currentpass formData string true "current pass"
+// @Param newpass formData string true "new pass"
+// @Param repeatpass formData string true "repeat pass"
 // @Produce  json
 // @Router /user/password [patch]
 func UpdatePass(c *gin.Context) {
