@@ -129,7 +129,7 @@ func GetReportData(c *gin.Context) {
 		return
 	}
 
-	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", "salesReport_"+time.Now().String()[:10]+"_"+Filter+".pdf"))
+	c.Writer.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", path))
 	c.Writer.Header().Set("Content-Type", "application/pdf")
 	c.File(path)
 
