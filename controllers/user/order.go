@@ -112,7 +112,7 @@ func CheckoutCart(c *gin.Context) {
 			})
 			return
 		}
-		v.Product.Quantity -= int(v.Quantity)
+		v.Product.Quantity -= int(orderitem.Quantity)
 		v.Product.Sold += int(v.Quantity)
 		v.Product.Ctgry.Sold += int(v.Quantity)
 		database.Db.Model(v.Product).Update("Quantity", v.Product.Quantity)
