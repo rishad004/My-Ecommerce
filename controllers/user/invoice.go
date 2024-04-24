@@ -153,7 +153,7 @@ func Invoice(c *gin.Context, OrderId int) error {
 	pdf.CellFormat(colWidth[3], lineHt, payment.Status, "1", 0, "C", false, 0, "")
 	pdf.Ln(-1)
 
-	path := "./ReportPDF/invoice" + strconv.Itoa(payment.OrderId) + ".pdf"
+	path := "/home/ubuntu/My-Ecommerce/invoice" + strconv.Itoa(payment.OrderId) + ".pdf"
 	if err := pdf.OutputFileAndClose(path); err != nil {
 		return err
 	}
