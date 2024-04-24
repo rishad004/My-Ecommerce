@@ -115,9 +115,9 @@ func CheckoutCart(c *gin.Context) {
 		v.Product.Quantity -= int(orderitem.Quantity)
 		v.Product.Sold += int(v.Quantity)
 		v.Product.Ctgry.Sold += int(v.Quantity)
-		database.Db.Model(v.Product).Update("quantity", v.Product.Quantity)
-		database.Db.Model(v.Product).Update("sold", v.Product.Sold)
-		database.Db.Model(&v.Product.Ctgry).Update("sold", v.Product.Ctgry.Sold)
+		database.Db.Model(&v.Product).Update("Quantity", v.Product.Quantity)
+		database.Db.Model(&v.Product).Update("Sold", v.Product.Sold)
+		database.Db.Model(&v.Product.Ctgry).Update("Sold", v.Product.Ctgry.Sold)
 	}
 
 	payment := models.Payment{
