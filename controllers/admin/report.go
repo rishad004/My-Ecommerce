@@ -118,7 +118,7 @@ func GetReportData(c *gin.Context) {
 	pdf.Ln(5)
 	pdf.CellFormat(0, 0, fmt.Sprint("Sales return : ", salesreturn), "1", 0, "R", false, 0, "")
 
-	path := "/home/ubuntu/My-Ecommerce/ReportPDF/salesReport_" + time.Now().String()[:10] + "_" + Filter + ".pdf"
+	path := "/home/ubuntu/My-Ecommerce/salesReport_" + time.Now().String()[:10] + "_" + Filter + ".pdf"
 	if err := pdf.OutputFileAndClose(path); err != nil {
 		c.JSON(401, gin.H{
 			"Code":    401,
