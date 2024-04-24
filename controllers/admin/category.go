@@ -197,7 +197,16 @@ func BlockingCategory(c *gin.Context) {
 	var ctgry models.Category
 	var product []models.Products
 
-	database.Db.First(&ctgry, "Id=?", uint(Id))
+	if err := database.Db.First(&ctgry, "Id=?", uint(Id)).Error; err != nil {
+		c.JSON(404, gin.H{
+			"Status":  "Error!",
+			"Code":    404,
+			"Message": "No such category found",
+			"Error":   err.Error(),
+			"Data":    gin.H{},
+		})
+		return
+	}
 	database.Db.Find(&product, "Ctgry_Id=?", ctgry.Id)
 
 	if !ctgry.Blocking {

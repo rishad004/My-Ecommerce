@@ -142,7 +142,7 @@ func DeleteAddress(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("-----------------------------ADDRESS DELETING------------------------")
 
-	Id, _ := strconv.Atoi(c.Param("Id"))
+	Id, _ := strconv.Atoi(c.Param("id"))
 	Logged := c.MustGet("Id").(uint)
 
 	var ad models.Address
