@@ -44,8 +44,6 @@ func Dashboard(c *gin.Context) {
 				"Description": category[i].Dscptn,
 				"Sold":        products[i].Sold,
 			})
-		} else {
-			break
 		}
 	}
 
