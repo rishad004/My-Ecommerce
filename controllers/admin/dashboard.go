@@ -58,8 +58,6 @@ func Dashboard(c *gin.Context) {
 				"Rating": products[i].AvrgRating,
 				"Sold":   products[i].Sold,
 			})
-		} else {
-			break
 		}
 	}
 	c.JSON(200, gin.H{
