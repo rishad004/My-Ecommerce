@@ -15,7 +15,7 @@ func Dashboard(c *gin.Context) {
 
 	var products []models.Products
 	var category []models.Category
-	var show, Show []gin.H
+	var show []gin.H
 
 	if err := database.Db.Order("Sold desc").Find(&products).Error; err != nil {
 		c.JSON(404, gin.H{
@@ -37,15 +37,15 @@ func Dashboard(c *gin.Context) {
 		return
 	}
 
-	for i := 0; i < len(category); i++ {
-		if i < 10 {
-			Show = append(Show, gin.H{
-				"Name":        category[i].Name,
-				"Description": category[i].Dscptn,
-				"Sold":        products[i].Sold,
-			})
-		}
-	}
+	// for i := 0; i < len(category); i++ {
+	// 	if i < 10 {
+	// 		Show = append(Show, gin.H{
+	// 			"Name":        category[i].Name,
+	// 			"Description": category[i].Dscptn,
+	// 			"Sold":        products[i].Sold,
+	// 		})
+	// 	}
+	// }
 
 	for i := 0; i < len(products); i++ {
 		if i < 10 {
@@ -63,8 +63,8 @@ func Dashboard(c *gin.Context) {
 		"Code":    200,
 		"Message": "Products found!",
 		"Data": gin.H{
-			"TopCategories": Show,
-			"TopProducts":   show,
+			// "TopCategories": Show,
+			"TopProducts": show,
 		},
 	})
 }
