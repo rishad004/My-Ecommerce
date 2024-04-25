@@ -82,7 +82,7 @@ func GetReportData(c *gin.Context) {
 	pdf.SetFont("Arial", "", 9)
 
 	for _, v := range orders {
-		if v.Status == "pending" || v.Status == "delivered" {
+		if v.Status == "Pending" || v.Status == "delivered" {
 			sales++
 		} else if v.Status == "cancelled" || v.Status == "returned" {
 			salesreturn++
