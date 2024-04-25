@@ -168,9 +168,9 @@ func DeleteCoupon(c *gin.Context) {
 
 	var coupon models.Coupons
 
-	database.Db.First(&coupon, Id)
+	err := database.Db.First(&coupon, Id).Error
 
-	if coupon.Id == 0 {
+	if err != nil {
 		c.JSON(404, gin.H{
 			"Status":  "Error!",
 			"Code":    404,
@@ -178,7 +178,16 @@ func DeleteCoupon(c *gin.Context) {
 			"Data":    gin.H{},
 		})
 	} else {
-		database.Db.Delete(&coupon)
+		err := database.Db.Delete(&coupon).Error
+		if err != nil {
+			c.JSON(409, gin.H{
+				"Status":  "Error!",
+				"Code":    409,
+				"Error":   err.Error(),
+				"Message": "Couldn't delete the coupon",
+				"Data":    gin.H{},
+			})
+		}
 		c.JSON(200, gin.H{
 			"Status":  "Success!",
 			"Code":    200,
