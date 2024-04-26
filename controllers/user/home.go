@@ -243,9 +243,16 @@ func FilterProduct(c *gin.Context) {
 			"Status":  "Error!",
 			"Code":    404,
 			"Message": "No products found in this category!",
-			"Data":    show,
+			"Data":    gin.H{},
 		})
 		return
 	}
-	c.JSON(200, gin.H{"Products": show})
+	c.JSON(200, gin.H{
+		"Status":  "Success!",
+		"Code":    200,
+		"Message": "Showing products of specific category!",
+		"Data": gin.H{
+			"Products": show,
+		},
+	})
 }
