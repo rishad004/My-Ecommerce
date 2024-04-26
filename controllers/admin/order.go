@@ -159,7 +159,7 @@ func OrdersStatusChange(c *gin.Context) {
 			})
 			return
 		}
-		if payment.Status == "recieved" {
+		if payment.Status == "recieved" || payment.Status == "partially refunded" {
 			wallet.Balance += (float32(order.Prdct.Offer) * float32(order.Quantity)) - (float32(order.Prdct.Offer) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
 			if err := database.Db.Save(&wallet).Error; err != nil {
 				c.JSON(400, gin.H{
