@@ -281,11 +281,12 @@ func CancelOrder(c *gin.Context) {
 
 	fmt.Println(order.Order.SubTotal, "   ", order.Prdct.Offer*order.Quantity)
 	if order.Order.SubTotal == (float32(order.Prdct.Offer) * float32(order.Quantity)) {
-		payment.Status = "refunded"
 		database.Db.Model(&order.Order).Update("coupon_id", 1)
 		if payment.Status == "recieved" || payment.Status == "partially refunded" || payment.Status == "refunded" {
+			payment.Status = "refunded"
 			wall := wallet.Balance + order.Order.Amount
 			fmt.Println(wall)
+			database.Db.Model(&wallet).Update("status", payment.Status)
 			database.Db.Model(&wallet).Update("balance", wall)
 		}
 		database.Db.Model(&order.Order).Update("sub_total", 0)
