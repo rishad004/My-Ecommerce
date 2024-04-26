@@ -159,29 +159,12 @@ func OrdersStatusChange(c *gin.Context) {
 			})
 			return
 		}
-		if payment.Status == "recieved" || payment.Status == "partially refunded" {
-			wallet.Balance += (float32(order.Prdct.Offer) * float32(order.Quantity)) - (float32(order.Prdct.Offer) * float32(order.Quantity) * float32(order.Order.Coupon.Value) / 100)
-			if err := database.Db.Save(&wallet).Error; err != nil {
-				c.JSON(400, gin.H{
-					"Status":  "Error!",
-					"Code":    400,
-					"Error":   err.Error(),
-					"Message": "Couldn't update wallet!",
-					"Data":    gin.H{},
-				})
-				return
-			}
-			payment.Status = "partially refunded"
-			if err := database.Db.Model(&payment).Update("Status", payment.Status).Error; err != nil {
-				c.JSON(400, gin.H{
-					"Status":  "Error!",
-					"Code":    400,
-					"Error":   err.Error(),
-					"Message": "Failed to set payment as refunded!",
-					"Data":    gin.H{},
-				})
-				return
-			}
+		if payment.Status == "recieved" || payment.Status == "partially refunded" || payment.Status == "refunded" {
+			payment.Status = "refunded"
+			wall := wallet.Balance + order.Order.Amount
+			fmt.Println(wall)
+			database.Db.Model(&wallet).Update("status", payment.Status)
+			database.Db.Model(&wallet).Update("balance", wall)
 		}
 	} else if status == "shipped" {
 		order.Status = status
