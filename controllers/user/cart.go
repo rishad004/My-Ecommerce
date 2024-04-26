@@ -66,7 +66,7 @@ func AddCart(c *gin.Context) {
 				c.JSON(404, gin.H{
 					"Status":  "Error!",
 					"Code":    404,
-					"Message": "No such Address found!",
+					"Message": "No such product found!",
 					"Data":    gin.H{},
 				})
 				return
