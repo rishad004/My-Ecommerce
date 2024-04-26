@@ -59,6 +59,18 @@ func CheckoutCart(c *gin.Context) {
 		})
 		return
 	}
+	if method == "COD" {
+		if order.Amount > 1000 {
+			c.JSON(401, gin.H{
+				"Status":  "Error!",
+				"Code":    401,
+				"Message": "Minimum order amount for Cash On Delivery is 1000",
+				"Data":    gin.H{},
+			})
+			return
+
+		}
+	}
 	errorr := database.Db.First(&coupon, "Code=?", Coupon)
 
 	num := helper.GenerateInt()
@@ -127,16 +139,6 @@ func CheckoutCart(c *gin.Context) {
 		Status:  "pending",
 	}
 	if method == "COD" {
-		if order.Amount < 1000 {
-			c.JSON(401, gin.H{
-				"Status":  "Error!",
-				"Code":    401,
-				"Message": "Minimum order amount for Cash On Delivery is 1000",
-				"Data":    gin.H{},
-			})
-			return
-
-		}
 		payment.PMethod = "COD"
 
 		for _, v := range ca {
