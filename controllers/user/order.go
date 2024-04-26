@@ -249,7 +249,7 @@ func CancelOrder(c *gin.Context) {
 		return
 	}
 
-	if err := database.Db.First(&payment, "Order_Id=?", order.OrderId).Error; err != nil {
+	if err := database.Db.Where("Order_Id=?", order.OrderId).First(&payment).Error; err != nil {
 		c.JSON(500, gin.H{
 			"Status":  "Error!",
 			"Code":    500,
