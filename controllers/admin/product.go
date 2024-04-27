@@ -211,7 +211,7 @@ func EditProduct(c *gin.Context) {
 		if err := database.Db.First(&p, "Id=?", name).Error; err != nil {
 			c.JSON(404, gin.H{"Error": "Product not found"})
 		} else {
-			database.Db.Model(&models.Products{}).Where("Name=?", name).Updates(Product)
+			database.Db.Model(&models.Products{}).Where("Id=?", name).Updates(Product)
 			c.JSON(200, gin.H{"Message": "Product edited successfully"})
 		}
 	}
