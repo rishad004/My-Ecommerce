@@ -203,18 +203,15 @@ func EditProduct(c *gin.Context) {
 		}
 	}
 
-	database.Db.First(&check, "Name=?", Category)
-
-	Product.CtgryId = check.Id
-
-	if Product.CtgryId == 0 {
+	if err := database.Db.First(&check, "Name=?", Category).Error; err != nil {
 		c.JSON(404, gin.H{"Message": "The category not found, Please add the category first."})
 	} else {
-		database.Db.First(&p, "Name=?", name)
-		database.Db.Model(&models.Products{}).Where("Name=?", name).Updates(Product)
-		if p.ID == 0 {
+		Product.CtgryId = check.Id
+
+		if err := database.Db.First(&p, "Name=?", name).Error; err != nil {
 			c.JSON(404, gin.H{"Error": "Product not found"})
 		} else {
+			database.Db.Model(&models.Products{}).Where("Name=?", name).Updates(Product)
 			c.JSON(200, gin.H{"Message": "Product edited successfully"})
 		}
 	}
