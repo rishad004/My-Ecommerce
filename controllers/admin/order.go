@@ -84,8 +84,6 @@ func OrdersStatusChange(c *gin.Context) {
 	fmt.Println(status)
 
 	var order models.Orderitem
-	var payment models.Payment
-	var wallet models.Wallet
 
 	if err := database.Db.Preload("Order").Preload("Order.Coupon").Preload("Prdct").First(&order, uint(ord)).Error; err != nil {
 		c.JSON(404, gin.H{
@@ -97,76 +95,7 @@ func OrdersStatusChange(c *gin.Context) {
 		})
 		return
 	}
-	if err := database.Db.First(&payment, "Order_Id=?", order.OrderId).Error; err != nil {
-		c.JSON(404, gin.H{
-			"Status":  "Error!",
-			"Code":    404,
-			"Error":   err.Error(),
-			"Message": "No such payment!",
-			"Data":    gin.H{},
-		})
-		return
-	}
-	if err := database.Db.First(&wallet, "User_Id=?", order.Order.UserId).Error; err != nil {
-		c.JSON(501, gin.H{
-			"Status":  "Error!",
-			"Code":    501,
-			"Error":   err.Error(),
-			"Message": "Failed to find the user wallet!",
-			"Data":    gin.H{},
-		})
-		return
-	}
-	if status == "cancelled" {
-		if order.Status == "cancelled" {
-			c.JSON(409, gin.H{
-				"Status":  "Error!",
-				"Code":    409,
-				"Message": "This order is already cancelled!",
-				"Data":    gin.H{},
-			})
-			return
-		}
-
-		order.Status = status
-
-		fmt.Println("Cancelling......................")
-		order.Order.SubTotal = order.Order.SubTotal - float32(order.Prdct.Offer*order.Quantity)
-		if order.Order.SubTotal < float32(order.Order.Coupon.Condition) {
-			order.Order.Amount = order.Order.SubTotal
-			order.Order.CouponId = 1
-		} else {
-			order.Order.Amount = order.Order.SubTotal - (order.Order.SubTotal * float32(order.Order.Coupon.Value) / 100)
-		}
-		if er := database.Db.Save(&order.Order).Error; er != nil {
-			c.JSON(400, gin.H{
-				"Status":  "Error!",
-				"Code":    400,
-				"Error":   er.Error(),
-				"Message": "Can't decrease the order amount!",
-				"Data":    gin.H{},
-			})
-			return
-		}
-		order.Prdct.Quantity += order.Quantity
-		if er := database.Db.Save(&order.Prdct).Error; er != nil {
-			c.JSON(400, gin.H{
-				"Status":  "Error!",
-				"Code":    400,
-				"Error":   er.Error(),
-				"Message": "Can't increase product quantity!",
-				"Data":    gin.H{},
-			})
-			return
-		}
-		if payment.Status == "recieved" || payment.Status == "partially refunded" || payment.Status == "refunded" {
-			payment.Status = "refunded"
-			wall := wallet.Balance + order.Order.Amount
-			fmt.Println(wall)
-			database.Db.Model(&wallet).Update("status", payment.Status)
-			database.Db.Model(&wallet).Update("balance", wall)
-		}
-	} else if status == "shipped" {
+	if status == "shipped" {
 		order.Status = status
 	} else if status == "delivered" {
 		order.Status = status
@@ -190,15 +119,7 @@ func OrdersStatusChange(c *gin.Context) {
 		})
 		return
 	}
-	if status == "cancelled" {
-		c.JSON(200, gin.H{
-			"Status":  "Success!",
-			"Code":    200,
-			"Message": "Order cancelled succesfully!",
-			"Data":    gin.H{},
-		})
-		return
-	}
+
 	c.JSON(200, gin.H{
 		"Status":  "Error!",
 		"Code":    200,
