@@ -14,7 +14,7 @@ import (
 
 //	@title			B Y E C O M  LTD
 //	@version		1.0
-//	@description	B Y E C O M  is your ecom. shop solution, where you can sell anything online with ease and at an affordable price. We provide an eCommerce platform for businesses to sell their products online and connect with customers worldwide.
+//	@description	B Y E C O M  is your ecom. shop soltion, where you can sell anything online with ease and at an affordable price. We provide an eCommerce platform for businesses to sell their products online and connect with customers worldwide.
 // @host      byecom.shop
 // @BasePath  /
 
