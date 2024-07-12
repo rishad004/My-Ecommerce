@@ -1512,7 +1512,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "B Y E C O M  LTD",
-	Description:      "B Y E C O M  is your ecom. shop solution, where you can sell anything online with ease and at an affordable price. We provide an eCommerce platform for businesses to sell their products online and connect with customers worldwide.",
+	Description:      "B Y E C O M  is your ecom. shop soltion, where you can sell anything online with ease and at an affordable price. We provide an eCommerce platform for businesses to sell their products online and connect with customers worldwide.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
