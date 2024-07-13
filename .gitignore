@@ -4,3 +4,4 @@
 vendor/
 ReportPDF/*.pdf
 assets/products/*
+/*.yml
