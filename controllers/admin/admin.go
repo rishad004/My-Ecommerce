@@ -54,7 +54,7 @@ func PostLoginA(c *gin.Context) {
 			})
 			return
 		}
-		c.SetCookie("Jwt-Admin", token, int((time.Hour * 1).Seconds()), "/", "byecom.shop", false, false)
+		c.SetCookie("Jwt-Admin", token, int((time.Hour * 1).Seconds()), "/", "http://adf92f645b67e4a27bca9dfc175ed059-1876988238.eu-north-1.elb.amazonaws.com/", false, false)
 		c.JSON(200, gin.H{
 			"Status":  "Success!",
 			"Code":    200,
@@ -76,7 +76,7 @@ func LogoutA(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println("------------------ADMIN LOGGING OUT----------------------")
 
-	c.SetCookie("Jwt-Admin", "", -1, "/", "byecom.shop", false, true)
+	c.SetCookie("Jwt-Admin", "", -1, "/", "http://adf92f645b67e4a27bca9dfc175ed059-1876988238.eu-north-1.elb.amazonaws.com/", false, true)
 	c.JSON(200, gin.H{
 		"Status":  "Success!",
 		"Code":    200,

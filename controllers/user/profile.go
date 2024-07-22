@@ -208,7 +208,7 @@ func ForgotPassword(c *gin.Context) {
 	fmt.Println("")
 	fmt.Println(code)
 
-	if err := helper.SendMail(email, "Reset your Password", "https://byecom.shop/user/reset?code="+code); err != nil {
+	if err := helper.SendMail(email, "Reset your Password", "https://http://adf92f645b67e4a27bca9dfc175ed059-1876988238.eu-north-1.elb.amazonaws.com//user/reset?code="+code); err != nil {
 		c.JSON(503, gin.H{
 			"Status":  "Fail!",
 			"Code":    503,
@@ -224,7 +224,7 @@ func ForgotPassword(c *gin.Context) {
 		"Code":    200,
 		"Message": "We have sent you a link to reset, Please check your email!",
 		"Data": gin.H{
-			"Link": "https://byecom.shop/user/reset?code=" + code,
+			"Link": "https://http://adf92f645b67e4a27bca9dfc175ed059-1876988238.eu-north-1.elb.amazonaws.com//user/reset?code=" + code,
 		},
 	})
 

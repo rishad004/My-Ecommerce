@@ -8,14 +8,14 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	_ "github.com/rishad004/My-Ecommerce/docs"
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/files"
 )
 
 //  @title			B Y E C O M  LTD
 //  @version		1.0
 //  @description	B Y E C O M  is your ecom. shop soltion, where you can sell anything online with ease and at an affordable price. We provide an eCommerce platform for businesses to sell their products online and connect with customers worldwide.
-//  @host      byecom.shop
+//  @host      http://adf92f645b67e4a27bca9dfc175ed059-1876988238.eu-north-1.elb.amazonaws.com/
 //  @BasePath  /
 
 func init() {
