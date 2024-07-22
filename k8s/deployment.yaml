@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: byecom-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: byecom
+  template:
+    metadata:
+      labels:
+        app: byecom-app
+    spec:
+      containers:
+        - name: byecom
+          image: rishad004/byecom:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: POSTGRES_NAME
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: POSTGRES_PORT
+            - name: disable
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: disable
+            - name: APPEMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: APPEMAIL
+            - name: APPPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: APPPASSWORD
+            - name: SECRETKEY
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: SECRETKEY
+            - name: RAZOR_PAY_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: RAZOR_PAY_KEY
+            - name: RAZOR_PAY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: RAZOR_PAY_SECRET
+            - name: HOST_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: byecom-secret
+                  key: HOST_NAME
+      tolerations:
+        - key: "node.cloudprovider.kubernetes.io/uninitialized"
+          operator: "Exists"
+          effect: "NoSchedule"
