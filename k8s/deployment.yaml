@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: byecom-deployment
+  name: byecom-app-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: byecom
+      app: byecom-app
   template:
     metadata:
       labels:
