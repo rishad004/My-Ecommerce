@@ -41,10 +41,10 @@ spec:
             secretKeyRef:
               name: byecom-secret
               key: POSTGRES_PORT
-        - name: POSTGRES_SSL
+        - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
               name: byecom-secret
-              key: POSTGRES_SSL
+              key: POSTGRES_URL
         ports:
         - containerPort: 5432

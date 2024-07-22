@@ -43,11 +43,11 @@ spec:
                 secretKeyRef:
                   name: byecom-secret
                   key: POSTGRES_PORT
-            - name: disable
+            - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: byecom-secret
-                  key: disable
+                  key: POSTGRES_URL
             - name: APPEMAIL
               valueFrom:
                 secretKeyRef:
